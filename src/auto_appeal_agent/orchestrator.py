@@ -25,6 +25,7 @@ from typing import Any, Callable, Optional
 from auto_appeal_agent.agents.chart_miner import mine_chart
 from auto_appeal_agent.agents.denial_analyzer import analyze_denial
 from auto_appeal_agent.agents.guideline_citer import cite_guidelines
+from auto_appeal_agent.agents.independent_reviewer import independent_review
 from auto_appeal_agent.agents.letter_writer import write_appeal
 from auto_appeal_agent.agents.policy_reader import read_policy
 from auto_appeal_agent.agents.verifier import verify_appeal
@@ -41,6 +42,7 @@ def _emit(cb: Optional[ProgressCallback], stage: str, status: str, **extra: Any)
 def run_pipeline(
     pipeline_input: PipelineInput,
     progress_callback: Optional[ProgressCallback] = None,
+    second_pass: bool = True,
 ) -> VerifiedAppeal:
     """Run every agent in order and return the final VerifiedAppeal.
 
@@ -50,6 +52,10 @@ def run_pipeline(
             stage with a dict like
             `{"stage": "denial_analyzer", "status": "done", ...}`.
             Used by the UI layer to stream live progress.
+        second_pass: When True (default), runs the IndependentReviewer
+            after the substring Verifier and attaches its review to the
+            returned VerifiedAppeal.second_pass_review. Set to False to
+            skip the extra LLM call (saves ~$0.10 per run).
     """
     cb = progress_callback
 
@@ -122,5 +128,18 @@ def run_pipeline(
         pass_rate=verified.verification_pass_rate,
         ready_to_send=verified.ready_to_send,
     )
+
+    if second_pass:
+        _emit(cb, "independent_reviewer", "running")
+        review = independent_review(draft, all_source_quotes)
+        verified.second_pass_review = review
+        _emit(
+            cb,
+            "independent_reviewer",
+            "done",
+            overall_verdict=review.overall_verdict,
+            citation_verdicts=len(review.citation_verdicts),
+            high_level_concerns=len(review.high_level_concerns),
+        )
 
     return verified
