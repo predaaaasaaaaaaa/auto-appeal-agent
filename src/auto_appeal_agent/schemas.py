@@ -166,6 +166,35 @@ class RejectedCitation(Strict):
     rejection_reason: str
 
 
+class CitationVerdict(Strict):
+    """Independent-reviewer verdict for one citation in the draft."""
+
+    paragraph_index: int = Field(..., ge=0)
+    citation_in_paragraph_index: int = Field(..., ge=0)
+    source_id: str
+    verdict: Literal["supports", "partial", "unsupported"]
+    rationale: str = Field(..., description="One-sentence explanation.")
+
+
+class AppealReview(Strict):
+    """Output of the independent (second-pass) reviewer.
+
+    Ran after the substring Verifier passes; gives a fresh, prompt-isolated
+    second opinion on whether each citation actually supports the claim.
+    """
+
+    case_id: str
+    overall_verdict: Literal["sign_ready", "needs_revision"]
+    citation_verdicts: list[CitationVerdict]
+    high_level_concerns: list[str] = Field(
+        default_factory=list,
+        description="Issues spanning the letter (tone, missing arguments, etc.).",
+    )
+    reviewer_summary: str = Field(
+        ..., description="One-paragraph summary of the review."
+    )
+
+
 class VerifiedAppeal(Strict):
     case_id: str
     draft: AppealDraft
@@ -175,4 +204,11 @@ class VerifiedAppeal(Strict):
     ready_to_send: bool = Field(
         ...,
         description="True only when verification_pass_rate == 1.0 and no rejected citations.",
+    )
+    second_pass_review: Optional[AppealReview] = Field(
+        default=None,
+        description=(
+            "Independent-reviewer verdict, populated when the orchestrator "
+            "is invoked with second_pass=True."
+        ),
     )
