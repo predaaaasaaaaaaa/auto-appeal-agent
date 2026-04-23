@@ -26,6 +26,9 @@ build/
 # Generated fixture case data — regenerable via `make fixtures`
 fixtures/case_*/
 
+# Pipeline outputs (generated appeal letters, verification reports)
+output/
+
 # OS
 .DS_Store
 Thumbs.db
