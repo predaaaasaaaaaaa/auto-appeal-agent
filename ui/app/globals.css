@@ -4,6 +4,32 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Semantic status colors, tuned for clinical UI (muted, not neon). */
+@theme {
+  --color-status-verified: oklch(0.55 0.10 160);    /* muted forest green */
+  --color-status-verified-bg: oklch(0.96 0.03 160);
+  --color-status-rejected: oklch(0.48 0.18 25);
+  --color-status-rejected-bg: oklch(0.96 0.04 25);
+  --color-status-running: oklch(0.55 0.065 205);
+  --color-status-running-bg: oklch(0.96 0.025 205);
+}
+
+/* Serif for the appeal letter body — gives it a document-letterhead feel
+   distinct from the surrounding UI chrome. */
+.letter-body {
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  font-variant-numeric: oldstyle-nums;
+}
+
+/* Highlight marker used in the source-document pane when the user clicks
+   a citation in the appeal panel. */
+.source-highlight {
+  background-color: oklch(0.93 0.09 85);
+  outline: 2px solid oklch(0.76 0.13 85);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -49,30 +75,33 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* Clinical palette: warm off-white bg, deep navy primary, muted teal accent.
+     Designed to feel like a medical-records or legal-document tool — dense,
+     professional, readable. Low saturation on purpose. */
+  --background: oklch(0.992 0.003 80);
+  --foreground: oklch(0.20 0.015 250);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.20 0.015 250);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.20 0.015 250);
+  --primary: oklch(0.32 0.07 248);       /* deep navy */
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --secondary: oklch(0.96 0.01 85);
+  --secondary-foreground: oklch(0.25 0.02 250);
+  --muted: oklch(0.95 0.005 85);
+  --muted-foreground: oklch(0.48 0.012 250);
+  --accent: oklch(0.55 0.065 205);        /* muted teal */
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.48 0.18 25);     /* muted medical red */
+  --border: oklch(0.89 0.006 85);
+  --input: oklch(0.89 0.006 85);
+  --ring: oklch(0.55 0.065 205);
+  --chart-1: oklch(0.55 0.065 205);
+  --chart-2: oklch(0.32 0.07 248);
+  --chart-3: oklch(0.48 0.18 25);
+  --chart-4: oklch(0.60 0.08 160);
+  --chart-5: oklch(0.56 0.12 80);
+  --radius: 0.25rem;                       /* tighter corners; less playful */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
