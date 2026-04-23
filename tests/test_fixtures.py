@@ -94,8 +94,11 @@ def test_orchestrator_runs_on_each_case(cassette, fixtures_dir: Path, case_dir_n
         patient_chart_path=str(case_dir / "patient_chart.txt"),
         payer_policy_path=str(case_dir / "payer_policy.pdf"),
     )
-    result = run_pipeline(pipeline_input)
+    # second_pass=False keeps this test focused on the extraction pipeline.
+    # The IndependentReviewer is exercised in tests/test_independent_reviewer.py.
+    result = run_pipeline(pipeline_input, second_pass=False)
     assert result.case_id == case_dir_name
     # Phase 1 gate: 100% citation verification for every case.
     assert result.verification_pass_rate == 1.0
     assert result.ready_to_send is True
+    assert result.second_pass_review is None
