@@ -15,8 +15,7 @@ from auto_appeal_agent.agents.guideline_citer import cite_guidelines
 from auto_appeal_agent.schemas import DenialReason, MedicalNecessityCriterion
 
 
-@pytest.mark.integration
-def test_guideline_citer_returns_structured_output():
+def test_guideline_citer_returns_structured_output(cassette):  # noqa: ARG001
     denial_reasons = [
         DenialReason(
             reason="Not medically necessary; member does not meet criteria "
