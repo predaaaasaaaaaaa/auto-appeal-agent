@@ -1,0 +1,152 @@
+"""
+FastAPI backend for the auto-appeal-agent UI.
+
+Endpoints:
+  GET  /api/health                          — liveness
+  GET  /api/cases                           — list fixture cases
+  GET  /api/case/{case_id}/source/{kind}    — raw text of a source doc
+  POST /api/run/{case_id}                   — run pipeline, stream SSE
+
+The SSE run endpoint streams events like
+    {"stage": "denial_analyzer", "status": "running"}
+    {"stage": "denial_analyzer", "status": "done", "source_quotes": 3}
+    ...
+    {"stage": "done", "result": <full VerifiedAppeal JSON>}
+
+Run locally:
+    make api   # or
+    .venv/bin/uvicorn auto_appeal_agent.api.main:app --reload --port 8000
+"""
+from __future__ import annotations
+
+import asyncio
+import json
+from pathlib import Path
+from typing import Any
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from sse_starlette.sse import EventSourceResponse
+
+from auto_appeal_agent.orchestrator import run_pipeline
+from auto_appeal_agent.pdf_utils import extract_text
+from auto_appeal_agent.schemas import PipelineInput
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+FIXTURES_ROOT = REPO_ROOT / "fixtures"
+
+app = FastAPI(
+    title="auto-appeal-agent API",
+    description="Prior Authorization Auto-Appeal Agent — backend",
+    version="0.1.0",
+)
+
+# Next.js dev server runs on :3000; allow it to call us.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/api/health")
+async def health() -> dict[str, str]:
+    return {"status": "ok"}
+
+
+@app.get("/api/cases")
+async def list_cases() -> dict[str, Any]:
+    cases: list[dict[str, Any]] = []
+    if not FIXTURES_ROOT.exists():
+        return {"cases": []}
+
+    for case_dir in sorted(FIXTURES_ROOT.iterdir()):
+        if not case_dir.is_dir() or not case_dir.name.startswith("case_"):
+            continue
+        entry: dict[str, Any] = {"case_id": case_dir.name}
+        expected_path = case_dir / "expected.json"
+        if expected_path.exists():
+            try:
+                data = json.loads(expected_path.read_text(encoding="utf-8"))
+                entry["expected_appeal"] = data.get("expected_appeal", {})
+            except json.JSONDecodeError:
+                pass
+        cases.append(entry)
+    return {"cases": cases}
+
+
+@app.get("/api/case/{case_id}/source/{kind}")
+async def get_source_text(case_id: str, kind: str) -> dict[str, str]:
+    case_dir = FIXTURES_ROOT / case_id
+    if not case_dir.is_dir():
+        raise HTTPException(status_code=404, detail="case not found")
+
+    if kind == "patient_chart":
+        path = case_dir / "patient_chart.txt"
+        if not path.exists():
+            raise HTTPException(status_code=404, detail="file not found")
+        return {"text": path.read_text(encoding="utf-8")}
+
+    if kind in ("denial_letter", "payer_policy"):
+        path = case_dir / f"{kind}.pdf"
+        if not path.exists():
+            raise HTTPException(status_code=404, detail="file not found")
+        return {"text": extract_text(path)}
+
+    raise HTTPException(status_code=400, detail="invalid source kind")
+
+
+@app.post("/api/run/{case_id}")
+async def run_case(case_id: str) -> EventSourceResponse:
+    case_dir = FIXTURES_ROOT / case_id
+    if not case_dir.is_dir():
+        raise HTTPException(status_code=404, detail="case not found")
+
+    pipeline_input = PipelineInput(
+        case_id=case_id,
+        denial_letter_path=str(case_dir / "denial_letter.pdf"),
+        patient_chart_path=str(case_dir / "patient_chart.txt"),
+        payer_policy_path=str(case_dir / "payer_policy.pdf"),
+    )
+
+    async def event_stream():
+        # Queue bridges the worker thread (where run_pipeline executes)
+        # and this asyncio coroutine (which yields SSE events).
+        queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
+        loop = asyncio.get_event_loop()
+
+        def progress_cb(event: dict[str, Any]) -> None:
+            loop.call_soon_threadsafe(queue.put_nowait, event)
+
+        async def runner() -> None:
+            try:
+                verified = await asyncio.to_thread(
+                    run_pipeline, pipeline_input, progress_cb
+                )
+                await queue.put(
+                    {"stage": "done", "result": verified.model_dump()}
+                )
+            except Exception as exc:  # pragma: no cover - streamed to client
+                await queue.put(
+                    {
+                        "stage": "error",
+                        "error_type": type(exc).__name__,
+                        "message": str(exc),
+                    }
+                )
+
+        task = asyncio.create_task(runner())
+        try:
+            while True:
+                event = await queue.get()
+                yield {"data": json.dumps(event)}
+                if event.get("stage") in ("done", "error"):
+                    break
+        finally:
+            await task
+
+    return EventSourceResponse(event_stream())
