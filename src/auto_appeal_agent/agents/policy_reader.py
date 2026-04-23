@@ -20,7 +20,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from auto_appeal_agent.anthropic_client import call_claude_structured
+from auto_appeal_agent.anthropic_client import call_claude_structured, cached_system
 from auto_appeal_agent.pdf_utils import extract_text
 from auto_appeal_agent.schemas import PolicyCriteria
 
@@ -75,7 +75,7 @@ def read_policy(case_id: str, payer_policy_path) -> PolicyCriteria:
 
     policy, _raw = call_claude_structured(
         output_model=PolicyCriteria,
-        system=_SYSTEM_PROMPT,
+        system=cached_system(_SYSTEM_PROMPT),
         messages=[{"role": "user", "content": user_content}],
         max_tokens=4096,
     )

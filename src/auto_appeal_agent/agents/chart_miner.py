@@ -17,7 +17,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from auto_appeal_agent.anthropic_client import call_claude_structured
+from auto_appeal_agent.anthropic_client import call_claude_structured, cached_system
 from auto_appeal_agent.schemas import ChartEvidence, MedicalNecessityCriterion
 
 _SYSTEM_PROMPT = """\
@@ -95,7 +95,7 @@ def mine_chart(
 
     evidence, _raw = call_claude_structured(
         output_model=ChartEvidence,
-        system=_SYSTEM_PROMPT,
+        system=cached_system(_SYSTEM_PROMPT),
         messages=[{"role": "user", "content": user_content}],
         max_tokens=8192,
         thinking=True,

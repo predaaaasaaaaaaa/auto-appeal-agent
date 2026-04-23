@@ -24,7 +24,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from auto_appeal_agent.anthropic_client import call_claude_structured
+from auto_appeal_agent.anthropic_client import call_claude_structured, cached_system
 from auto_appeal_agent.schemas import (
     AppealDraft,
     ChartEvidence,
@@ -124,7 +124,7 @@ def write_appeal(
 
     draft, _raw = call_claude_structured(
         output_model=AppealDraft,
-        system=_SYSTEM_PROMPT,
+        system=cached_system(_SYSTEM_PROMPT),
         messages=[{"role": "user", "content": user_content}],
         max_tokens=8192,
         thinking=True,

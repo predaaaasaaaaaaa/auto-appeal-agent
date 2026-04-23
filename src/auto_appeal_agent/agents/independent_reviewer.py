@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from auto_appeal_agent.anthropic_client import call_claude_structured
+from auto_appeal_agent.anthropic_client import call_claude_structured, cached_system
 from auto_appeal_agent.schemas import (
     AppealDraft,
     AppealReview,
@@ -114,7 +114,7 @@ def independent_review(
 
     review, _raw = call_claude_structured(
         output_model=AppealReview,
-        system=_SYSTEM_PROMPT,
+        system=cached_system(_SYSTEM_PROMPT),
         messages=[{"role": "user", "content": user_content}],
         max_tokens=4096,
         thinking=True,
