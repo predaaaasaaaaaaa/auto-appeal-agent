@@ -6,6 +6,7 @@ Endpoints:
   GET  /api/cases                           — list fixture cases
   GET  /api/case/{case_id}/source/{kind}    — raw text of a source doc
   GET  /api/run/{case_id}                   — run pipeline, stream SSE
+  POST /api/export_pdf                      — render an AppealDraft to PDF
 
 The SSE run endpoint streams events like
     {"stage": "denial_analyzer", "status": "running"}
@@ -26,11 +27,13 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from sse_starlette.sse import EventSourceResponse
 
 from auto_appeal_agent.orchestrator import run_pipeline
+from auto_appeal_agent.pdf_export import render_appeal_pdf
 from auto_appeal_agent.pdf_utils import extract_text
-from auto_appeal_agent.schemas import PipelineInput
+from auto_appeal_agent.schemas import AppealDraft, PipelineInput
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 FIXTURES_ROOT = REPO_ROOT / "fixtures"
@@ -98,6 +101,23 @@ async def get_source_text(case_id: str, kind: str) -> dict[str, str]:
         return {"text": extract_text(path)}
 
     raise HTTPException(status_code=400, detail="invalid source kind")
+
+
+@app.post("/api/export_pdf")
+async def export_pdf(draft: AppealDraft) -> Response:
+    """Render the (possibly edited) appeal draft to a PDF download.
+
+    Accepts an AppealDraft whose paragraphs may have been edited by the
+    user in the UI. Returns an application/pdf body with a filename
+    suggestion based on case_id.
+    """
+    pdf_bytes = render_appeal_pdf(draft)
+    filename = f"{draft.case_id}_appeal.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @app.get("/api/run/{case_id}")
