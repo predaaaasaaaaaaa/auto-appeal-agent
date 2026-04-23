@@ -163,8 +163,10 @@ export const PIPELINE_STAGES: readonly string[] = [
   "guideline_citer",
   "letter_writer",
   "verifier",
-  "independent_reviewer",
 ] as const;
+// Note: "independent_reviewer" is opt-in via second_pass=True and not
+// part of the default stepper. Its label/description stay in the maps
+// below so the run page can still display the review when present.
 
 // Human-readable labels for each stage.
 export const STAGE_LABELS: Record<string, string> = {
