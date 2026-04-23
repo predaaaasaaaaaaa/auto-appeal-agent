@@ -5,7 +5,7 @@ Endpoints:
   GET  /api/health                          — liveness
   GET  /api/cases                           — list fixture cases
   GET  /api/case/{case_id}/source/{kind}    — raw text of a source doc
-  POST /api/run/{case_id}                   — run pipeline, stream SSE
+  GET  /api/run/{case_id}                   — run pipeline, stream SSE
 
 The SSE run endpoint streams events like
     {"stage": "denial_analyzer", "status": "running"}
@@ -100,7 +100,7 @@ async def get_source_text(case_id: str, kind: str) -> dict[str, str]:
     raise HTTPException(status_code=400, detail="invalid source kind")
 
 
-@app.post("/api/run/{case_id}")
+@app.get("/api/run/{case_id}")
 async def run_case(case_id: str) -> EventSourceResponse:
     case_dir = FIXTURES_ROOT / case_id
     if not case_dir.is_dir():
