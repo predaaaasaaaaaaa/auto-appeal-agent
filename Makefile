@@ -1,4 +1,4 @@
-.PHONY: install fixtures test test-integration test-all clean
+.PHONY: install fixtures test test-integration test-all api ui dev clean
 
 install:
 	python3 -m venv .venv
@@ -20,5 +20,13 @@ test-integration:
 test-all:
 	.venv/bin/pytest -m 'integration or not integration'
 
+# Backend only (FastAPI on :8000).
+api:
+	.venv/bin/uvicorn auto_appeal_agent.api.main:app --reload --port 8000
+
+# Frontend only (Next.js on :3000). Requires `make install-ui` once.
+ui:
+	cd ui && PATH="$$HOME/.local/node/bin:$$PATH" npm run dev
+
 clean:
-	rm -rf .venv .pytest_cache .mypy_cache **/__pycache__ *.egg-info fixtures/case_*/
+	rm -rf .venv .pytest_cache .mypy_cache **/__pycache__ *.egg-info fixtures/case_*/ output/
