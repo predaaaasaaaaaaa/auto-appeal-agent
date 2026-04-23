@@ -22,14 +22,18 @@ improvements (retries, caching, observability) live in one spot.
 """
 from __future__ import annotations
 
+import logging
 import os
+import time
 from functools import lru_cache
-from typing import Any, Type, TypeVar, Union
+from typing import Any, Optional, Type, TypeVar, Union
 
 from anthropic import Anthropic
 from anthropic.types import Message
 from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
+
+logger = logging.getLogger(__name__)
 
 # Load .env at import time so `ANTHROPIC_API_KEY` is available to the SDK.
 load_dotenv()
@@ -86,6 +90,8 @@ def call_claude_structured(
     model: str = DEFAULT_MODEL,
     max_tokens: int = 4096,
     thinking: bool = False,
+    max_retries: int = 2,
+    retry_sleep_seconds: float = 1.0,
 ) -> tuple[T, Message]:
     """Call Claude and return a validated Pydantic instance of `output_model`.
 
@@ -99,6 +105,11 @@ def call_claude_structured(
         max_tokens: Hard cap on generated tokens for this single request.
         thinking: If True, enables adaptive thinking. Adds tokens but
             helps on complex reasoning (ChartMiner, LetterWriter).
+        max_retries: Number of additional attempts if the first call
+            raises ValidationError (bad shape) or RuntimeError (no
+            tool_use block returned). These are typically non-
+            deterministic LLM failures; retries usually succeed.
+        retry_sleep_seconds: Seconds to wait before each retry.
 
     Returns:
         (parsed, raw) where `parsed` is the validated Pydantic instance
@@ -106,8 +117,8 @@ def call_claude_structured(
         inspect `raw.usage` (input/output/cache tokens).
 
     Raises:
-        RuntimeError if Claude did not return a tool_use block.
-        pydantic.ValidationError if the tool_use input failed schema validation.
+        RuntimeError if every attempt returned no tool_use block.
+        pydantic.ValidationError if every attempt failed schema validation.
     """
     tool = schema_to_tool(output_model)
     # tool_choice rules (per Anthropic API):
@@ -130,15 +141,31 @@ def call_claude_structured(
     if thinking:
         request["thinking"] = {"type": "adaptive"}
 
-    response = get_client().messages.create(**request)
+    last_error: Optional[Exception] = None
+    total_attempts = max_retries + 1
+    for attempt in range(1, total_attempts + 1):
+        try:
+            response = get_client().messages.create(**request)
+            for block in response.content:
+                if block.type == "tool_use":
+                    parsed = output_model.model_validate(block.input)
+                    return parsed, response
+            raise RuntimeError(
+                "Claude returned no tool_use block. "
+                f"stop_reason={response.stop_reason} "
+                f"content_types={[b.type for b in response.content]}"
+            )
+        except (ValidationError, RuntimeError) as e:
+            last_error = e
+            logger.warning(
+                "Claude call attempt %d/%d failed: %s: %s",
+                attempt,
+                total_attempts,
+                type(e).__name__,
+                e,
+            )
+            if attempt < total_attempts:
+                time.sleep(retry_sleep_seconds)
 
-    for block in response.content:
-        if block.type == "tool_use":
-            parsed = output_model.model_validate(block.input)
-            return parsed, response
-
-    raise RuntimeError(
-        "Claude returned no tool_use block. "
-        f"stop_reason={response.stop_reason} "
-        f"content_types={[b.type for b in response.content]}"
-    )
+    assert last_error is not None
+    raise last_error
