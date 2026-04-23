@@ -51,3 +51,28 @@ def test_unknown_source_kind_returns_400():
 def test_unknown_case_returns_404():
     r = client.get("/api/case/does_not_exist/source/patient_chart")
     assert r.status_code == 404
+
+
+def test_export_pdf_returns_application_pdf():
+    draft = {
+        "case_id": "case_test",
+        "recipient_plan": "ACME",
+        "subject_line": "Test",
+        "paragraphs": [
+            {
+                "heading": "h",
+                "text": "body",
+                "citations": [],
+            }
+        ],
+    }
+    r = client.post("/api/export_pdf", json=draft)
+    assert r.status_code == 200
+    assert r.headers["content-type"] == "application/pdf"
+    assert "case_test_appeal.pdf" in r.headers.get("content-disposition", "")
+    assert r.content.startswith(b"%PDF-")
+
+
+def test_export_pdf_rejects_malformed_draft():
+    r = client.post("/api/export_pdf", json={"case_id": "bad"})
+    assert r.status_code == 422  # Pydantic validation error from FastAPI
