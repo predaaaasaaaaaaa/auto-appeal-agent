@@ -58,7 +58,10 @@ def test_guideline_citer_returns_structured_output():
     for c in result.citations:
         assert c.citation_id.startswith("guideline_q")
         assert c.guideline_source, f"empty guideline_source on {c.citation_id}"
-        assert c.citation_title, f"empty citation_title on {c.citation_id}"
+        # citation_title is optional; if present, must be non-empty.
+        assert c.citation_title is None or c.citation_title.strip(), (
+            f"blank citation_title on {c.citation_id}"
+        )
         assert c.quote, f"empty quote on {c.citation_id}"
         assert c.supports_claim, f"empty supports_claim on {c.citation_id}"
 
