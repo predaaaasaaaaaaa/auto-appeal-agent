@@ -112,11 +112,16 @@ def independent_review(
     )
     user_content: list[dict[str, Any]] = [{"type": "text", "text": user_text}]
 
+    # max_retries=0: a ValidationError from the reviewer is almost always
+    # a prompt/schema mismatch on big drafts, not a transient failure.
+    # Retrying burns tokens without changing the outcome. The orchestrator
+    # catches the exception and proceeds without the review.
     review, _raw = call_claude_structured(
         output_model=AppealReview,
         system=cached_system(_SYSTEM_PROMPT),
         messages=[{"role": "user", "content": user_content}],
         max_tokens=4096,
         thinking=True,
+        max_retries=0,
     )
     return review
