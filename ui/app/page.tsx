@@ -1,11 +1,7 @@
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { type CaseSummary, humanCaseId } from "@/lib/types";
+import { type CaseSummary, caseMeta } from "@/lib/types";
 
 async function getCases(): Promise<CaseSummary[]> {
-  // Server-component fetch: Next.js rewrites apply only to browser requests,
-  // so we talk to FastAPI directly on :8000 here.
   try {
     const res = await fetch("http://localhost:8000/api/cases", {
       cache: "no-store",
@@ -22,92 +18,115 @@ export default async function Home() {
   const cases = await getCases();
 
   return (
-    <main className="flex flex-1 justify-center px-6 py-16">
-      <div className="w-full max-w-5xl flex flex-col gap-10">
-        <header className="flex flex-col gap-3">
-          <h1 className="text-4xl font-semibold tracking-tight">
-            auto-appeal-agent
+    <main className="flex flex-1 justify-center px-6 py-6">
+      <div className="w-full max-w-[1400px] flex flex-col gap-6">
+        <section className="flex flex-col gap-1">
+          <h1 className="text-xl font-semibold tracking-tight">
+            Appeal worklist
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            Prior Authorization Auto-Appeal Agent — reads a denial letter,
-            the patient&apos;s chart, and the insurer&apos;s medical policy,
-            and drafts a cited appeal letter where{" "}
-            <span className="text-foreground font-medium">
-              every factual claim is verified against its source
-            </span>
-            . Built with Claude Opus 4.7.
+          <p className="text-sm text-muted-foreground">
+            Select a denial to review. The agent will read the insurer&apos;s
+            denial letter, the patient chart, and the plan&apos;s medical
+            policy, then draft a cited appeal letter for physician sign-off.
           </p>
-          <div className="flex gap-2 items-center pt-2 text-sm text-muted-foreground">
-            <Badge variant="secondary">Opus 4.7</Badge>
-            <span>•</span>
-            <span>Verifier strips hallucinated citations before delivery</span>
-          </div>
-        </header>
-
-        <section className="flex flex-col gap-4">
-          <div className="flex items-baseline justify-between">
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Sample cases
-            </h2>
-            <span className="text-sm text-muted-foreground">
-              Pick a case to run the pipeline end-to-end.
-            </span>
-          </div>
-
-          {cases.length === 0 ? (
-            <div className="rounded-lg border border-dashed p-8 text-center text-muted-foreground">
-              No cases found. Make sure the backend is running on{" "}
-              <code className="bg-muted px-1 rounded">
-                localhost:8000
-              </code>{" "}
-              (<code>make api</code>) and fixtures are generated (
-              <code>make fixtures</code>).
-            </div>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {cases.map((c) => (
-                <Link
-                  key={c.case_id}
-                  href={`/run/${c.case_id}`}
-                  className="group"
-                >
-                  <Card className="h-full transition-all group-hover:border-foreground/40 group-hover:shadow-sm">
-                    <CardHeader>
-                      <CardTitle className="text-base">
-                        {humanCaseId(c.case_id)}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-2 text-sm text-muted-foreground">
-                      {c.expected_appeal?.key_claims
-                        ?.slice(0, 2)
-                        .map((claim, i) => (
-                          <div key={i} className="flex gap-2">
-                            <span className="text-foreground/40">•</span>
-                            <span>{claim}</span>
-                          </div>
-                        ))}
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          )}
         </section>
 
-        <footer className="text-sm text-muted-foreground border-t pt-6 mt-auto">
-          <p>
-            Built with Claude Code. See{" "}
-            <a
-              href="https://github.com/predaaaasaaaaaaa/auto-appeal-agent"
-              className="underline hover:text-foreground"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              the repo
-            </a>{" "}
-            for architecture, tests, and prior-auth domain docs.
-          </p>
-        </footer>
+        {cases.length === 0 ? (
+          <div className="rounded-sm border border-dashed border-border bg-card p-8 text-center text-sm text-muted-foreground">
+            No cases on the worklist. Start the backend (
+            <code className="bg-muted px-1 rounded-sm">make api</code>) and
+            generate fixtures (
+            <code className="bg-muted px-1 rounded-sm">make fixtures</code>).
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-sm border border-border bg-card">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/60 text-xs uppercase tracking-wider text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-2 text-left font-medium">
+                    Patient
+                  </th>
+                  <th className="px-4 py-2 text-left font-medium">
+                    Service denied
+                  </th>
+                  <th className="px-4 py-2 text-left font-medium">Plan</th>
+                  <th className="px-4 py-2 text-left font-medium">
+                    Denial date
+                  </th>
+                  <th className="px-4 py-2 text-left font-medium">
+                    Specialty
+                  </th>
+                  <th className="px-4 py-2 text-right font-medium">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {cases.map((c) => {
+                  const meta = caseMeta(c.case_id);
+                  return (
+                    <tr
+                      key={c.case_id}
+                      className="hover:bg-muted/40 transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {meta?.patient_name ?? c.case_id}
+                          </span>
+                          <span className="text-xs text-muted-foreground tabular-nums">
+                            DOB {meta?.date_of_birth ?? "—"} · Member{" "}
+                            {meta?.member_id ?? "—"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        {meta?.service ?? "—"}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {meta?.plan ?? "—"}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground tabular-nums">
+                        {meta?.denial_date ?? "—"}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {meta?.clinical_domain ?? "—"}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <Link
+                          href={`/run/${c.case_id}`}
+                          className="inline-flex items-center rounded-sm border border-primary bg-primary px-3 py-1 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+                        >
+                          Draft appeal →
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <aside className="flex flex-col gap-2 rounded-sm border border-border bg-muted/40 p-4 text-xs text-muted-foreground">
+          <div className="font-medium text-foreground">
+            How this works
+          </div>
+          <ol className="list-decimal pl-5 leading-relaxed">
+            <li>
+              Six specialist agents read the denial letter, the plan&apos;s
+              medical policy, the patient chart, and relevant clinical
+              guidelines.
+            </li>
+            <li>
+              A Letter Writer drafts the appeal, attaching a citation receipt
+              to every factual claim.
+            </li>
+            <li>
+              A separate Verifier re-reads each citation against its source
+              and strips anything it cannot confirm verbatim. Nothing
+              unverified reaches the final letter.
+            </li>
+          </ol>
+        </aside>
       </div>
     </main>
   );
