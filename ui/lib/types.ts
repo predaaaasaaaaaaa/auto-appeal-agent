@@ -63,6 +63,71 @@ export type CaseSummary = {
   };
 };
 
+// Display metadata that turns an opaque case_id into something a prior-auth
+// specialist recognizes (patient, service, plan, date). Hardcoded here for
+// the hackathon; in production this would live on the case record itself.
+export type CaseMeta = {
+  patient_name: string;
+  date_of_birth: string;
+  member_id: string;
+  service: string;
+  plan: string;
+  denial_date: string;
+  clinical_domain: string;
+};
+
+export const CASE_META: Record<string, CaseMeta> = {
+  case_01_ozempic_bmi34: {
+    patient_name: "Jane A. Doe",
+    date_of_birth: "1978-05-14",
+    member_id: "BS-A1234567",
+    service: "Semaglutide (Ozempic) 1 mg weekly",
+    plan: "BlueSun Health Premium HMO",
+    denial_date: "2026-04-01",
+    clinical_domain: "Endocrinology / Obesity medicine",
+  },
+  case_02_brain_mri_headache: {
+    patient_name: "Robert K. Lee",
+    date_of_birth: "1984-10-03",
+    member_id: "NS-77881266",
+    service: "MRI brain with and without contrast (CPT 70553)",
+    plan: "Northstar Gold PPO",
+    denial_date: "2026-03-28",
+    clinical_domain: "Neurology / Advanced imaging",
+  },
+  case_03_pt_extension: {
+    patient_name: "Maria S. Gonzalez",
+    date_of_birth: "1967-08-22",
+    member_id: "MH-44219087",
+    service: "Physical therapy — 12 additional visits",
+    plan: "Meridian Health Plus",
+    denial_date: "2026-04-05",
+    clinical_domain: "Orthopedics / Rehabilitation",
+  },
+  case_04_cgm_t2dm_insulin: {
+    patient_name: "David T. Harrison",
+    date_of_birth: "1961-02-11",
+    member_id: "SC-22019445",
+    service: "Continuous glucose monitor (HCPCS A9276/A9277/A9278)",
+    plan: "Summit Care Select",
+    denial_date: "2026-04-07",
+    clinical_domain: "Endocrinology / Diabetes",
+  },
+  case_05_adalimumab_ra: {
+    patient_name: "Sarah M. O'Brien",
+    date_of_birth: "1979-06-30",
+    member_id: "EV-55930741",
+    service: "Adalimumab (Humira) 40 mg subcutaneous q2w",
+    plan: "Evercare Silver HMO",
+    denial_date: "2026-04-10",
+    clinical_domain: "Rheumatology / Biologics",
+  },
+};
+
+export function caseMeta(caseId: string): CaseMeta | null {
+  return CASE_META[caseId] ?? null;
+}
+
 // The shape of SSE events emitted by /api/run/{case_id}.
 // `stage` is the agent name ("denial_analyzer", etc.), "done", or "error".
 export type ProgressEvent = {
