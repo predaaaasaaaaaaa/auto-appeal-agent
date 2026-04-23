@@ -71,7 +71,6 @@ def test_expected_json_parses(all_case_dirs: list[Path]):
         assert "key_claims" in data["expected_appeal"]
 
 
-@pytest.mark.integration
 @pytest.mark.parametrize(
     "case_dir_name",
     [
@@ -82,7 +81,7 @@ def test_expected_json_parses(all_case_dirs: list[Path]):
         "case_05_adalimumab_ra",
     ],
 )
-def test_orchestrator_runs_on_each_case(fixtures_dir: Path, case_dir_name: str):
+def test_orchestrator_runs_on_each_case(cassette, fixtures_dir: Path, case_dir_name: str):  # noqa: ARG001
     """End-to-end: the pipeline produces a valid VerifiedAppeal for every case.
 
     As Phase 1 un-stubs each agent, this test starts hitting the real API.

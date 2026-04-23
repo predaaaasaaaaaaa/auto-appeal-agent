@@ -1,0 +1,575 @@
+{
+  "4ebea2735edae9c1": {
+    "container": null,
+    "content": [
+      {
+        "signature": "Ep4IClkIDRgCKkAmbey2K6uJg+TjiWUlsyp6wSr5fgN0RG4bdIYT2E8Chid/aXCNZQmgi388w0JkOX4RBzRYA7yGs9vGhpZdfQmHMg9jbGF1ZGUtb3B1cy00LTc4ABIM0rB7VFG5zSVJp3WPGgyaa+QjbLtIPVPXjUIiMAvsEhiNOuSnWQgBo9TTTl4l76yGfOIxI38FXOeb505t2e7Wvur4x9g7UUlSDO7LISryBso+N5OFZqqxScIDI6n/RkoEd1c1EAiGI+YaXK0A4u+dnTEBkixOa0SgVejeB4DZqCi1/E6RcZ+2J082L0ft4BrKZF6wgHE9t78TpkNSzPgfiV2UkT/BgZzcphiupDR959V9JDTUF4VRFNneuISkS8A6qmjPsEWGUOJrRz6FAfqIKtcoGgcVdwPEJvFxz5NDBciEFyx2V1WWNqvpMBIfb1Jvx1VhlKX4LBVQ/PcDZXOIUUpVFAXS0OaViEiLAMONKOWTqxJTnANyyhSKQ7XWBrA8Mo5BxXZWgfWwIdjxEBvYqXduNs50lTJwhXXzs2SISRwZOFI5eVj3+ybJcansWTlzYzgcMaf8t4NoKsvmd3GvmfRnDCSMpHRY9GKPFgdneX9RO7M/hUJJkmTNPDTD0TzyU0vGjuPgPIW0uAaicWMssQDMcpQEw9cGlIhy5AJiBFs30FMTu1oQ8D6pqR7wmdw3njRHgMr8+zPyzCteceXLRQcxUFRc9zAfljyl4RSzpnVKNt6z3dBk/9dF1UIewIAoM8wG9rZGK0jICjqBAyjhX8tU89RH1NTrm46XkCtxaKbMQR0+XSwj7TrwU9vW6/yAYnnQgM4chhECtvd9fOAZl7AsjkDsD4CrVQG0lF04nIMDfEHBuDrNaRSPggJeweU2snsK7VaxsasDv23gS4uZFX8SpsFL2RGfXVlXuDbSnPLm/LFnTweRtHCFGIwZhYYHEgM2+UTHwOuHPDNV2hB4+CYgnyoO/BRG4xNws+hbu1dYiRtSM7ELZ/LDXkz5lHPOgUiCZkG37s8xC8PoonRFhCpMeEzvK4J0vYrukLdWTwYdmduJ0nfIuN+G0JjG+W+lzA4CHaYHIzCLJBNu7W24hTK3EU/SSoctyXnqDbHgkSKP5/mzglpyHaSV9iab5zL/zcT0YCelZHmHdrVGRz/NEjFG+VcJ5eV+MjgMkDyN7Ruwt/tnVJOWX5EXZSC52BvHqMlYS/T8DpekzsP0Y8pAmQK7ZQxMHkHMR7rwd0u8yKzPp+HuSCJ6+YFK0qUkSBTHkB5AzYiJ28Cz8eD1mJJgu83j5ef/n8KkSb0WlbSg5bMxj1B2TePO0nAyD8VEFMGr5yw8BVb0tVzikxkq0qu4o7gZu5viwdjKxFcaxAwEWiF/ol/lML4sOB5BZrXQF3DqkBgB",
+        "thinking": "",
+        "type": "thinking"
+      },
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01A3W12dmYfSJEbUN4RtcEZy",
+        "input": {
+          "case_id": "case_01_ozempic_bmi34",
+          "criteria_met": {
+            "mn_1": true,
+            "mn_2": true,
+            "mn_3": true,
+            "mn_4": true
+          },
+          "evidence_items": [
+            {
+              "criterion_id": "mn_1",
+              "finding": "Patient's DOB is 1978-05-14; chart assembled 2026-04-02, making patient 47 years old (well over 18).",
+              "quote": "DOB: 1978-05-14  |  MRN: 00451892",
+              "quote_location": "Chart header",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_2",
+              "finding": "Patient has BMI of 34.0 (\u226530) and also has hypertension, type 2 diabetes, and dyslipidemia (on atorvastatin) as weight-related comorbidities.",
+              "quote": "2026-03-10: BP 130/82, weight 204 lb, BMI 34.0, A1c 7.1%",
+              "quote_location": "Vitals/Labs section, 2026-03-10 entry",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_2",
+              "finding": "Documented weight-related comorbidities on problem list (hypertension and type 2 diabetes) reinforce BMI criterion.",
+              "quote": "Essential hypertension (I10) - diagnosed 2021\nType 2 diabetes mellitus without complications (E11.9) - diagnosed 2023",
+              "quote_location": "Problem List",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_3",
+              "finding": "Patient enrolled in structured supervised lifestyle program (Weight Watchers) with dietitian referral on 2025-05-01.",
+              "quote": "Patient enrolled in structured Weight Watchers program today. Dietitian referral placed. Plan for supervised lifestyle modification x 6+ months before considering pharmacotherapy.",
+              "quote_location": "Progress Note 2025-05-01 (Dr. Chen)",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_3",
+              "finding": "Six-month review documents objective compliance: 21 of 24 group sessions attended, weekly food logs, and 150+ minutes/week exercise.",
+              "quote": "Six-month lifestyle modification review. Patient has attended 21 of 24 scheduled Weight Watchers group sessions. Food logs submitted weekly. Exercise log shows 150+ minutes moderate activity per week. Weight change: 208 -> 206 lb (2 lb loss over 6 months).",
+              "quote_location": "Progress Note 2025-11-20 (Dr. Chen)",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_3",
+              "finding": "At 10-month review, full compliance documented and attendance records are on file.",
+              "quote": "Patient has completed 10 months of documented structured lifestyle intervention (Weight Watchers attendance records on file).",
+              "quote_location": "Progress Note 2026-03-10 (Dr. Chen)",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_4",
+              "finding": "No personal or family history of medullary thyroid carcinoma or MEN2; patient not pregnant.",
+              "quote": "No personal or family history of medullary thyroid carcinoma or MEN2 (confirmed with patient today). Not pregnant; last menstrual period 2026-02-06.",
+              "quote_location": "Progress Note 2026-02-15 (Dr. Chen)",
+              "supports_appeal": true
+            }
+          ],
+          "source_quotes": [
+            {
+              "location": "Chart header",
+              "quote": "DOB: 1978-05-14  |  MRN: 00451892",
+              "quote_id": "chart_q1",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Problem List",
+              "quote": "Essential hypertension (I10) - diagnosed 2021\nType 2 diabetes mellitus without complications (E11.9) - diagnosed 2023\nObesity, class 2 (E66.01) - diagnosed 2024",
+              "quote_id": "chart_q2",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Vitals/Labs, 2026-03-10",
+              "quote": "2026-03-10: BP 130/82, weight 204 lb, BMI 34.0, A1c 7.1%",
+              "quote_id": "chart_q3",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Progress Note 2025-05-01 (Dr. Chen)",
+              "quote": "Patient enrolled in structured Weight Watchers program today. Dietitian referral placed. Plan for supervised lifestyle modification x 6+ months before considering pharmacotherapy.",
+              "quote_id": "chart_q4",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Progress Note 2025-11-20 (Dr. Chen)",
+              "quote": "Six-month lifestyle modification review. Patient has attended 21 of 24 scheduled Weight Watchers group sessions. Food logs submitted weekly. Exercise log shows 150+ minutes moderate activity per week. Weight change: 208 -> 206 lb (2 lb loss over 6 months).",
+              "quote_id": "chart_q5",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Progress Note 2026-02-15 (Dr. Chen)",
+              "quote": "No personal or family history of medullary thyroid carcinoma or MEN2 (confirmed with patient today). Not pregnant; last menstrual period 2026-02-06.",
+              "quote_id": "chart_q6",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Progress Note 2026-03-10 (Dr. Chen)",
+              "quote": "Patient has completed 10 months of documented structured lifestyle intervention (Weight Watchers attendance records on file). All GLP-1 RA eligibility criteria met per plan policy.",
+              "quote_id": "chart_q7",
+              "source_type": "patient_chart"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01TRCQfchGojy7DWbar531t9",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 3849,
+      "output_tokens": 2477,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "5c576a2b56075005": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01VHzv43WdhL8yU6Ctuqzv9Q",
+        "input": {
+          "case_id": "case_01_ozempic_bmi34",
+          "denial_date": "April 1, 2026",
+          "denial_reasons": [
+            {
+              "code": "MN-12, STEP-03",
+              "quote": "Reason for denial: Not medically necessary. Member does not meet all criteria for GLP-1 receptor agonist therapy per plan medical policy MEDPOL-GLP1-v3 (effective January 1, 2026). Denial codes: MN-12, STEP-03.",
+              "quote_location": "page 1, paragraph 4 (reason for denial)",
+              "reason": "Not medically necessary; member does not meet all criteria for GLP-1 receptor agonist therapy per plan medical policy MEDPOL-GLP1-v3."
+            },
+            {
+              "code": "STEP-03",
+              "quote": "Specifically: documentation does not establish that the member has completed the required six months of supervised diet, exercise, and behavior-modification program before pharmacologic therapy.",
+              "quote_location": "page 1, paragraph 5 (specific reason)",
+              "reason": "Step therapy not met: documentation does not establish completion of the required six months of supervised diet, exercise, and behavior-modification program before pharmacologic therapy."
+            }
+          ],
+          "member_info": {
+            "date_of_birth": "May 14, 1978",
+            "member_id": "BS-A1234567",
+            "member_name": "Jane A. Doe",
+            "plan_name": "BlueSun Health Premium HMO"
+          },
+          "requested_service": "semaglutide (Ozempic) 1mg weekly subcutaneous injection",
+          "source_quotes": [
+            {
+              "location": "page 1, paragraph 3",
+              "quote": "We are writing to inform you that your prior authorization request for semaglutide (Ozempic) 1mg weekly subcutaneous injection has been DENIED.",
+              "quote_id": "denial_q1",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, paragraph 4",
+              "quote": "Reason for denial: Not medically necessary. Member does not meet all criteria for GLP-1 receptor agonist therapy per plan medical policy MEDPOL-GLP1-v3 (effective January 1, 2026). Denial codes: MN-12, STEP-03.",
+              "quote_id": "denial_q2",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, paragraph 5",
+              "quote": "Specifically: documentation does not establish that the member has completed the required six months of supervised diet, exercise, and behavior-modification program before pharmacologic therapy.",
+              "quote_id": "denial_q3",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, paragraph 6",
+              "quote": "You have the right to appeal this decision within 180 days. Appeals should reference policy MEDPOL-GLP1-v3 and include supporting clinical documentation.",
+              "quote_id": "denial_q4",
+              "source_type": "denial_letter"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01LxVaCAqUzsMpmynNJBpMMk",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 5010,
+      "output_tokens": 1084,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "b49d861ab98f5cd6": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01Rv2ERVmCiXTzsnSZ5vCfP1",
+        "input": {
+          "case_id": "case_01_ozempic_bmi34",
+          "criteria": [
+            {
+              "category": "clinical_history",
+              "criterion_id": "mn_1",
+              "quote": "Age at least 18 years.",
+              "quote_location": "Page 1, Medical Necessity Criteria, item 1",
+              "text": "Member must be at least 18 years of age."
+            },
+            {
+              "category": "diagnostics",
+              "criterion_id": "mn_2",
+              "quote": "Body Mass Index (BMI) at or above 30 kg/m^2, OR BMI at or above 27 kg/m^2 with at least one weight-related\ncomorbidity (hypertension, type 2 diabetes mellitus, dyslipidemia, or obstructive sleep apnea).",
+              "quote_location": "Page 1, Medical Necessity Criteria, item 2",
+              "text": "Member must have a BMI of at least 30 kg/m^2, or a BMI of at least 27 kg/m^2 with at least one weight-related comorbidity (hypertension, type 2 diabetes mellitus, dyslipidemia, or obstructive sleep apnea)."
+            },
+            {
+              "category": "prior_treatments",
+              "criterion_id": "mn_3",
+              "quote": "Documented participation in a supervised program of reduced-calorie diet, increased physical activity, and\nbehavior modification for a minimum of six months with objective measures of compliance.",
+              "quote_location": "Page 1, Medical Necessity Criteria, item 3",
+              "text": "Member must have documented participation in a supervised program of reduced-calorie diet, increased physical activity, and behavior modification for at least six months, with objective measures of compliance."
+            },
+            {
+              "category": "contraindications",
+              "criterion_id": "mn_4",
+              "quote": "Absence of contraindications, specifically: personal or family history of medullary thyroid carcinoma; personal\nhistory of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy.",
+              "quote_location": "Page 1, Medical Necessity Criteria, item 4",
+              "text": "Member must not have contraindications: personal or family history of medullary thyroid carcinoma; personal history of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy."
+            },
+            {
+              "category": "prior_treatments",
+              "criterion_id": "mn_5",
+              "quote": "Before approval of tirzepatide or the obesity-specific formulations of\nsemaglutide, members must have a documented trial and inadequate response to at least one generic or\npreferred alternative pharmacotherapy, unless clinically contraindicated.",
+              "quote_location": "Page 1, Step Therapy Requirement",
+              "text": "For tirzepatide or obesity-specific semaglutide formulations, member must have a documented trial and inadequate response to at least one generic or preferred alternative pharmacotherapy, unless clinically contraindicated."
+            }
+          ],
+          "policy_effective_date": "January 1, 2026",
+          "policy_name": "MEDPOL-GLP1-v3: GLP-1 Receptor Agonists for Weight Management",
+          "source_quotes": [
+            {
+              "location": "Page 1, Medical Necessity Criteria, item 1",
+              "quote": "Age at least 18 years.",
+              "quote_id": "policy_q1",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Medical Necessity Criteria, item 2",
+              "quote": "Body Mass Index (BMI) at or above 30 kg/m^2, OR BMI at or above 27 kg/m^2 with at least one weight-related\ncomorbidity (hypertension, type 2 diabetes mellitus, dyslipidemia, or obstructive sleep apnea).",
+              "quote_id": "policy_q2",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Medical Necessity Criteria, item 3",
+              "quote": "Documented participation in a supervised program of reduced-calorie diet, increased physical activity, and\nbehavior modification for a minimum of six months with objective measures of compliance.",
+              "quote_id": "policy_q3",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Medical Necessity Criteria, item 4",
+              "quote": "Absence of contraindications, specifically: personal or family history of medullary thyroid carcinoma; personal\nhistory of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy.",
+              "quote_id": "policy_q4",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Step Therapy Requirement",
+              "quote": "Before approval of tirzepatide or the obesity-specific formulations of\nsemaglutide, members must have a documented trial and inadequate response to at least one generic or\npreferred alternative pharmacotherapy, unless clinically contraindicated.",
+              "quote_id": "policy_q5",
+              "source_type": "payer_policy"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01BWtL1ucvDxwU5wrbuhiDja",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 2946,
+      "output_tokens": 1797,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "c56e79a18677de07": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01VKu9HfRRdrc4qUvTmbNVFC",
+        "input": {
+          "case_id": "case_01_ozempic_bmi34",
+          "citations": [
+            {
+              "citation_id": "guideline_q1",
+              "citation_title": "AACE Comprehensive Clinical Practice Guidelines for Medical Care of Patients with Obesity",
+              "guideline_source": "American Association of Clinical Endocrinology (AACE) 2022 Clinical Practice Guideline on Obesity",
+              "quote": "Pharmacotherapy for obesity is recommended as an adjunct to lifestyle modification in adults with BMI >= 30 kg/m^2, or BMI >= 27 kg/m^2 with weight-related complications, and need not be delayed until a fixed duration of lifestyle therapy has failed.",
+              "supports_claim": "BMI >= 30 alone qualifies patient for GLP-1 pharmacotherapy without requiring a mandatory six-month supervised lifestyle program first.",
+              "url": null
+            },
+            {
+              "citation_id": "guideline_q2",
+              "citation_title": "Pharmacological Management of Obesity: An Endocrine Society Clinical Practice Guideline",
+              "guideline_source": "The Endocrine Society 2015 Clinical Practice Guideline: Pharmacological Management of Obesity",
+              "quote": "Weight-loss medications are recommended for patients with BMI >= 30 kg/m^2 or BMI >= 27 kg/m^2 with comorbidities, to be used concurrently with (not after a prolonged trial of) comprehensive lifestyle intervention.",
+              "supports_claim": "Pharmacotherapy can be initiated concurrently with lifestyle modification rather than sequentially after six months.",
+              "url": null
+            },
+            {
+              "citation_id": "guideline_q3",
+              "citation_title": "AGA Clinical Practice Guideline on Pharmacological Interventions for Adults with Obesity",
+              "guideline_source": "American Gastroenterological Association (AGA) 2022 Clinical Practice Guideline on Pharmacological Interventions for Adults with Obesity",
+              "quote": "In adults with obesity (BMI >= 30) or overweight (BMI >= 27) with weight-related complications who have an inadequate response to lifestyle interventions, the AGA recommends adding pharmacologic agents including semaglutide 2.4 mg to lifestyle therapy.",
+              "supports_claim": "GLP-1 receptor agonist therapy (semaglutide) is guideline-recommended for patients with BMI >= 30 as an adjunct to lifestyle intervention.",
+              "url": null
+            },
+            {
+              "citation_id": "guideline_q4",
+              "citation_title": "Obesity Medicine Association Clinical Practice Statement on Obesity Pillars",
+              "guideline_source": "Obesity Medicine Association (OMA) 2023 Clinical Practice Statement",
+              "quote": "Obesity is a chronic disease and anti-obesity medications should be offered to eligible patients (BMI >= 30, or >= 27 with comorbidities) without requiring a prolonged predefined trial of lifestyle therapy as a prerequisite to pharmacotherapy.",
+              "supports_claim": "A mandatory six-month supervised diet/exercise trial prior to pharmacotherapy is not supported by contemporary obesity guidelines.",
+              "url": null
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_012bhspcCEgcJ65B94PSF5Dt",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 2324,
+      "output_tokens": 1159,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "d70a55494c084496": {
+    "container": null,
+    "content": [
+      {
+        "signature": "EvABClkIDRgCKkAb8AHyeB0+ZAgdQt/sJZwu1l2Y5DiOZu6Gm5x1ML4QGtn+c5Kr2iYhAcwnVDwMbHGBBxpV6J6zMrsP862ECIWaMg9jbGF1ZGUtb3B1cy00LTc4ABIMRYXjYk+COtAO7GQ3GgyVBuzEh1+cg4eMB1IiMBUtAxE2TKqzvbKveHwZH79kIZQaYW526yNFH9hR0HPvMMuniqcHAQza+USphf9a0ypFPS4rrHYVwQOm3qPNZw0khWL+DHt+UVnx3llZQ06m+hSMcpJzSgYy4OxQjT3RipyDFSvwn1Kfwu+kzdsTDRu0jiHFvdWIGAE=",
+        "thinking": "",
+        "type": "thinking"
+      },
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01HbbEZ9HVyowNxCfBcVegEz",
+        "input": {
+          "case_id": "case_01_ozempic_bmi34",
+          "paragraphs": [
+            {
+              "citations": [
+                {
+                  "claim": "The denied service is semaglutide (Ozempic) 1mg weekly subcutaneous injection.",
+                  "source_id": "denial_q1",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "semaglutide (Ozempic) 1mg weekly subcutaneous injection has been DENIED"
+                },
+                {
+                  "claim": "The stated basis for denial was that the member does not meet all criteria under MEDPOL-GLP1-v3.",
+                  "source_id": "denial_q2",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "does not meet all criteria for GLP-1 receptor agonist therapy per plan medical policy MEDPOL-GLP1-v3"
+                },
+                {
+                  "claim": "The specific objection raised was the six-month supervised lifestyle program requirement.",
+                  "source_id": "denial_q3",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "documentation does not establish that the member has completed the required six months of supervised diet, exercise, and behavior-modification program before pharmacologic therapy"
+                },
+                {
+                  "claim": "The plan instructs that appeals reference MEDPOL-GLP1-v3 with supporting clinical documentation.",
+                  "source_id": "denial_q4",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Appeals should reference policy MEDPOL-GLP1-v3 and include supporting clinical documentation"
+                }
+              ],
+              "heading": "Patient and Requested Service",
+              "text": "I am writing on behalf of my patient Jane A. Doe (member ID BS-A1234567, DOB May 14, 1978), a member of BlueSun Health Premium HMO, to formally appeal the April 1, 2026 denial of prior authorization for semaglutide (Ozempic) 1mg weekly subcutaneous injection. The denial letter stated that the request for 'semaglutide (Ozempic) 1mg weekly subcutaneous injection has been DENIED' on the grounds that the member allegedly 'does not meet all criteria for GLP-1 receptor agonist therapy per plan medical policy MEDPOL-GLP1-v3,' citing denial codes MN-12 and STEP-03. The specific concern was that 'documentation does not establish that the member has completed the required six months of supervised diet, exercise, and behavior-modification program before pharmacologic therapy.' As permitted by the plan's own instructions that 'Appeals should reference policy MEDPOL-GLP1-v3 and include supporting clinical documentation,' this appeal addresses each policy criterion in turn and demonstrates, with chart evidence, that Ms. Doe in fact meets every medical necessity criterion under MEDPOL-GLP1-v3."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "The policy requires the member to be at least 18 years of age.",
+                  "source_id": "policy_q1",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Age at least 18 years."
+                },
+                {
+                  "claim": "The patient's date of birth establishes she is an adult well over 18.",
+                  "source_id": "chart_q1",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "DOB: 1978-05-14"
+                }
+              ],
+              "heading": "Medical necessity met: Age at least 18 years",
+              "text": "MEDPOL-GLP1-v3 requires that the member be of 'Age at least 18 years.' Ms. Doe's chart header documents her date of birth as '1978-05-14,' making her 47 years old at the time of the authorization request. This criterion is plainly satisfied."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "The policy sets the BMI threshold at >=30, or >=27 with a qualifying comorbidity.",
+                  "source_id": "policy_q2",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Body Mass Index (BMI) at or above 30 kg/m^2, OR BMI at or above 27 kg/m^2 with at least one weight-related"
+                },
+                {
+                  "claim": "The patient's documented BMI is 34.0, exceeding the 30 kg/m^2 threshold.",
+                  "source_id": "chart_q3",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "BMI 34.0"
+                },
+                {
+                  "claim": "The patient also has documented hypertension and type 2 diabetes as qualifying weight-related comorbidities.",
+                  "source_id": "chart_q2",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Essential hypertension (I10) - diagnosed 2021\nType 2 diabetes mellitus without complications (E11.9) - diagnosed 2023"
+                }
+              ],
+              "heading": "Medical necessity met: BMI threshold with weight-related comorbidities",
+              "text": "MEDPOL-GLP1-v3 requires a 'Body Mass Index (BMI) at or above 30 kg/m^2, OR BMI at or above 27 kg/m^2 with at least one weight-related' comorbidity such as hypertension or type 2 diabetes. Ms. Doe exceeds the higher of the two thresholds: her March 10, 2026 vitals document 'BMI 34.0, A1c 7.1%.' She also carries multiple qualifying weight-related comorbidities documented on her problem list, including 'Essential hypertension (I10) - diagnosed 2021' and 'Type 2 diabetes mellitus without complications (E11.9) - diagnosed 2023.' Her clinical profile therefore independently satisfies both pathways of this criterion, consistent with the AACE 2022 Clinical Practice Guideline on Obesity and the AGA 2022 Clinical Practice Guideline, which recommend pharmacotherapy with agents including semaglutide for adults with BMI >= 30 as an adjunct to lifestyle intervention."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "The policy requires documented six-month supervised lifestyle participation with objective compliance measures.",
+                  "source_id": "policy_q3",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Documented participation in a supervised program of reduced-calorie diet, increased physical activity, and\nbehavior modification for a minimum of six months with objective measures of compliance."
+                },
+                {
+                  "claim": "The patient was formally enrolled in a structured supervised lifestyle program on May 1, 2025.",
+                  "source_id": "chart_q4",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Patient enrolled in structured Weight Watchers program today. Dietitian referral placed. Plan for supervised lifestyle modification x 6+ months before considering pharmacotherapy."
+                },
+                {
+                  "claim": "Objective compliance measures (attendance, food logs, exercise logs) were documented at the six-month review.",
+                  "source_id": "chart_q5",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Patient has attended 21 of 24 scheduled Weight Watchers group sessions. Food logs submitted weekly. Exercise log shows 150+ minutes moderate activity per week."
+                },
+                {
+                  "claim": "By March 10, 2026 the patient had completed ten months of documented supervised lifestyle intervention with attendance records on file.",
+                  "source_id": "chart_q7",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Patient has completed 10 months of documented structured lifestyle intervention (Weight Watchers attendance records on file)."
+                }
+              ],
+              "heading": "Medical necessity met: Six-month supervised lifestyle program with objective measures of compliance",
+              "text": "This is the sole criterion the denial letter specifically disputed. MEDPOL-GLP1-v3 requires 'Documented participation in a supervised program of reduced-calorie diet, increased physical activity, and behavior modification for a minimum of six months with objective measures of compliance.' Ms. Doe's chart documents this in detail. On May 1, 2025, Dr. Chen enrolled her in a structured program: 'Patient enrolled in structured Weight Watchers program today. Dietitian referral placed. Plan for supervised lifestyle modification x 6+ months before considering pharmacotherapy.' At the six-month mark, objective compliance measures were recorded: 'Patient has attended 21 of 24 scheduled Weight Watchers group sessions. Food logs submitted weekly. Exercise log shows 150+ minutes moderate activity per week. Weight change: 208 -> 206 lb (2 lb loss over 6 months).' By the time of the March 10, 2026 visit, the treating physician documented that the 'Patient has completed 10 months of documented structured lifestyle intervention (Weight Watchers attendance records on file).' The record therefore establishes not six months but ten months of supervised participation with attendance, dietary, and exercise logs constituting the objective measures of compliance the policy requires. Contemporary obesity guidelines \u2014 including the Endocrine Society 2015 Clinical Practice Guideline, the AACE 2022 guideline, and the Obesity Medicine Association 2023 Clinical Practice Statement \u2014 further support initiation of pharmacotherapy concurrent with (not deferred after) lifestyle intervention; Ms. Doe nonetheless satisfies the plan's stricter sequential requirement."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "The policy requires absence of specific contraindications (MTC, MEN2, pregnancy).",
+                  "source_id": "policy_q4",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Absence of contraindications, specifically: personal or family history of medullary thyroid carcinoma; personal\nhistory of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy."
+                },
+                {
+                  "claim": "The patient has no personal or family history of MTC or MEN2 and is not pregnant.",
+                  "source_id": "chart_q6",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "No personal or family history of medullary thyroid carcinoma or MEN2 (confirmed with patient today). Not pregnant; last menstrual period 2026-02-06."
+                }
+              ],
+              "heading": "Medical necessity met: Absence of contraindications",
+              "text": "MEDPOL-GLP1-v3 requires 'Absence of contraindications, specifically: personal or family history of medullary thyroid carcinoma; personal history of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy.' The treating physician has specifically screened for and documented the absence of each contraindication: 'No personal or family history of medullary thyroid carcinoma or MEN2 (confirmed with patient today). Not pregnant; last menstrual period 2026-02-06.' This criterion is therefore met."
+            },
+            {
+              "citations": [],
+              "heading": "Conclusion and Request",
+              "text": "Ms. Doe meets every medical necessity criterion under MEDPOL-GLP1-v3: she is 47 years old (age criterion met), her BMI of 34.0 exceeds the 30 kg/m^2 threshold and she additionally carries qualifying weight-related comorbidities (hypertension and type 2 diabetes), she has completed ten months \u2014 well beyond the required six \u2014 of documented, supervised lifestyle intervention with objective measures of compliance, and she has no contraindications to GLP-1 receptor agonist therapy. The sole basis articulated in the April 1, 2026 denial \u2014 incomplete supervised lifestyle documentation \u2014 is directly refuted by the enclosed progress notes and attendance records. I respectfully request that the plan overturn its denial and approve semaglutide (Ozempic) 1mg weekly subcutaneous injection for Ms. Doe without further delay. Thank you for your timely reconsideration."
+            }
+          ],
+          "recipient_plan": "BlueSun Health Premium HMO",
+          "subject_line": "Appeal of prior authorization denial \u2014 semaglutide (Ozempic) 1mg weekly subcutaneous injection \u2014 member BS-A1234567"
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01QoSV3zXEXXMnqigooiNZBR",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 10118,
+      "output_tokens": 4401,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  }
+}

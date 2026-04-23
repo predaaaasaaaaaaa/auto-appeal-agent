@@ -1,0 +1,605 @@
+{
+  "29d021bcbd4737f2": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01F36EXYiWgnesjpZm2FGmUo",
+        "input": {
+          "case_id": "case_02_brain_mri_headache",
+          "denial_date": "March 28, 2026",
+          "denial_reasons": [
+            {
+              "code": "IMG-N-04",
+              "quote": "Request does not meet medical necessity criteria for advanced imaging in the evaluation of headache per Northstar Imaging Policy IMG-HEAD-v7. The submitted documentation does not demonstrate presence of red-flag features or failure of first-line management sufficient to justify advanced imaging at this time.",
+              "quote_location": "page 1, reason for denial paragraph",
+              "reason": "Does not meet medical necessity criteria for advanced imaging in evaluation of headache per policy IMG-HEAD-v7; no red-flag features or failure of first-line management documented."
+            },
+            {
+              "code": "IMG-N-04",
+              "quote": "Denial code: IMG-N-04 (insufficient clinical red flags documented).",
+              "quote_location": "page 1, denial code line",
+              "reason": "Insufficient clinical red flags documented."
+            }
+          ],
+          "member_info": {
+            "date_of_birth": "October 3, 1984",
+            "member_id": "NS-77881266",
+            "member_name": "Robert K. Lee",
+            "plan_name": "Northstar Gold PPO"
+          },
+          "requested_service": "MRI of the brain with and without contrast (CPT 70553)",
+          "source_quotes": [
+            {
+              "location": "page 1, paragraph after salutation",
+              "quote": "Your request for an MRI of the brain with and without contrast (CPT 70553) has been DENIED.",
+              "quote_id": "denial_q1",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, reason for denial paragraph",
+              "quote": "Reason for denial: Request does not meet medical necessity criteria for advanced imaging in the evaluation of headache per Northstar Imaging Policy IMG-HEAD-v7. The submitted documentation does not demonstrate presence of red-flag features or failure of first-line management sufficient to justify advanced imaging at this time.",
+              "quote_id": "denial_q2",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, denial code line",
+              "quote": "Denial code: IMG-N-04 (insufficient clinical red flags documented).",
+              "quote_id": "denial_q3",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, appeal rights paragraph",
+              "quote": "You have the right to appeal. Appeals must reference the specific red-flag criteria in policy IMG-HEAD-v7 and include supporting clinical documentation.",
+              "quote_id": "denial_q4",
+              "source_type": "denial_letter"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_019G8vosUTMpHxixKNAtoxTk",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 5009,
+      "output_tokens": 990,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "34974d1e4dd268fb": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01KHS8LYfYcZbaubExrpqwMh",
+        "input": {
+          "case_id": "case_02_brain_mri_headache",
+          "citations": [
+            {
+              "citation_id": "guideline_q1",
+              "citation_title": "ACR Appropriateness Criteria: Headache",
+              "guideline_source": "American College of Radiology (ACR) 2019 Appropriateness Criteria - Headache",
+              "quote": "MRI of the head without and with IV contrast is usually appropriate for patients with chronic headache showing new features, increasing frequency, or a change from baseline pattern, and for headache with neurologic deficit or other red-flag features.",
+              "supports_claim": "Advanced brain MRI is appropriate when a patient has a significant change in headache pattern, frequency, or severity, or new neurologic features.",
+              "url": "https://acsearch.acr.org/docs/69482/Narrative/"
+            },
+            {
+              "citation_id": "guideline_q2",
+              "citation_title": "Evidence-Based Guideline Update: Pharmacologic Treatment for Episodic Migraine Prevention in Adults",
+              "guideline_source": "American Academy of Neurology (AAN) and American Headache Society (AHS) 2012 (reaffirmed)",
+              "quote": "Neuroimaging should be considered in patients with non-acute headache and an unexplained abnormal neurologic examination finding, or with atypical headache features or headaches that do not fulfill the strict definition of migraine.",
+              "supports_claim": "Neuroimaging is indicated when headache features are atypical or accompanied by neurologic findings, supporting medical necessity of brain MRI.",
+              "url": null
+            },
+            {
+              "citation_id": "guideline_q3",
+              "citation_title": "Practice Parameter: The Utility of Neuroimaging in the Evaluation of Headache in Patients with Normal Neurologic Examinations",
+              "guideline_source": "American Academy of Neurology (AAN) 2000 (reaffirmed)",
+              "quote": "Neuroimaging should be considered in patients with headaches that have changed in pattern, are not consistent with migraine, or are associated with focal neurologic signs or symptoms, papilledema, or other red-flag features.",
+              "supports_claim": "Brain imaging is medically necessary for patients with a change in headache pattern or red-flag features such as focal deficits or papilledema.",
+              "url": null
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01AEBjD9pRjb9sU1XYwpoBUy",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 2178,
+      "output_tokens": 862,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "38ab475756f74b39": {
+    "container": null,
+    "content": [
+      {
+        "signature": "EpYCClkIDRgCKkBNevWMkl91hR11SEBvpjfj9xPH0eAaNpsgAYlHFdcvEoPDslLHlzfuD9X3dSYzdn02CgtF8ztTuDKCHOA5OyKjMg9jbGF1ZGUtb3B1cy00LTc4ABIMBY9m/LT0B0+BqKH+GgxMCSRtZC5J5O5OQEUiMCjR0JSdinXPBc/QJ/1rj08yWtvgY4XBmseoV9hONJUqyjZfhcclxTg/U2kuHG+JriprEvkX9AnZDNH2XMUMoVa1T0QMz6LLqnfxNuLlW8IyByUlNl9pvt/N8dg61n1sgG2n1qyXl/55AmIKeujG3d3nsPhAN4Sto6X+COCiV8JG6Kn9DZ3P4ZXBjifatXKBGKEsHTkgERJrBzJGqksYAQ==",
+        "thinking": "",
+        "type": "thinking"
+      },
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01MjWZpea1H8ftYz8WvUuzrx",
+        "input": {
+          "case_id": "case_02_brain_mri_headache",
+          "paragraphs": [
+            {
+              "citations": [
+                {
+                  "claim": "The service denied is a brain MRI with and without contrast (CPT 70553).",
+                  "source_id": "denial_q1",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Your request for an MRI of the brain with and without contrast (CPT 70553) has been DENIED."
+                },
+                {
+                  "claim": "The denial was issued under policy IMG-HEAD-v7 on grounds of allegedly absent red-flag features or failure of first-line therapy.",
+                  "source_id": "denial_q2",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "The submitted documentation does not demonstrate presence of red-flag features or failure of first-line management sufficient to justify advanced imaging at this time."
+                },
+                {
+                  "claim": "The assigned denial code is IMG-N-04.",
+                  "source_id": "denial_q3",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Denial code: IMG-N-04 (insufficient clinical red flags documented)."
+                },
+                {
+                  "claim": "The plan invites appeals referencing the specific red-flag criteria of IMG-HEAD-v7.",
+                  "source_id": "denial_q4",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Appeals must reference the specific red-flag criteria in policy IMG-HEAD-v7 and include supporting clinical documentation."
+                }
+              ],
+              "heading": "Patient and Requested Service",
+              "text": "This letter formally appeals Northstar Gold PPO's March 28, 2026 denial of prior authorization for Robert K. Lee (member ID NS-77881266, DOB October 3, 1984). The service at issue is an MRI of the brain with and without contrast (CPT 70553), ordered by the treating neurologist, Dr. Patel. The denial letter states that the request has been denied, citing denial code IMG-N-04 for allegedly insufficient red-flag documentation under Northstar Imaging Policy IMG-HEAD-v7. As permitted by the appeal rights set forth in the denial letter, this appeal references the specific red-flag criteria in IMG-HEAD-v7 and provides the supporting clinical documentation demonstrating that multiple criteria are, in fact, met."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "Policy IMG-HEAD-v7 requires only one red-flag criterion to establish medical necessity.",
+                  "source_id": "policy_q1",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Advanced neuroimaging is considered medically necessary when at least ONE of the following red-flag criteria is documented in the medical record:"
+                },
+                {
+                  "claim": "Thunderclap headache reaching maximum intensity within one minute is a qualifying red-flag criterion.",
+                  "source_id": "policy_q2",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "(a) Sudden-onset severe (\"thunderclap\") headache reaching maximum intensity within one minute."
+                },
+                {
+                  "claim": "The patient presented with sudden worst headache of life during exertion.",
+                  "source_id": "chart_q1",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Chief complaint: sudden worst headache of life while exercising, onset 30 minutes prior."
+                },
+                {
+                  "claim": "The treating neurologist explicitly documented a new-onset thunderclap headache.",
+                  "source_id": "chart_q3",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "New-onset \"thunderclap\" headache with transient focal neurologic deficit is a significant change from his established migraine pattern."
+                }
+              ],
+              "heading": "Medical necessity met: Thunderclap headache (criterion mn_1)",
+              "text": "Policy IMG-HEAD-v7 establishes that advanced neuroimaging is medically necessary when at least ONE red-flag criterion is documented, and criterion (a) is sudden-onset severe (\"thunderclap\") headache reaching maximum intensity within one minute. Mr. Lee's presentation meets this criterion unambiguously. At the Urgent Care visit of March 5, 2026, he presented with the sudden worst headache of his life while exercising, with onset only 30 minutes prior. His treating neurologist subsequently characterized the event as a new-onset \"thunderclap\" headache representing a significant change from his established migraine pattern. This satisfies criterion (a) on its own and is consistent with the ACR Appropriateness Criteria: Headache (2019), which identifies thunderclap presentations as appropriate indications for brain MRI."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "A new or progressive focal neurologic deficit associated with headache is a qualifying red flag.",
+                  "source_id": "policy_q3",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "(b) New or progressive focal neurologic deficit (motor, sensory, visual, speech) associated with the headache."
+                },
+                {
+                  "claim": "The first episode included focal sensory deficits documented on exam.",
+                  "source_id": "chart_q2",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Associated with brief (90-second) left-hand paresthesia. BP 148/92. Neuro exam: transiently diminished proprioception in left hand, resolved during exam."
+                },
+                {
+                  "claim": "A second episode involved a focal visual deficit.",
+                  "source_id": "chart_q3",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Second similar episode 2026-03-09 with right-sided visual blur lasting 2 minutes."
+                },
+                {
+                  "claim": "A third episode involved a focal motor deficit (facial droop).",
+                  "source_id": "chart_q4",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Third episode of transient focal symptoms (right-sided facial droop, 3 minutes) overnight 2026-03-20."
+                }
+              ],
+              "heading": "Medical necessity met: New focal neurologic deficits (criterion mn_2)",
+              "text": "Policy criterion (b) is satisfied by a new or progressive focal neurologic deficit \u2014 motor, sensory, visual, or speech \u2014 associated with the headache. Mr. Lee's chart documents all three modalities across three separate episodes. On March 5, 2026 he had a 90-second left-hand paresthesia with objectively diminished proprioception on neurologic exam (sensory deficit). On March 9, 2026 he experienced a right-sided visual blur lasting two minutes (visual deficit). On March 20, 2026 he had a three-minute right-sided facial droop (motor deficit). These objective, examiner-witnessed and patient-reported focal findings are precisely the red-flag features the policy enumerates, and they are the type of findings that the AAN/AHS and ACR guidelines identify as indications for neuroimaging."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "A significant change in headache pattern, frequency, or severity is a qualifying red-flag criterion.",
+                  "source_id": "policy_q4",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "(c) Significant change in headache pattern, frequency, or severity from the member's established baseline."
+                },
+                {
+                  "claim": "The neurologist documented that the new features are a significant change from baseline and are new red-flag features.",
+                  "source_id": "chart_q3",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "These are NEW red-flag features not previously present."
+                }
+              ],
+              "heading": "Medical necessity met: Significant change from established baseline (criterion mn_3)",
+              "text": "Policy criterion (c) is met when there is a significant change in headache pattern, frequency, or severity from the member's established baseline. Mr. Lee has a well-documented history of established migraine under Dr. Patel's care. His treating neurologist explicitly concluded in the March 12, 2026 progress note that the new thunderclap presentation and the transient focal neurologic deficits are NEW red-flag features not previously present and represent a significant change from his established migraine pattern. This is exactly the clinical scenario criterion (c) was written to cover, and it aligns with the AAN 2000 Practice Parameter (reaffirmed) recommendation that neuroimaging be considered when a patient's headaches change in pattern or are associated with focal neurologic signs."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "Failure of at least two preventive agents for chronic migraine satisfies the first-line-therapy red flag.",
+                  "source_id": "policy_q7",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "(f) Failure of adequate trial of first-line therapy (including at least two preventive agents for chronic migraine)."
+                },
+                {
+                  "claim": "Topiramate, the first preventive, produced only partial benefit with continued breakthrough migraines.",
+                  "source_id": "chart_q5",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Established migraine. On topiramate 50mg BID with partial benefit. Continues 2-3 migraines per month."
+                },
+                {
+                  "claim": "Erenumab, the second preventive, was added but frequency worsened to 4-6 migraines per month.",
+                  "source_id": "chart_q6",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Added erenumab 70mg monthly. Patient reports 4-6 migraines/month now, down from baseline."
+                }
+              ],
+              "heading": "Medical necessity met: Failure of first-line preventive therapy (criterion mn_6)",
+              "text": "Policy criterion (f) requires failure of an adequate trial of first-line therapy, including at least two preventive agents for chronic migraine. Mr. Lee has failed two guideline-recommended preventive agents. First, he was maintained on topiramate 50 mg BID with only partial benefit, continuing to experience 2-3 migraines per month. Second, erenumab 70 mg monthly was added, after which his migraine frequency actually increased to 4-6 per month. Two preventive agents at adequate dose and duration have therefore been tried and failed, independently satisfying criterion (f) and directly rebutting the denial letter's assertion that failure of first-line management was not documented."
+            },
+            {
+              "citations": [],
+              "heading": "Conclusion and Request",
+              "text": "Policy IMG-HEAD-v7 requires only a single red-flag criterion to establish medical necessity for advanced neuroimaging. Mr. Lee independently satisfies four: thunderclap onset (criterion a), new focal neurologic deficits across sensory, visual, and motor modalities (criterion b), a significant change from his established migraine baseline (criterion c), and failure of two adequate first-line preventive agents (criterion f). His presentation \u2014 three discrete episodes of transient focal neurologic symptoms superimposed on a thunderclap onset \u2014 raises serious concern for subarachnoid hemorrhage, vascular malformation, or early ischemic disease, the very entities for which MRI of the brain with and without contrast is the appropriate modality and for which CT has known limited sensitivity. We respectfully request that Northstar Gold PPO overturn the IMG-N-04 denial and approve CPT 70553 without further delay. Please direct any questions or requests for additional documentation to the ordering physician's office."
+            }
+          ],
+          "recipient_plan": "Northstar Gold PPO",
+          "subject_line": "Appeal of prior authorization denial \u2014 MRI of the brain with and without contrast (CPT 70553) \u2014 member NS-77881266"
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01QBKyjZH5nbdmkQkmgGnRaj",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 9397,
+      "output_tokens": 4229,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "8c5d39ea739d994d": {
+    "container": null,
+    "content": [
+      {
+        "signature": "EusBClkIDRgCKkBg8wiGZrXftu/dZ6C2qkPshIqNEI80LpTvH45qRPQ+/UMkTD+duj9WHjPL4st9xEpu5Oo3bT8i/RQYs3dAWs4EMg9jbGF1ZGUtb3B1cy00LTc4ABIMqlxVoMsaZVG5CqcRGgy//yTPSOEea5EXmIEiMDUs2JmtvtXUG5cLr7kumV6h7PnZhcMSKNIuHNZYlwyAoAuxuwQROLCtd8/YqKZjnCpAmyTCSCvNo5C8hKQmjkzBh9M15zybrGnxujqg3uQa8vrOGcTiaW+RVE3IBpsfFS+YtE/c19ufDU2CRl4/9QyRhxgB",
+        "thinking": "",
+        "type": "thinking"
+      },
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_016tx55ZH4sJHocS4GBBpGCW",
+        "input": {
+          "case_id": "case_02_brain_mri_headache",
+          "criteria_met": {
+            "mn_1": true,
+            "mn_2": true,
+            "mn_3": true,
+            "mn_6": true
+          },
+          "evidence_items": [
+            {
+              "criterion_id": "mn_1",
+              "finding": "Patient presented with sudden worst headache of life while exercising, consistent with thunderclap headache.",
+              "quote": "Chief complaint: sudden worst headache of life while exercising, onset 30 minutes prior.",
+              "quote_location": "Urgent Care Visit 2026-03-05",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_1",
+              "finding": "Treating neurologist explicitly characterizes the event as a thunderclap headache.",
+              "quote": "New-onset \"thunderclap\" headache with transient focal neurologic deficit is a significant change from his established migraine pattern.",
+              "quote_location": "Progress Note 2026-03-12 (Dr. Patel)",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_2",
+              "finding": "Transient left-hand paresthesia and diminished proprioception associated with the headache episode.",
+              "quote": "Associated with brief (90-second) left-hand paresthesia. BP 148/92. Neuro exam: transiently diminished proprioception in left hand, resolved during exam.",
+              "quote_location": "Urgent Care Visit 2026-03-05",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_2",
+              "finding": "Second episode with focal visual deficit (right-sided visual blur).",
+              "quote": "Second similar episode 2026-03-09 with right-sided visual blur lasting 2 minutes.",
+              "quote_location": "Progress Note 2026-03-12 (Dr. Patel)",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_2",
+              "finding": "Third episode with focal motor deficit (right-sided facial droop).",
+              "quote": "Third episode of transient focal symptoms (right-sided facial droop, 3 minutes) overnight 2026-03-20.",
+              "quote_location": "Progress Note 2026-03-22 (Dr. Patel)",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_3",
+              "finding": "Neurologist documents significant change from established migraine baseline with new red-flag features.",
+              "quote": "New-onset \"thunderclap\" headache with transient focal neurologic deficit is a significant change from his established migraine pattern. Second similar episode 2026-03-09 with right-sided visual blur lasting 2 minutes. These are NEW red-flag features not previously present.",
+              "quote_location": "Progress Note 2026-03-12 (Dr. Patel)",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_6",
+              "finding": "Patient failed adequate trial of topiramate (preventive #1) with only partial benefit.",
+              "quote": "Established migraine. On topiramate 50mg BID with partial benefit. Continues 2-3 migraines per month.",
+              "quote_location": "Progress Note 2025-09-12 (Dr. Patel)",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_6",
+              "finding": "Erenumab (preventive #2) added with inadequate response; migraine frequency increased to 4-6/month.",
+              "quote": "Added erenumab 70mg monthly. Patient reports 4-6 migraines/month now, down from baseline.",
+              "quote_location": "Progress Note 2026-01-20 (Dr. Patel)",
+              "supports_appeal": true
+            }
+          ],
+          "source_quotes": [
+            {
+              "location": "Urgent Care Visit 2026-03-05",
+              "quote": "Chief complaint: sudden worst headache of life while exercising, onset 30 minutes prior.",
+              "quote_id": "chart_q1",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Urgent Care Visit 2026-03-05",
+              "quote": "Associated with brief (90-second) left-hand paresthesia. BP 148/92. Neuro exam: transiently diminished proprioception in left hand, resolved during exam.",
+              "quote_id": "chart_q2",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Progress Note 2026-03-12 (Dr. Patel)",
+              "quote": "New-onset \"thunderclap\" headache with transient focal neurologic deficit is a significant change from his established migraine pattern. Second similar episode 2026-03-09 with right-sided visual blur lasting 2 minutes. These are NEW red-flag features not previously present.",
+              "quote_id": "chart_q3",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Progress Note 2026-03-22 (Dr. Patel)",
+              "quote": "Third episode of transient focal symptoms (right-sided facial droop, 3 minutes) overnight 2026-03-20.",
+              "quote_id": "chart_q4",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Progress Note 2025-09-12 (Dr. Patel)",
+              "quote": "Established migraine. On topiramate 50mg BID with partial benefit. Continues 2-3 migraines per month.",
+              "quote_id": "chart_q5",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Progress Note 2026-01-20 (Dr. Patel)",
+              "quote": "Added erenumab 70mg monthly. Patient reports 4-6 migraines/month now, down from baseline.",
+              "quote_id": "chart_q6",
+              "source_type": "patient_chart"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01SLM48PNWGcA6EUQjdW3KtL",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 3500,
+      "output_tokens": 2006,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "f331399660d0b003": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01GC29m3cygys4bBeAB3iXmb",
+        "input": {
+          "case_id": "case_02_brain_mri_headache",
+          "criteria": [
+            {
+              "category": "clinical_history",
+              "criterion_id": "mn_1",
+              "quote": "(a) Sudden-onset severe (\"thunderclap\") headache reaching maximum intensity within one minute.",
+              "quote_location": "Page 1, Medical Necessity list, item (a)",
+              "text": "Sudden-onset severe (thunderclap) headache that reaches maximum intensity within one minute."
+            },
+            {
+              "category": "clinical_history",
+              "criterion_id": "mn_2",
+              "quote": "(b) New or progressive focal neurologic deficit (motor, sensory, visual, speech) associated with the headache.",
+              "quote_location": "Page 1, Medical Necessity list, item (b)",
+              "text": "New or progressive focal neurologic deficit (motor, sensory, visual, or speech) associated with the headache."
+            },
+            {
+              "category": "clinical_history",
+              "criterion_id": "mn_3",
+              "quote": "(c) Significant change in headache pattern, frequency, or severity from the member's established baseline.",
+              "quote_location": "Page 1, Medical Necessity list, item (c)",
+              "text": "Significant change in headache pattern, frequency, or severity from the member's established baseline."
+            },
+            {
+              "category": "clinical_history",
+              "criterion_id": "mn_4",
+              "quote": "(d) Headache in an immunocompromised host or in the setting of active malignancy.",
+              "quote_location": "Page 1, Medical Necessity list, item (d)",
+              "text": "Headache occurring in an immunocompromised host or in the setting of active malignancy."
+            },
+            {
+              "category": "diagnostics",
+              "criterion_id": "mn_5",
+              "quote": "(e) Papilledema or other signs of increased intracranial pressure.",
+              "quote_location": "Page 1, Medical Necessity list, item (e)",
+              "text": "Papilledema or other signs of increased intracranial pressure."
+            },
+            {
+              "category": "prior_treatments",
+              "criterion_id": "mn_6",
+              "quote": "(f) Failure of adequate trial of first-line therapy (including at least two preventive agents for chronic migraine).",
+              "quote_location": "Page 1, Medical Necessity list, item (f)",
+              "text": "Failure of an adequate trial of first-line therapy, including at least two preventive agents for chronic migraine."
+            }
+          ],
+          "policy_effective_date": "October 1, 2025",
+          "policy_name": "IMG-HEAD-v7: Advanced Neuroimaging for Headache",
+          "source_quotes": [
+            {
+              "location": "Page 1, Medical Necessity header",
+              "quote": "MEDICAL NECESSITY: Advanced neuroimaging is considered medically necessary when at least ONE of the following red-flag criteria is documented in the medical record:",
+              "quote_id": "policy_q1",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, item (a)",
+              "quote": "(a) Sudden-onset severe (\"thunderclap\") headache reaching maximum intensity within one minute.",
+              "quote_id": "policy_q2",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, item (b)",
+              "quote": "(b) New or progressive focal neurologic deficit (motor, sensory, visual, speech) associated with the headache.",
+              "quote_id": "policy_q3",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, item (c)",
+              "quote": "(c) Significant change in headache pattern, frequency, or severity from the member's established baseline.",
+              "quote_id": "policy_q4",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, item (d)",
+              "quote": "(d) Headache in an immunocompromised host or in the setting of active malignancy.",
+              "quote_id": "policy_q5",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, item (e)",
+              "quote": "(e) Papilledema or other signs of increased intracranial pressure.",
+              "quote_id": "policy_q6",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, item (f)",
+              "quote": "(f) Failure of adequate trial of first-line therapy (including at least two preventive agents for chronic migraine).",
+              "quote_id": "policy_q7",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, closing paragraph",
+              "quote": "A prior negative non-contrast CT does NOT preclude MRI when red-flag features are present, as CT has limited sensitivity for posterior fossa lesions, small vascular malformations, and early ischemic change.",
+              "quote_id": "policy_q8",
+              "source_type": "payer_policy"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01Be5S8pv6dVEASjfucXpX73",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 2773,
+      "output_tokens": 1821,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  }
+}

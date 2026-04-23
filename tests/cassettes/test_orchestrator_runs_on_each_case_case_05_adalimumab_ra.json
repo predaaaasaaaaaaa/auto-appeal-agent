@@ -1,0 +1,575 @@
+{
+  "29d683129b8e7853": {
+    "container": null,
+    "content": [
+      {
+        "signature": "EusBClkIDRgCKkBg8wiGZrXftu/dZ6C2qkPshIqNEI80LpTvH45qRPQ+/UMkTD+duj9WHjPL4st9xEpu5Oo3bT8i/RQYs3dAWs4EMg9jbGF1ZGUtb3B1cy00LTc4ABIMn9nOq+TmKWB2BWq5GgzwUnAUFCzXgHIH5U4iMPtD3hqaWW6tniA5ubVNh2SQWdwybV0+oA2D4a3OlhgPuuC2zq8xd53CLeflHtJBtipArc3phAR61WA4N5AUwP3L9PJ55ENYI2dm5uhc7D7rJa6KASscxeKmG18CmDqxGwHXw+cwvzlg70RoAtpNhhuYXxgB",
+        "thinking": "",
+        "type": "thinking"
+      },
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01UoZARVV7XELrw7q3zLbmwt",
+        "input": {
+          "case_id": "case_05_adalimumab_ra",
+          "criteria_met": {
+            "mn_1": true,
+            "mn_2": true,
+            "mn_3": true,
+            "mn_4": true
+          },
+          "evidence_items": [
+            {
+              "criterion_id": "mn_1",
+              "finding": "Seropositive RA diagnosed and managed by rheumatologist Dr. Amanda Cole, with supporting serology and erosive imaging.",
+              "quote": "Rheumatoid arthritis, seropositive, moderate-to-severe activity (M05.79)\nDiagnosed 2024-08. CCP antibody 312 U/mL. RF 89 IU/mL. Erosive changes on hand X-ray at diagnosis.",
+              "quote_location": "Diagnoses section",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_1",
+              "finding": "Rheumatologist of record is documented on the chart.",
+              "quote": "Rheumatologist: Dr. Amanda Cole, MD",
+              "quote_location": "Chart header",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_2",
+              "finding": "DAS28 of 4.7 on leflunomide in March 2026 demonstrates persistent moderate disease activity (>=3.2).",
+              "quote": "DAS28 at 2026-03: 4.7 (moderate activity persists).",
+              "quote_location": "DMARD History - Leflunomide entry",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_2",
+              "finding": "DAS28 of 4.9 on methotrexate in October 2025 confirms moderate disease activity above threshold.",
+              "quote": "DAS28 at 2025-10: 4.9 (moderate disease activity, not remission).",
+              "quote_location": "DMARD History - Methotrexate entry",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_3",
+              "finding": "Patient had adequate-dose methotrexate 25mg weekly for 11 months with inadequate response, satisfying step therapy.",
+              "quote": "2024-11 to 2025-10: Methotrexate. Started 10mg weekly, titrated to 25mg weekly (maximum tolerated) by 2025-02. Folate supplementation. 11 months of adequate-dose methotrexate. DAS28 at 2025-10: 4.9 (moderate disease activity, not remission).",
+              "quote_location": "DMARD History - Methotrexate entry",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_3",
+              "finding": "Multiple conventional DMARD trials (hydroxychloroquine, methotrexate, leflunomide) documented as failed or intolerant.",
+              "quote": "Patient has failed/been intolerant to three conventional DMARDs: hydroxychloroquine (inadequate response), methotrexate (hepatotoxicity), leflunomide (inadequate response with side effects).",
+              "quote_location": "Current Status 2026-04-05",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_4",
+              "finding": "Methotrexate discontinued due to hepatotoxicity with ALT >3x ULN; hepatology advised against resumption \u2014 meets clinically significant adverse event requiring discontinuation.",
+              "quote": "Hepatic enzymes progressively elevated: ALT rose from 24 to 96 U/L by 2025-09 (>3x upper limit of normal).\n\n2025-10: Methotrexate held due to hepatotoxicity. Discussed with hepatology; advised against resumption due to persistent elevation.",
+              "quote_location": "DMARD History - Methotrexate entry",
+              "supports_appeal": true
+            }
+          ],
+          "source_quotes": [
+            {
+              "location": "Chart header",
+              "quote": "Rheumatologist: Dr. Amanda Cole, MD",
+              "quote_id": "chart_q1",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Diagnoses section",
+              "quote": "Rheumatoid arthritis, seropositive, moderate-to-severe activity (M05.79)\nDiagnosed 2024-08. CCP antibody 312 U/mL. RF 89 IU/mL. Erosive changes on hand X-ray at diagnosis.",
+              "quote_id": "chart_q2",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "DMARD History - Methotrexate entry",
+              "quote": "2024-11 to 2025-10: Methotrexate. Started 10mg weekly, titrated to 25mg weekly (maximum tolerated) by 2025-02. Folate supplementation. 11 months of adequate-dose methotrexate. DAS28 at 2025-10: 4.9 (moderate disease activity, not remission). Hepatic enzymes progressively elevated: ALT rose from 24 to 96 U/L by 2025-09 (>3x upper limit of normal).",
+              "quote_id": "chart_q3",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "DMARD History - Methotrexate discontinuation",
+              "quote": "2025-10: Methotrexate held due to hepatotoxicity. Discussed with hepatology; advised against resumption due to persistent elevation.",
+              "quote_id": "chart_q4",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "DMARD History - Leflunomide entry",
+              "quote": "2025-11 to 2026-03: Leflunomide 20mg daily as third DMARD trial. 20 weeks of treatment. DAS28 at 2026-03: 4.7 (moderate activity persists). Patient reports new hair thinning, GI upset.",
+              "quote_id": "chart_q5",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Current Status 2026-04-05, Dr. Cole",
+              "quote": "Patient has failed/been intolerant to three conventional DMARDs: hydroxychloroquine (inadequate response), methotrexate (hepatotoxicity), leflunomide (inadequate response with side effects). Active erosive disease. Initiating biologic DMARD. Adalimumab selected due to moderate-severe activity and patient factors. Submitted PA.",
+              "quote_id": "chart_q6",
+              "source_type": "patient_chart"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_018HUQ2PR1xdTbRrtPJyGBCb",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 3683,
+      "output_tokens": 2226,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "2d6ad593c27b2484": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_017MrSvJ8yAoUtD8PAcmYZEh",
+        "input": {
+          "case_id": "case_05_adalimumab_ra",
+          "citations": [
+            {
+              "citation_id": "guideline_q1",
+              "citation_title": "2021 American College of Rheumatology Guideline for the Treatment of Rheumatoid Arthritis",
+              "guideline_source": "American College of Rheumatology (ACR), 2021",
+              "quote": "In DMARD-naive patients with moderate-to-high disease activity, methotrexate monotherapy is strongly recommended as initial therapy. For patients with moderate-to-high disease activity despite maximally tolerated methotrexate, addition of or switch to a biologic DMARD (such as a TNF inhibitor) or targeted synthetic DMARD is recommended.",
+              "supports_claim": "Adalimumab (a TNF inhibitor) is appropriate after inadequate response to methotrexate, satisfying step therapy.",
+              "url": "https://rheumatology.org/rheumatoid-arthritis-guideline"
+            },
+            {
+              "citation_id": "guideline_q2",
+              "citation_title": "EULAR recommendations for the management of rheumatoid arthritis with synthetic and biological disease-modifying antirheumatic drugs: 2022 update",
+              "guideline_source": "European Alliance of Associations for Rheumatology (EULAR), 2022",
+              "quote": "If the treatment target is not achieved with the first csDMARD strategy (typically methotrexate) and poor prognostic factors are present, a bDMARD such as a TNF inhibitor should be added. Methotrexate should be part of the first treatment strategy.",
+              "supports_claim": "Escalation to a biologic (adalimumab) after failure of methotrexate is guideline-endorsed standard of care.",
+              "url": "https://ard.bmj.com/content/82/1/3"
+            },
+            {
+              "citation_id": "guideline_q3",
+              "citation_title": "2021 ACR Guideline for the Treatment of Rheumatoid Arthritis \u2013 Treat-to-Target",
+              "guideline_source": "American College of Rheumatology (ACR), 2021",
+              "quote": "A treat-to-target strategy is strongly recommended, with the goal of low disease activity or remission. If the target is not reached with initial csDMARD therapy at adequate dose and duration, therapy should be escalated, including to biologic DMARDs.",
+              "supports_claim": "Documented inadequate response to methotrexate at adequate dose/duration justifies escalation to adalimumab rather than continued csDMARD monotherapy.",
+              "url": "https://rheumatology.org/rheumatoid-arthritis-guideline"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01BqvvZgbSjbfzzqmxpm1v61",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 2302,
+      "output_tokens": 963,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "5867cc03e068a94d": {
+    "container": null,
+    "content": [
+      {
+        "signature": "EusCClkIDRgCKkDvZTQcMHs8m+DSLprompLe1inoMs5Ic9gNsdE2M/pLrq2V+tUrwxfTRyBhu0jcd1y8rn6aCyHT/k9osul0DYUjMg9jbGF1ZGUtb3B1cy00LTc4ABIMk0NVgDMMTBcTQ9rOGgxBdjkmZmwjIUxHsHQiMN1vmH7tJTTndGXCshi7cktObphkIaoQbPvomvLGF1dQRrF8Y1MLnFsWU83YZ8XiVCq/AQeMhjrksZE/WYYyFS30FT44ENWb5LM0GUhsW1Pp7AO28OTgwi+h8JYe7kOtsD7hYm8Z2+Vp10Uvn1H3FsUp8JdW6t+iyws780rh9o8pb4GC9iVXONohIcsNT/omUJqZA+4aYbeDQJVQXTdui5kkO9jMFp4efkiMyHqoXtu2ccsNwfWANjCuPj+/u/OHUnnYONliKkiMhMThWHoM681euWTtQ4gy4Wimp4gt9HxuIUwi5s8o8niJpAZ5Bh5yL5EDGAE=",
+        "thinking": "",
+        "type": "thinking"
+      },
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01Cwt8ajJeo7YFfeYDQGbFWW",
+        "input": {
+          "case_id": "case_05_adalimumab_ra",
+          "paragraphs": [
+            {
+              "citations": [
+                {
+                  "claim": "The requested service being appealed is adalimumab (Humira) 40mg subcutaneous every other week, which was denied.",
+                  "source_id": "denial_q1",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Your request for adalimumab (Humira) 40mg subcutaneous every other week has been DENIED."
+                },
+                {
+                  "claim": "The denial rationale was a step-therapy requirement under policy RX-BIO-RA-v6.",
+                  "source_id": "denial_q2",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Reason for denial: Step-therapy requirement not satisfied. Per policy RX-BIO-RA-v6, biologic DMARDs for rheumatoid arthritis require documented inadequate response or intolerance to at least one conventional DMARD (methotrexate preferred) at an adequate trial duration. Denial code: STEP-02."
+                },
+                {
+                  "claim": "The ordering physician is Dr. Amanda Cole, MD, a rheumatologist.",
+                  "source_id": "denial_q4",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Ordering Physician: Dr. Amanda Cole, MD (Rheumatology)"
+                },
+                {
+                  "claim": "The member has the right to appeal this determination.",
+                  "source_id": "denial_q3",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "You have the right to appeal."
+                }
+              ],
+              "heading": "Patient and Requested Service",
+              "text": "I am writing on behalf of my patient, Sarah M. O'Brien (member ID EV-55930741, Evercare Silver HMO, DOB June 30, 1979), to appeal the April 10, 2026 denial of prior authorization for adalimumab (Humira) 40mg subcutaneous every other week. The denial letter states that the request has been denied and cites failure to satisfy step therapy under policy RX-BIO-RA-v6. As the ordering rheumatologist of record, I respectfully request that this decision be overturned. The record demonstrates that Ms. O'Brien meets every applicable medical-necessity criterion, including the step-therapy requirement that formed the basis of the denial."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "Policy requires a confirmed RA diagnosis documented by a rheumatologist.",
+                  "source_id": "policy_q1",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Confirmed diagnosis of rheumatoid arthritis documented by a rheumatologist."
+                },
+                {
+                  "claim": "Patient has a seropositive RA diagnosis with supporting serology and erosive imaging.",
+                  "source_id": "chart_q2",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Rheumatoid arthritis, seropositive, moderate-to-severe activity (M05.79)\nDiagnosed 2024-08. CCP antibody 312 U/mL. RF 89 IU/mL. Erosive changes on hand X-ray at diagnosis."
+                },
+                {
+                  "claim": "The rheumatologist of record is Dr. Amanda Cole, MD.",
+                  "source_id": "chart_q1",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Rheumatologist: Dr. Amanda Cole, MD"
+                }
+              ],
+              "heading": "Medical necessity met: Confirmed RA diagnosis by a rheumatologist",
+              "text": "Policy RX-BIO-RA-v6 requires a confirmed diagnosis of rheumatoid arthritis documented by a rheumatologist. Ms. O'Brien carries a rheumatologist-documented diagnosis of seropositive, moderate-to-severe rheumatoid arthritis (ICD-10 M05.79), diagnosed in August 2024 and supported by a strongly positive CCP antibody (312 U/mL), elevated rheumatoid factor (89 IU/mL), and erosive changes on hand radiographs at diagnosis. She is under the ongoing care of a board-certified rheumatologist. This diagnosis fully satisfies the first medical-necessity criterion."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "Policy requires DAS28 at or above 3.2 (or equivalent).",
+                  "source_id": "policy_q2",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Moderate or severe disease activity (DAS28 at or above 3.2, or equivalent measure)."
+                },
+                {
+                  "claim": "DAS28 of 4.9 on methotrexate documented in October 2025.",
+                  "source_id": "chart_q3",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "DAS28 at 2025-10: 4.9 (moderate disease activity, not remission)."
+                },
+                {
+                  "claim": "DAS28 of 4.7 on leflunomide documented in March 2026.",
+                  "source_id": "chart_q5",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "DAS28 at 2026-03: 4.7 (moderate activity persists)."
+                }
+              ],
+              "heading": "Medical necessity met: Moderate-to-severe disease activity (DAS28 >= 3.2)",
+              "text": "Policy RX-BIO-RA-v6 requires moderate or severe disease activity, defined as a DAS28 score at or above 3.2 or an equivalent measure. Ms. O'Brien's disease activity has remained well above this threshold despite serial conventional DMARD therapy. Her DAS28 was 4.9 in October 2025 on maximally tolerated methotrexate and 4.7 in March 2026 on leflunomide \u2014 both firmly in the moderate-to-severe range. This persistent active disease, consistent with the treat-to-target strategy endorsed by the 2021 ACR Guideline for the Treatment of Rheumatoid Arthritis, clearly satisfies the disease-activity criterion."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "Policy states that inadequate response to methotrexate 15-25mg weekly for at least 12 weeks satisfies step therapy.",
+                  "source_id": "policy_q3",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Methotrexate is the\npreferred first-line agent; an inadequate response to methotrexate 15-25mg weekly for at least 12 weeks\nsatisfies the step requirement."
+                },
+                {
+                  "claim": "Patient completed 11 months of adequate-dose methotrexate titrated to 25mg weekly with persistent disease activity (DAS28 4.9).",
+                  "source_id": "chart_q3",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "2024-11 to 2025-10: Methotrexate. Started 10mg weekly, titrated to 25mg weekly (maximum tolerated) by 2025-02. Folate supplementation. 11 months of adequate-dose methotrexate. DAS28 at 2025-10: 4.9 (moderate disease activity, not remission)."
+                },
+                {
+                  "claim": "Patient has failed or been intolerant to three conventional DMARDs including methotrexate and leflunomide.",
+                  "source_id": "chart_q6",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Patient has failed/been intolerant to three conventional DMARDs: hydroxychloroquine (inadequate response), methotrexate (hepatotoxicity), leflunomide (inadequate response with side effects)."
+                }
+              ],
+              "heading": "Medical necessity met: Step therapy satisfied \u2014 adequate methotrexate trial with inadequate response",
+              "text": "This is the specific criterion cited in the denial, and the record unambiguously satisfies it. Policy RX-BIO-RA-v6 states that step therapy is met by a documented trial of at least one conventional DMARD at adequate dose and duration (generally 12 weeks), and that an inadequate response to methotrexate 15-25mg weekly for at least 12 weeks satisfies the step requirement. Ms. O'Brien received methotrexate from November 2024 through October 2025 \u2014 approximately 11 months, far exceeding the 12-week minimum \u2014 titrated to 25mg weekly (the maximum tolerated dose, at the top of the policy's specified range) with folate supplementation. Her DAS28 remained 4.9 at the end of that trial, documenting an inadequate response. She has in fact failed or been intolerant to three conventional DMARDs: hydroxychloroquine (inadequate response), methotrexate (hepatotoxicity), and leflunomide (inadequate response with side effects). Escalation to a TNF inhibitor such as adalimumab following inadequate response to methotrexate is the explicit standard of care under the 2021 ACR Guideline and the 2022 EULAR recommendations."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "Policy defines intolerance as a clinically significant adverse event requiring discontinuation, including hepatotoxicity.",
+                  "source_id": "policy_q4",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Intolerance is defined as a clinically significant adverse event requiring\ndiscontinuation (e.g., hepatotoxicity, cytopenia, persistent GI intolerance)."
+                },
+                {
+                  "claim": "ALT rose to more than 3x the upper limit of normal during methotrexate therapy.",
+                  "source_id": "chart_q3",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Hepatic enzymes progressively elevated: ALT rose from 24 to 96 U/L by 2025-09 (>3x upper limit of normal)."
+                },
+                {
+                  "claim": "Methotrexate was discontinued due to hepatotoxicity and hepatology advised against resumption.",
+                  "source_id": "chart_q4",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "2025-10: Methotrexate held due to hepatotoxicity. Discussed with hepatology; advised against resumption due to persistent elevation."
+                }
+              ],
+              "heading": "Medical necessity met: Clinically significant intolerance (methotrexate hepatotoxicity)",
+              "text": "Independently of the inadequate-response pathway, Ms. O'Brien also satisfies step therapy via the intolerance pathway. Policy RX-BIO-RA-v6 defines intolerance as a clinically significant adverse event requiring discontinuation, expressly listing hepatotoxicity as an example. During Ms. O'Brien's methotrexate trial, her ALT rose progressively from 24 to 96 U/L by September 2025 \u2014 more than three times the upper limit of normal \u2014 and methotrexate was held in October 2025 due to hepatotoxicity. Hepatology was consulted and advised against resumption given the persistent enzyme elevation. This is precisely the clinically significant adverse event requiring discontinuation contemplated by the policy, providing a second, independent basis for satisfying step therapy."
+            },
+            {
+              "citations": [],
+              "heading": "Conclusion and Request",
+              "text": "Ms. O'Brien meets every applicable medical-necessity criterion under policy RX-BIO-RA-v6: she has a rheumatologist-confirmed diagnosis of seropositive, erosive rheumatoid arthritis; she has persistent moderate-to-severe disease activity with serial DAS28 scores of 4.9 and 4.7; and she satisfies the step-therapy requirement twice over \u2014 first through an 11-month trial of maximally tolerated methotrexate at 25mg weekly with an inadequate response, and second through clinically significant hepatotoxicity (ALT >3x ULN) requiring discontinuation and with hepatology advising against resumption. The underlying STEP-02 basis for the denial is therefore not supported by the record. Escalation to adalimumab is the guideline-endorsed next step and is medically necessary to prevent further erosive joint damage. I respectfully request that the denial be overturned and that adalimumab (Humira) 40mg subcutaneous every other week be approved without further delay. Please contact my office if any additional information would assist your review."
+            }
+          ],
+          "recipient_plan": "Evercare Silver HMO",
+          "subject_line": "Appeal of prior authorization denial \u2014 adalimumab (Humira) 40mg subcutaneous every other week \u2014 member EV-55930741"
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01VTsK8VcoEdC7sJwyRw7aRv",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 9871,
+      "output_tokens": 4558,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "900ab8d287df2499": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_012kJS5FGMbKZhbtcFAKfdQM",
+        "input": {
+          "case_id": "case_05_adalimumab_ra",
+          "denial_date": "April 10, 2026",
+          "denial_reasons": [
+            {
+              "code": "STEP-02",
+              "quote": "Reason for denial: Step-therapy requirement not satisfied. Per policy RX-BIO-RA-v6, biologic DMARDs for rheumatoid arthritis require documented inadequate response or intolerance to at least one conventional DMARD (methotrexate preferred) at an adequate trial duration. Denial code: STEP-02.",
+              "quote_location": "page 1, paragraph 5 (Reason for denial)",
+              "reason": "Step-therapy requirement not satisfied; requires documented inadequate response or intolerance to at least one conventional DMARD (methotrexate preferred) at an adequate trial duration."
+            }
+          ],
+          "member_info": {
+            "date_of_birth": "June 30, 1979",
+            "member_id": "EV-55930741",
+            "member_name": "Sarah M. O'Brien",
+            "plan_name": "Evercare Silver HMO"
+          },
+          "requested_service": "adalimumab (Humira) 40mg subcutaneous every other week",
+          "source_quotes": [
+            {
+              "location": "page 1, paragraph 4",
+              "quote": "Your request for adalimumab (Humira) 40mg subcutaneous every other week has been DENIED.",
+              "quote_id": "denial_q1",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, paragraph 5",
+              "quote": "Reason for denial: Step-therapy requirement not satisfied. Per policy RX-BIO-RA-v6, biologic DMARDs for rheumatoid arthritis require documented inadequate response or intolerance to at least one conventional DMARD (methotrexate preferred) at an adequate trial duration. Denial code: STEP-02.",
+              "quote_id": "denial_q2",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, paragraph 6",
+              "quote": "You have the right to appeal.",
+              "quote_id": "denial_q3",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, member information block",
+              "quote": "Ordering Physician: Dr. Amanda Cole, MD (Rheumatology)",
+              "quote_id": "denial_q4",
+              "source_type": "denial_letter"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_018YHXkMLXRndgsP2rrXhase",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 5009,
+      "output_tokens": 883,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "dd0597d31fefe0f5": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01FgMikCQYjDgWKqiM57kL4n",
+        "input": {
+          "case_id": "case_05_adalimumab_ra",
+          "criteria": [
+            {
+              "category": "clinical_history",
+              "criterion_id": "mn_1",
+              "quote": "Confirmed diagnosis of rheumatoid arthritis documented by a rheumatologist.",
+              "quote_location": "Page 1, Medical Necessity Criteria, item 1",
+              "text": "Patient must have a confirmed diagnosis of rheumatoid arthritis documented by a rheumatologist."
+            },
+            {
+              "category": "diagnostics",
+              "criterion_id": "mn_2",
+              "quote": "Moderate or severe disease activity (DAS28 at or above 3.2, or equivalent measure).",
+              "quote_location": "Page 1, Medical Necessity Criteria, item 2",
+              "text": "Patient must have moderate or severe disease activity, defined as DAS28 at or above 3.2 or equivalent measure."
+            },
+            {
+              "category": "prior_treatments",
+              "criterion_id": "mn_3",
+              "quote": "Step therapy: documented trial of at least one conventional DMARD at adequate dose and duration (generally\n12 weeks), OR documented intolerance or contraindication to conventional DMARDs. Methotrexate is the\npreferred first-line agent; an inadequate response to methotrexate 15-25mg weekly for at least 12 weeks\nsatisfies the step requirement.",
+              "quote_location": "Page 1, Medical Necessity Criteria, item 3",
+              "text": "Step therapy: patient must have a documented trial of at least one conventional DMARD at adequate dose and duration (generally 12 weeks), OR documented intolerance or contraindication to conventional DMARDs. Methotrexate is the preferred first-line agent; an inadequate response to methotrexate 15-25mg weekly for at least 12 weeks satisfies the step requirement."
+            },
+            {
+              "category": "prior_treatments",
+              "criterion_id": "mn_4",
+              "quote": "Intolerance is defined as a clinically significant adverse event requiring\ndiscontinuation (e.g., hepatotoxicity, cytopenia, persistent GI intolerance).",
+              "quote_location": "Page 1, Medical Necessity Criteria, item 3",
+              "text": "If relying on intolerance to satisfy step therapy, intolerance must be a clinically significant adverse event requiring discontinuation (e.g., hepatotoxicity, cytopenia, persistent GI intolerance)."
+            },
+            {
+              "category": "contraindications",
+              "criterion_id": "mn_5",
+              "quote": "No active serious infection, no latent tuberculosis untreated, no active malignancy.",
+              "quote_location": "Page 1, Medical Necessity Criteria, item 4",
+              "text": "Patient must have no active serious infection."
+            },
+            {
+              "category": "contraindications",
+              "criterion_id": "mn_6",
+              "quote": "No active serious infection, no latent tuberculosis untreated, no active malignancy.",
+              "quote_location": "Page 1, Medical Necessity Criteria, item 4",
+              "text": "Patient must have no untreated latent tuberculosis."
+            },
+            {
+              "category": "contraindications",
+              "criterion_id": "mn_7",
+              "quote": "No active serious infection, no latent tuberculosis untreated, no active malignancy.",
+              "quote_location": "Page 1, Medical Necessity Criteria, item 4",
+              "text": "Patient must have no active malignancy."
+            }
+          ],
+          "policy_effective_date": "January 1, 2026",
+          "policy_name": "RX-BIO-RA-v6: Biologic DMARDs for Rheumatoid Arthritis",
+          "source_quotes": [
+            {
+              "location": "Page 1, Medical Necessity Criteria, item 1",
+              "quote": "Confirmed diagnosis of rheumatoid arthritis documented by a rheumatologist.",
+              "quote_id": "policy_q1",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Medical Necessity Criteria, item 2",
+              "quote": "Moderate or severe disease activity (DAS28 at or above 3.2, or equivalent measure).",
+              "quote_id": "policy_q2",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Medical Necessity Criteria, item 3",
+              "quote": "Step therapy: documented trial of at least one conventional DMARD at adequate dose and duration (generally\n12 weeks), OR documented intolerance or contraindication to conventional DMARDs. Methotrexate is the\npreferred first-line agent; an inadequate response to methotrexate 15-25mg weekly for at least 12 weeks\nsatisfies the step requirement.",
+              "quote_id": "policy_q3",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Medical Necessity Criteria, item 3",
+              "quote": "Intolerance is defined as a clinically significant adverse event requiring\ndiscontinuation (e.g., hepatotoxicity, cytopenia, persistent GI intolerance).",
+              "quote_id": "policy_q4",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Medical Necessity Criteria, item 4",
+              "quote": "No active serious infection, no latent tuberculosis untreated, no active malignancy.",
+              "quote_id": "policy_q5",
+              "source_type": "payer_policy"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_016wUN8TcLHA1uyp9syeKzc3",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 2782,
+      "output_tokens": 2028,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  }
+}

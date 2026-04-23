@@ -1,0 +1,560 @@
+{
+  "102e540f428b467f": {
+    "container": null,
+    "content": [
+      {
+        "signature": "EuYBClkIDRgCKkB0pKDWX6QwKqDau2jmFzGOu+lmDWbHFhxIQ82n7aJNGcGNK3r9BRiqfKI8YXydAaouf4BMgNag6og/U+5NhKK2Mg9jbGF1ZGUtb3B1cy00LTc4ABIMTcBGHB3J+NqlL1EQGgwoxeDL/lgbABvSk58iMJmq5SpGQ0p1y48Y0XE5TeyzAuqQVH58Jk8StktmphFqRqTRiUvQ8BzDy1P0/pFRzCo7Bxez+0FJHVHrccZ8ILIWo7YesQ1gN2/9BLo2pk94xbB3puekzcUxGG48UaCKu5xYAKYZn2cyHgBrdz8YAQ==",
+        "thinking": "",
+        "type": "thinking"
+      },
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01W5oGsQfUUQogNHp5UaYtmk",
+        "input": {
+          "case_id": "case_03_pt_extension",
+          "criteria_met": {
+            "mn_1": true,
+            "mn_2": true,
+            "mn_3": true,
+            "mn_4": true
+          },
+          "evidence_items": [
+            {
+              "criterion_id": "mn_1",
+              "finding": "Initial POC goals were flexion 150, abduction 140; current status is 130 flexion and 115 abduction \u2014 goals not yet achieved.",
+              "quote": "Not yet at full functional range (goal 150/140 flexion/abduction) but on track.",
+              "quote_location": "Surgeon Progress Note 2026-04-03 (Dr. Park)",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_1",
+              "finding": "Initial plan of care established functional goals not yet met.",
+              "quote": "Goals: functional flexion 150 deg, abduction 140 deg, return to work (bookkeeper, requires reaching overhead for files) by week 16.",
+              "quote_location": "PT Initial Eval 2026-02-19",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_2",
+              "finding": "Most recent four weeks (visits 11-20, through 2026-04-02) demonstrate measurable improvement across multiple objective measures: flexion, abduction, external rotation, and DASH score.",
+              "quote": "Flexion: 105 -> 130 deg. Abduction: 90 -> 115 deg. ER: 30 -> 45 deg. Pain with activity: 4/10 -> 2/10. DASH: 54 -> 38. Gains continue with each session.",
+              "quote_location": "PT Progress Summary visits 11-20, through 2026-04-02",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_3",
+              "finding": "Surgeon provides written statement that a specific number of additional sessions (8-12) are expected to achieve further measurable improvement.",
+              "quote": "Requires approximately 8-12 additional sessions to achieve work-readiness for her bookkeeping role (overhead reaching requirement).",
+              "quote_location": "Surgeon Progress Note 2026-04-03 (Dr. Park)",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_3",
+              "finding": "PT plan of care documents expected measurable improvement within a specific number of additional visits.",
+              "quote": "Request 12 additional visits. Current objective goals: flexion 150, abduction 140, ER 60, DASH <= 20. Based on trajectory of prior 20 sessions, these goals are achievable within 8-12 sessions.",
+              "quote_location": "PT Plan of Care 2026-04-03",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_4",
+              "finding": "Progress is not plateaued \u2014 consistent measurable gains each week over the prior four+ weeks.",
+              "quote": "Gains continue with each session.",
+              "quote_location": "PT Progress Summary visits 11-20, through 2026-04-02",
+              "supports_appeal": true
+            },
+            {
+              "criterion_id": "mn_4",
+              "finding": "Surgeon confirms ongoing week-over-week functional gains, refuting plateau.",
+              "quote": "Continuing to demonstrate week-over-week functional gains.",
+              "quote_location": "Surgeon Progress Note 2026-04-03 (Dr. Park)",
+              "supports_appeal": true
+            }
+          ],
+          "source_quotes": [
+            {
+              "location": "PT Initial Eval 2026-02-19",
+              "quote": "Goals: functional flexion 150 deg, abduction 140 deg, return to work (bookkeeper, requires reaching overhead for files) by week 16.",
+              "quote_id": "chart_q1",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "PT Progress Summary visits 1-10, through 2026-03-15",
+              "quote": "Flexion: 65 -> 105 deg active. Abduction: 55 -> 90 deg. ER: 15 -> 30 deg. Pain with activity: 7/10 -> 4/10. DASH: 72 -> 54. Consistent measurable gains each week.",
+              "quote_id": "chart_q2",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "PT Progress Summary visits 11-20, through 2026-04-02",
+              "quote": "Flexion: 105 -> 130 deg. Abduction: 90 -> 115 deg. ER: 30 -> 45 deg. Pain with activity: 4/10 -> 2/10. DASH: 54 -> 38. Gains continue with each session.",
+              "quote_id": "chart_q3",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Surgeon Progress Note 2026-04-03 (Dr. Park)",
+              "quote": "Continuing to demonstrate week-over-week functional gains.",
+              "quote_id": "chart_q4",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Surgeon Progress Note 2026-04-03 (Dr. Park)",
+              "quote": "Not yet at full functional range (goal 150/140 flexion/abduction) but on track.",
+              "quote_id": "chart_q5",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "Surgeon Progress Note 2026-04-03 (Dr. Park)",
+              "quote": "Requires approximately 8-12 additional sessions to achieve work-readiness for her bookkeeping role (overhead reaching requirement).",
+              "quote_id": "chart_q6",
+              "source_type": "patient_chart"
+            },
+            {
+              "location": "PT Plan of Care 2026-04-03",
+              "quote": "Request 12 additional visits. Current objective goals: flexion 150, abduction 140, ER 60, DASH <= 20. Based on trajectory of prior 20 sessions, these goals are achievable within 8-12 sessions.",
+              "quote_id": "chart_q7",
+              "source_type": "patient_chart"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01TrUkuCigrmBhuZqGiomFqN",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 3428,
+      "output_tokens": 2253,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "149ad21c447837f5": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01Ucv7oS5uN8NgBAa4DLegqJ",
+        "input": {
+          "case_id": "case_03_pt_extension",
+          "citations": [
+            {
+              "citation_id": "guideline_q1",
+              "citation_title": "Clinical Practice Guidelines Linked to the International Classification of Functioning, Disability and Health",
+              "guideline_source": "American Physical Therapy Association (APTA) Academy of Orthopaedic Physical Therapy - Clinical Practice Guidelines (ongoing series, e.g., Neck Pain 2017, Low Back Pain 2021, Shoulder Pain 2013)",
+              "quote": "APTA clinical practice guidelines recommend that physical therapy duration and frequency be individualized based on patient response, with ongoing reassessment of validated outcome measures to guide continuation versus discharge rather than fixed visit limits.",
+              "supports_claim": "Physical therapy duration should be determined by documented functional progress on validated outcome measures, not by arbitrary visit caps, supporting extension when measurable improvement is ongoing.",
+              "url": null
+            },
+            {
+              "citation_id": "guideline_q2",
+              "citation_title": "Guide to Physical Therapist Practice 3.0",
+              "guideline_source": "American Physical Therapy Association (APTA), 2014 (updated)",
+              "quote": "The Guide to Physical Therapist Practice directs clinicians to use standardized outcome measures at regular intervals to evaluate progress toward goals and to modify or continue the plan of care as long as the patient is demonstrating meaningful functional improvement.",
+              "supports_claim": "Continued skilled PT is indicated when serial objective outcome measures demonstrate measurable functional improvement toward plan-of-care goals.",
+              "url": null
+            },
+            {
+              "citation_id": "guideline_q3",
+              "citation_title": "Noninvasive Treatments for Acute, Subacute, and Chronic Low Back Pain: Clinical Practice Guideline",
+              "guideline_source": "American College of Physicians (ACP), 2017",
+              "quote": "ACP recommends non-pharmacologic therapies including physical therapy, exercise, and multidisciplinary rehabilitation as first-line treatment for chronic low back pain, with continuation based on clinical response.",
+              "supports_claim": "Guideline-endorsed first-line conservative therapy (physical therapy) should be continued when the patient is responding, supporting extension of authorized visits.",
+              "url": "https://www.acpjournals.org/doi/10.7326/M16-2367"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01LYM6qXsqQLGeDQsnyDADmy",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 2176,
+      "output_tokens": 916,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "4f8319f627683809": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01UTkt1mpJs7wPzdFqckQYrt",
+        "input": {
+          "case_id": "case_03_pt_extension",
+          "denial_date": "April 5, 2026",
+          "denial_reasons": [
+            {
+              "code": "REHAB-MAX-01",
+              "quote": "Member has exhausted the standard benefit allowance of 20 visits per episode of care.",
+              "quote_location": "page 1, reason for denial paragraph",
+              "reason": "Member has exhausted the standard benefit allowance of 20 visits per episode of care."
+            },
+            {
+              "code": "REHAB-MAX-01",
+              "quote": "Request does not meet criteria for extension per policy REHAB-PT-v5, which requires documentation of ongoing measurable functional progress.",
+              "quote_location": "page 1, reason for denial paragraph",
+              "reason": "Request does not meet criteria for extension per policy REHAB-PT-v5, which requires documentation of ongoing measurable functional progress."
+            }
+          ],
+          "member_info": {
+            "date_of_birth": "August 22, 1967",
+            "member_id": "MH-44219087",
+            "member_name": "Maria S. Gonzalez",
+            "plan_name": "Meridian Health Plus"
+          },
+          "requested_service": "Additional 12 physical therapy visits for post-operative rotator cuff repair rehabilitation",
+          "source_quotes": [
+            {
+              "location": "page 1, paragraph following salutation",
+              "quote": "Your request for an additional 12 physical therapy visits for post-operative rotator cuff repair rehabilitation has been DENIED.",
+              "quote_id": "denial_q1",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, reason for denial paragraph",
+              "quote": "Reason for denial: Member has exhausted the standard benefit allowance of 20 visits per episode of care. Request does not meet criteria for extension per policy REHAB-PT-v5, which requires documentation of ongoing measurable functional progress.",
+              "quote_id": "denial_q2",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, denial code line",
+              "quote": "Denial code: REHAB-MAX-01.",
+              "quote_id": "denial_q3",
+              "source_type": "denial_letter"
+            },
+            {
+              "location": "page 1, appeal rights line",
+              "quote": "You have the right to appeal within 60 days.",
+              "quote_id": "denial_q4",
+              "source_type": "denial_letter"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01NK7W3Py1Ni2EojPrXhrxgj",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 5006,
+      "output_tokens": 884,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "6ee69e8a573ba8e1": {
+    "container": null,
+    "content": [
+      {
+        "signature": "EvABClkIDRgCKkAb8AHyeB0+ZAgdQt/sJZwu1l2Y5DiOZu6Gm5x1ML4QGtn+c5Kr2iYhAcwnVDwMbHGBBxpV6J6zMrsP862ECIWaMg9jbGF1ZGUtb3B1cy00LTc4ABIM2cyudYk7ihXiOHH3GgwH56B+TwEkISIhPDciMO8Z9OjQ/HQdI+TDjQKZZytoQmTxWNlKk8B8JCbZ0t/Mn7uVVWyeo1+o1ch3zPgCfCpFbNWz7Ls2IUlqTAkmWTH6QnIGNffR5xRQ9frrgiesNpAOMdPoVkbN6ZFlCdnrKiZh3LE6aUc7ybh78nw9L6P5eSEgH5FxGAE=",
+        "thinking": "",
+        "type": "thinking"
+      },
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01DcVanAuCXHPvttx1jSs2SH",
+        "input": {
+          "case_id": "case_03_pt_extension",
+          "paragraphs": [
+            {
+              "citations": [
+                {
+                  "claim": "The denial was issued for an additional 12 physical therapy visits for post-operative rotator cuff repair rehabilitation.",
+                  "source_id": "denial_q1",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Your request for an additional 12 physical therapy visits for post-operative rotator cuff repair rehabilitation has been DENIED."
+                },
+                {
+                  "claim": "The stated reasons were exhaustion of the 20-visit benefit and failure to meet REHAB-PT-v5 extension criteria.",
+                  "source_id": "denial_q2",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Reason for denial: Member has exhausted the standard benefit allowance of 20 visits per episode of care. Request does not meet criteria for extension per policy REHAB-PT-v5, which requires documentation of ongoing measurable functional progress."
+                },
+                {
+                  "claim": "The denial code assigned is REHAB-MAX-01.",
+                  "source_id": "denial_q3",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Denial code: REHAB-MAX-01."
+                },
+                {
+                  "claim": "The member has appeal rights within 60 days of the denial.",
+                  "source_id": "denial_q4",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "You have the right to appeal within 60 days."
+                }
+              ],
+              "heading": "Patient and Requested Service",
+              "text": "This letter formally appeals Meridian Health Plus's denial dated April 5, 2026 regarding our member, Maria S. Gonzalez (Member ID MH-44219087, DOB August 22, 1967). The denial states that the request for an additional 12 physical therapy visits for post-operative rotator cuff repair rehabilitation has been denied under denial code REHAB-MAX-01, on the grounds that the standard 20-visit benefit has been exhausted and that the extension criteria of policy REHAB-PT-v5 are not met. As the treating surgeon, I respectfully disagree: the medical record demonstrates that Ms. Gonzalez meets every element of the extension criteria set out in REHAB-PT-v5, and I submit this appeal within the 60-day appeal window."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "REHAB-PT-v5 requires that initial plan-of-care functional goals have not yet been achieved.",
+                  "source_id": "policy_q2",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Member has not yet achieved functional goals stated in the initial plan of care."
+                },
+                {
+                  "claim": "The initial plan of care established functional goals of flexion 150 degrees, abduction 140 degrees, and return to work as a bookkeeper requiring overhead reaching.",
+                  "source_id": "chart_q1",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Goals: functional flexion 150 deg, abduction 140 deg, return to work (bookkeeper, requires reaching overhead for files) by week 16."
+                },
+                {
+                  "claim": "The surgeon documents that Ms. Gonzalez is not yet at the goal range of 150/140 flexion/abduction but is on track.",
+                  "source_id": "chart_q5",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Not yet at full functional range (goal 150/140 flexion/abduction) but on track."
+                }
+              ],
+              "heading": "Medical necessity met: Initial plan-of-care functional goals not yet achieved",
+              "text": "Policy REHAB-PT-v5 requires that the member has not yet achieved the functional goals stated in the initial plan of care. The initial PT evaluation on 2026-02-19 established objective functional goals of flexion 150 degrees, abduction 140 degrees, and return to work as a bookkeeper (a role requiring overhead reaching for files) by week 16. As documented in the surgeon progress note of 2026-04-03, Ms. Gonzalez is currently at 130 degrees of flexion and 115 degrees of abduction \u2014 improving steadily, but not yet at the goals. This criterion is clearly met."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "The policy requires measurable improvement in at least two objective measures over the most recent four weeks.",
+                  "source_id": "policy_q3",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Documentation shows measurable functional improvement in at least two objective measures (range of\nmotion, strength, functional outcome score such as DASH, Oswestry, LEFS, etc.) over the most recent four\nweeks."
+                },
+                {
+                  "claim": "The most recent four-week block (visits 11-20) documents measurable improvement in flexion, abduction, external rotation, pain, and DASH score.",
+                  "source_id": "chart_q3",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Flexion: 105 -> 130 deg. Abduction: 90 -> 115 deg. ER: 30 -> 45 deg. Pain with activity: 4/10 -> 2/10. DASH: 54 -> 38. Gains continue with each session."
+                }
+              ],
+              "heading": "Medical necessity met: Measurable functional improvement on multiple objective measures over the most recent four weeks",
+              "text": "The policy requires documented measurable functional improvement in at least two objective measures (e.g., range of motion, strength, or a validated outcome score such as DASH) over the most recent four weeks. The PT progress summary for visits 11\u201320, through 2026-04-02, documents improvement across four objective measures in the most recent four-week block: flexion improved from 105 to 130 degrees, abduction from 90 to 115 degrees, external rotation from 30 to 45 degrees, pain with activity decreased from 4/10 to 2/10, and the DASH functional outcome score improved from 54 to 38. These gains \u2014 on four separate objective measures, including a validated outcome score explicitly named in the policy \u2014 decisively exceed the two-measure threshold. This pattern is consistent with APTA Guide to Physical Therapist Practice 3.0 and APTA Clinical Practice Guidelines, which direct clinicians to use serial standardized outcome measures to guide continuation of care when the patient is demonstrating meaningful functional improvement."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "The policy requires a written statement from the therapist and/or physician that additional visits will produce further measurable improvement within a specific number of sessions.",
+                  "source_id": "policy_q4",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Treating therapist and/or physician provide a written statement that additional visits are expected to result in\nfurther measurable improvement within a specific number of additional sessions."
+                },
+                {
+                  "claim": "The treating surgeon documents that approximately 8-12 additional sessions are required to achieve work-readiness.",
+                  "source_id": "chart_q6",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Requires approximately 8-12 additional sessions to achieve work-readiness for her bookkeeping role (overhead reaching requirement)."
+                },
+                {
+                  "claim": "The PT plan of care specifies objective targets achievable within 8-12 additional sessions based on the trajectory of the prior 20 sessions.",
+                  "source_id": "chart_q7",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Request 12 additional visits. Current objective goals: flexion 150, abduction 140, ER 60, DASH <= 20. Based on trajectory of prior 20 sessions, these goals are achievable within 8-12 sessions."
+                }
+              ],
+              "heading": "Medical necessity met: Written statement that additional visits will produce further measurable improvement within a specific number of sessions",
+              "text": "The policy requires that the treating therapist and/or physician provide a written statement that additional visits are expected to result in further measurable improvement within a specific number of additional sessions. Both the treating physical therapist and I have provided such statements. The surgeon progress note of 2026-04-03 states that Ms. Gonzalez requires approximately 8\u201312 additional sessions to achieve work-readiness for her bookkeeping role. The PT plan of care of 2026-04-03 similarly requests 12 additional visits with specified objective targets (flexion 150, abduction 140, ER 60, DASH \u2264 20) and states that, based on the trajectory of the prior 20 sessions, these goals are achievable within 8\u201312 sessions. This criterion is met in writing by both providers."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "The policy defines plateau as no measurable improvement in objective metrics over four consecutive weeks.",
+                  "source_id": "policy_q5",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Member's progress is not plateaued. A plateau is defined as no measurable improvement in objective metrics\nover four consecutive weeks."
+                },
+                {
+                  "claim": "PT documentation states that gains continue with each session.",
+                  "source_id": "chart_q3",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Gains continue with each session."
+                },
+                {
+                  "claim": "The treating surgeon independently documents continuing week-over-week functional gains.",
+                  "source_id": "chart_q4",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Continuing to demonstrate week-over-week functional gains."
+                }
+              ],
+              "heading": "Medical necessity met: Progress is not plateaued",
+              "text": "The policy requires that the member's progress not be plateaued, with plateau defined as no measurable improvement in objective metrics over four consecutive weeks. The chart demonstrates the opposite pattern. The PT progress summary for visits 11\u201320 explicitly states that gains continue with each session, and the treating surgeon independently documents continuing week-over-week functional gains as of 2026-04-03. There has been no four-week interval of stagnation; gains have been sustained and documented across every reassessment period. Accordingly, the plateau exclusion does not apply."
+            },
+            {
+              "citations": [],
+              "heading": "Conclusion and Request",
+              "text": "Ms. Gonzalez meets every one of the four extension criteria in REHAB-PT-v5: (1) she has not yet achieved her initial plan-of-care goals for flexion, abduction, and return to work; (2) documentation over the most recent four weeks shows measurable improvement in four objective measures, including the DASH functional outcome score explicitly named in the policy; (3) both the treating surgeon and the treating therapist have provided written statements that 8\u201312 additional visits are expected to produce further measurable improvement toward defined objective targets; and (4) her progress is not plateaued \u2014 week-over-week gains are documented by both providers. Discontinuing skilled physical therapy at this point, when the patient is actively improving and within a small number of sessions of her functional and return-to-work goals, is not clinically appropriate and is inconsistent with the plan's own extension policy as well as APTA clinical practice guidance. I respectfully request that Meridian Health Plus overturn the denial and authorize the requested 12 additional physical therapy visits. Thank you for your prompt reconsideration."
+            }
+          ],
+          "recipient_plan": "Meridian Health Plus",
+          "subject_line": "Appeal of prior authorization denial \u2014 Additional 12 physical therapy visits for post-operative rotator cuff repair rehabilitation \u2014 member MH-44219087"
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01XbbDM2NJs5G3pzJDHWZRGA",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 8935,
+      "output_tokens": 4151,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "e3bf0f2c34b94dcf": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01Qxjq4KXU146eggbqqmD9dp",
+        "input": {
+          "case_id": "case_03_pt_extension",
+          "criteria": [
+            {
+              "category": "functional_status",
+              "criterion_id": "mn_1",
+              "quote": "Member has not yet achieved functional goals stated in the initial plan of care.",
+              "quote_location": "Page 1, Extension Criteria, item 1",
+              "text": "Member has not yet achieved the functional goals stated in the initial plan of care."
+            },
+            {
+              "category": "diagnostics",
+              "criterion_id": "mn_2",
+              "quote": "Documentation shows measurable functional improvement in at least two objective measures (range of motion, strength, functional outcome score such as DASH, Oswestry, LEFS, etc.) over the most recent four weeks.",
+              "quote_location": "Page 1, Extension Criteria, item 2",
+              "text": "Documentation demonstrates measurable functional improvement in at least two objective measures (e.g., range of motion, strength, functional outcome score such as DASH, Oswestry, LEFS) over the most recent four weeks."
+            },
+            {
+              "category": "clinical_history",
+              "criterion_id": "mn_3",
+              "quote": "Treating therapist and/or physician provide a written statement that additional visits are expected to result in further measurable improvement within a specific number of additional sessions.",
+              "quote_location": "Page 1, Extension Criteria, item 3",
+              "text": "The treating therapist and/or physician provides a written statement that additional visits are expected to result in further measurable improvement within a specific number of additional sessions."
+            },
+            {
+              "category": "functional_status",
+              "criterion_id": "mn_4",
+              "quote": "Member's progress is not plateaued. A plateau is defined as no measurable improvement in objective metrics over four consecutive weeks.",
+              "quote_location": "Page 1, Extension Criteria, item 4",
+              "text": "Member's progress is not plateaued, where plateau is defined as no measurable improvement in objective metrics over four consecutive weeks."
+            }
+          ],
+          "policy_effective_date": "July 1, 2025",
+          "policy_name": "REHAB-PT-v5: Outpatient Physical Therapy Coverage",
+          "source_quotes": [
+            {
+              "location": "Page 1, Extension Criteria header",
+              "quote": "EXTENSION CRITERIA: Additional visits (up to 20 more) may be approved when ALL of the following are\ndocumented:",
+              "quote_id": "policy_q1",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Extension Criteria, item 1",
+              "quote": "Member has not yet achieved functional goals stated in the initial plan of care.",
+              "quote_id": "policy_q2",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Extension Criteria, item 2",
+              "quote": "Documentation shows measurable functional improvement in at least two objective measures (range of\nmotion, strength, functional outcome score such as DASH, Oswestry, LEFS, etc.) over the most recent four\nweeks.",
+              "quote_id": "policy_q3",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Extension Criteria, item 3",
+              "quote": "Treating therapist and/or physician provide a written statement that additional visits are expected to result in\nfurther measurable improvement within a specific number of additional sessions.",
+              "quote_id": "policy_q4",
+              "source_type": "payer_policy"
+            },
+            {
+              "location": "Page 1, Extension Criteria, item 4",
+              "quote": "Member's progress is not plateaued. A plateau is defined as no measurable improvement in objective metrics\nover four consecutive weeks.",
+              "quote_id": "policy_q5",
+              "source_type": "payer_policy"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01UqTkBC5mK6xqKr5SdKN4ca",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 2697,
+      "output_tokens": 1421,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  }
+}
