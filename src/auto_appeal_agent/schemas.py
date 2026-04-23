@@ -126,7 +126,9 @@ class GuidelineCitation(Strict):
     guideline_source: str = Field(
         ..., description="Issuing body, e.g. 'ADA 2024 Standards of Care'."
     )
-    citation_title: str
+    # Optional: not every guideline has a clean section title Claude can
+    # confidently name. The appeal still reads fine when this is missing.
+    citation_title: Optional[str] = None
     quote: str
     url: Optional[str] = None
     supports_claim: str = Field(..., description="What clinical claim this citation backs.")
