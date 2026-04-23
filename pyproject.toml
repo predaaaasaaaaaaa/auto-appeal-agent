@@ -28,8 +28,10 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-addopts = "-ra --strict-markers"
+# Skip integration tests by default so `pytest` never burns API credits unintentionally.
+# Run them explicitly with `pytest -m integration` or `make test-integration`.
+addopts = "-ra --strict-markers -m 'not integration'"
 markers = [
-    "integration: tests that call external services (Anthropic API)",
+    "integration: tests that call external services (Anthropic API) and cost money",
     "e2e: end-to-end pipeline tests across all fixtures",
 ]
