@@ -1,0 +1,42 @@
+{
+  "5f14830f99ad3e47": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01GLFSCbtZpBpHrJ41ntCxBZ",
+        "input": {
+          "words": [
+            "Hello",
+            "there",
+            "friend"
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01TRy4k6Cw3MdYDMavwiLbbh",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 1060,
+      "output_tokens": 61,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  }
+}
