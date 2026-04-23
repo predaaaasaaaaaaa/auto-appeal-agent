@@ -148,7 +148,19 @@ def call_claude_structured(
             response = get_client().messages.create(**request)
             for block in response.content:
                 if block.type == "tool_use":
-                    parsed = output_model.model_validate(block.input)
+                    # Claude occasionally leaks tool-schema metadata fields
+                    # ("$FUNCTION_NAME", "$PARAMETER_NAME", etc.) into the
+                    # tool input payload. These aren't part of any user-
+                    # defined schema and break strict Pydantic models, so
+                    # strip them defensively before validation.
+                    raw_input = block.input
+                    if isinstance(raw_input, dict):
+                        raw_input = {
+                            k: v
+                            for k, v in raw_input.items()
+                            if not (isinstance(k, str) and k.startswith("$"))
+                        }
+                    parsed = output_model.model_validate(raw_input)
                     return parsed, response
             raise RuntimeError(
                 "Claude returned no tool_use block. "
