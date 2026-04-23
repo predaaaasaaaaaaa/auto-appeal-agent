@@ -1,64 +1,111 @@
 """
-DenialAnalyzer — reads the insurer's denial letter.
+DenialAnalyzer — reads the insurer's denial letter via high-res vision.
 
-Plain-language summary: when an insurance company refuses to pay for a
-treatment, they send a denial letter. This module's job is to read that
-letter and pull out the structured facts we need:
+Plain-language summary: converts each page of the denial-letter PDF into
+a high-resolution image (rendered at 150 DPI, comfortably within Claude
+4.7's 2576-pixel limit), and asks Claude to extract a structured
+DenialAnalysis. The prompt demands that every `quote` field be a
+verbatim character-for-character substring of the letter — anything
+paraphrased will be caught downstream by the Verifier.
 
-  * who the patient is (name, member ID, plan name),
-  * what service was requested (e.g. "Ozempic 1mg weekly"),
-  * why it was denied (plain-language reasons plus any denial codes),
-  * verbatim quotes from the letter the Verifier can re-check later.
-
-Phase 0 status: STUBBED. Returns a minimal valid shape so the orchestrator
-and tests run end-to-end. Phase 1 replaces the stub with a real Claude Opus
-4.7 call using high-resolution vision on the PDF.
+This is the first agent that replaces its stub with a real Claude call.
 """
 from __future__ import annotations
 
+import base64
 from pathlib import Path
+from typing import Any
 
-from auto_appeal_agent.schemas import (
-    DenialAnalysis,
-    DenialReason,
-    MemberInfo,
-    SourceQuote,
-)
+import fitz  # PyMuPDF
+
+from auto_appeal_agent.anthropic_client import call_claude_structured
+from auto_appeal_agent.schemas import DenialAnalysis
+
+# Render at 150 DPI: a US-Letter page becomes roughly 1275x1650 pixels,
+# which is well under Claude 4.7's 2576-pixel / 3.75-megapixel limits and
+# plenty of resolution to read denial-letter body text and footnotes.
+_RENDER_DPI = 150
+
+_SYSTEM_PROMPT = """\
+You are a healthcare prior-authorization specialist. Your job is to read
+an insurer's denial letter and extract the structured facts a reviewer
+will need to write an appeal.
+
+You MUST follow these rules:
+
+  - Every `quote` field must be a VERBATIM substring of the letter,
+    copied character-for-character. Never paraphrase. Never summarize.
+    Never add ellipsis. Never change punctuation.
+  - Every `source_quote` entry must have a stable `quote_id` of the form
+    "denial_qN" where N starts at 1 and increments.
+  - Every `source_quote` must have `source_type = "denial_letter"`.
+  - `quote_location` should be human-readable, e.g. "page 1, paragraph 2".
+  - If the letter does not contain information for a requested field,
+    use an empty list or null. Never fabricate content.
+  - The `case_id` you output MUST match exactly the `case_id` in the
+    user's request.
+
+Return your answer by calling the emit_structured_output tool with a
+valid DenialAnalysis object.
+"""
 
 
-def analyze_denial(case_id: str, denial_letter_path: Path) -> DenialAnalysis:
-    """Return a structured analysis of the denial letter.
+def _pdf_to_image_blocks(pdf_path: Path, dpi: int = _RENDER_DPI) -> list[dict[str, Any]]:
+    """Convert a PDF to a list of Anthropic image content blocks (one per page)."""
+    doc = fitz.open(pdf_path)
+    blocks: list[dict[str, Any]] = []
+    try:
+        for page in doc:
+            pix = page.get_pixmap(dpi=dpi)
+            png_bytes = pix.tobytes("png")
+            blocks.append(
+                {
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": "image/png",
+                        "data": base64.b64encode(png_bytes).decode("ascii"),
+                    },
+                }
+            )
+    finally:
+        doc.close()
+    return blocks
+
+
+def analyze_denial(case_id: str, denial_letter_path) -> DenialAnalysis:
+    """Read the denial letter and return a verified structured analysis.
 
     Args:
-        case_id: Stable ID for this case (e.g. "case_01_ozempic").
-        denial_letter_path: Path to the denial letter PDF (unused in stub).
+        case_id: Stable ID for this case (e.g. "case_01_ozempic_bmi34").
+            This value is echoed back into the DenialAnalysis so pipeline
+            downstream stages can key off it.
+        denial_letter_path: Path (or str) to the denial-letter PDF.
 
     Returns:
-        A DenialAnalysis with placeholder content; shape is valid.
+        A DenialAnalysis. Every SourceQuote it contains is intended to be
+        a verbatim substring of the letter; the downstream Verifier will
+        reject any citation whose quote cannot be found in the source.
     """
-    del denial_letter_path  # stub does not read the file yet
-    return DenialAnalysis(
-        case_id=case_id,
-        member_info=MemberInfo(
-            member_name="[stub] Jane Doe",
-            member_id="[stub] A00000",
-            plan_name="[stub] ACME Health",
-        ),
-        requested_service="[stub] requested service",
-        denial_reasons=[
-            DenialReason(
-                reason="[stub] not medically necessary",
-                code="STUB-1",
-                quote="[stub] the requested service is not medically necessary",
-                quote_location="[stub] page 1",
-            )
-        ],
-        source_quotes=[
-            SourceQuote(
-                quote_id="denial_q1",
-                source_type="denial_letter",
-                quote="[stub] the requested service is not medically necessary",
-                location="[stub] page 1",
-            )
-        ],
+    pdf_path = Path(denial_letter_path)
+    image_blocks = _pdf_to_image_blocks(pdf_path)
+
+    user_content: list[dict[str, Any]] = [
+        {
+            "type": "text",
+            "text": (
+                f"Analyze the denial letter below for case_id='{case_id}'. "
+                "Return the full structured DenialAnalysis object. "
+                "Reminder: every quote must be VERBATIM from the letter."
+            ),
+        },
+        *image_blocks,
+    ]
+
+    analysis, _raw = call_claude_structured(
+        output_model=DenialAnalysis,
+        system=_SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": user_content}],
+        max_tokens=4096,
     )
+    return analysis
