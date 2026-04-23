@@ -33,8 +33,7 @@ def _normalize(s: str) -> str:
     return " ".join(s.lower().split())
 
 
-@pytest.mark.integration
-def test_denial_analyzer_extracts_case_01(fixtures_dir: Path):
+def test_denial_analyzer_extracts_case_01(cassette, fixtures_dir: Path):  # noqa: ARG001
     case_dir = fixtures_dir / "case_01_ozempic_bmi34"
     analysis = analyze_denial(
         "case_01_ozempic_bmi34",
