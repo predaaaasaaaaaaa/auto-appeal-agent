@@ -38,9 +38,10 @@ def test_schema_to_tool_custom_name():
     assert tool["name"] == "emit_greeting"
 
 
-@pytest.mark.integration
-def test_structured_output_roundtrip():
-    """Real API call. Tiny request, costs well under a cent."""
+def test_structured_output_roundtrip(cassette):
+    """Cassette-backed: first run records, subsequent runs replay for free.
+    Verifies that tool_use round-tripping works end-to-end against the real
+    API shape."""
     greeting, raw = call_claude_structured(
         output_model=_DemoGreeting,
         system=(
@@ -53,6 +54,5 @@ def test_structured_output_roundtrip():
     assert isinstance(greeting, _DemoGreeting)
     assert len(greeting.words) >= 1
     assert all(isinstance(w, str) for w in greeting.words)
-    # Usage metadata must be present so agents can report token spend.
     assert raw.usage.input_tokens > 0
     assert raw.usage.output_tokens > 0
