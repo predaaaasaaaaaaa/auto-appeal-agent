@@ -36,14 +36,46 @@ CASSETTES_DIR = Path(__file__).resolve().parent / "cassettes"
 RECORD_MODE = os.getenv("RECORD_CASSETTES") == "1"
 
 
+def _strip_cache_control(obj: Any) -> Any:
+    """Recursively remove `cache_control` keys so prompt-caching markers
+    don't alter the cassette key (the response content is the same with
+    or without caching enabled)."""
+    if isinstance(obj, dict):
+        return {k: _strip_cache_control(v) for k, v in obj.items() if k != "cache_control"}
+    if isinstance(obj, list):
+        return [_strip_cache_control(item) for item in obj]
+    return obj
+
+
+def _system_to_text(system: Any) -> Any:
+    """Normalize system field to plain text. A bare string and a single-
+    text-block list with the same content should produce the same key."""
+    if system is None:
+        return None
+    if isinstance(system, str):
+        return system
+    if isinstance(system, list):
+        return "".join(
+            b["text"]
+            for b in system
+            if isinstance(b, dict) and b.get("type") == "text"
+        )
+    return str(system)
+
+
 def _key(kwargs: dict[str, Any]) -> str:
-    """Stable hash of the request payload, used as cassette lookup key."""
+    """Stable hash of the request payload, used as cassette lookup key.
+
+    Ignores `cache_control` markers and string/list-of-blocks differences
+    in `system`, so adding/removing prompt caching doesn't invalidate
+    existing cassettes.
+    """
     payload = json.dumps(
         {
             "model": kwargs.get("model"),
-            "system": kwargs.get("system"),
-            "messages": kwargs.get("messages"),
-            "tools": kwargs.get("tools"),
+            "system": _system_to_text(kwargs.get("system")),
+            "messages": _strip_cache_control(kwargs.get("messages")),
+            "tools": _strip_cache_control(kwargs.get("tools")),
             "tool_choice": kwargs.get("tool_choice"),
             "thinking": kwargs.get("thinking"),
         },
