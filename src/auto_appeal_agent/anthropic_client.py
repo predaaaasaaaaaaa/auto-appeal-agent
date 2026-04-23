@@ -1,0 +1,135 @@
+"""
+anthropic_client.py — cached, structured-output Claude client.
+
+Plain-language summary: a thin wrapper around the Anthropic Python SDK
+that every agent in this project uses to talk to Claude. It centralizes
+three things:
+
+  1. Loading the API key from .env at import time (python-dotenv).
+  2. Running Claude and parsing the response through a Pydantic model
+     (via the tool-use pattern), so each agent gets back a typed object
+     or a clear ValidationError — never free-form text it then has to
+     parse itself.
+  3. Accepting either a plain-string `system` prompt or a list of system
+     content blocks. The list form lets callers mark sections with
+     `cache_control` for prompt caching — up to four breakpoints per
+     request — so static context (instructions, tool schemas, the whole
+     patient chart) gets billed once and reused at ~10% cost.
+
+Design principle: this module is the ONLY place that talks to the
+Anthropic SDK. Agents import from here. That way, reliability
+improvements (retries, caching, observability) live in one spot.
+"""
+from __future__ import annotations
+
+import os
+from functools import lru_cache
+from typing import Any, Type, TypeVar, Union
+
+from anthropic import Anthropic
+from anthropic.types import Message
+from dotenv import load_dotenv
+from pydantic import BaseModel
+
+# Load .env at import time so `ANTHROPIC_API_KEY` is available to the SDK.
+load_dotenv()
+
+T = TypeVar("T", bound=BaseModel)
+
+DEFAULT_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-7")
+
+
+@lru_cache(maxsize=1)
+def get_client() -> Anthropic:
+    """Return a singleton Anthropic client.
+
+    The SDK reads ANTHROPIC_API_KEY from the environment on its own; we
+    just check here to raise a friendly error if the key is missing,
+    instead of letting the first API call blow up with a cryptic 401.
+    """
+    if not os.getenv("ANTHROPIC_API_KEY"):
+        raise RuntimeError(
+            "ANTHROPIC_API_KEY is not set. Copy .env.template to .env "
+            "and paste your key there."
+        )
+    return Anthropic()
+
+
+def schema_to_tool(
+    output_model: Type[T],
+    tool_name: str = "emit_structured_output",
+) -> dict[str, Any]:
+    """Convert a Pydantic model class into an Anthropic tool definition.
+
+    We use the tool-use pattern for structured output: Claude "calls" a
+    synthetic tool whose input schema is the Pydantic model's JSON
+    schema. Forcing `tool_choice` to this tool guarantees the response
+    is an object matching the schema — or the call raises.
+    """
+    return {
+        "name": tool_name,
+        "description": (
+            f"Emit a structured {output_model.__name__} object. Every "
+            "field is required; do not invent fields outside the schema. "
+            "Quote fields must contain verbatim text copied character-for-"
+            "character from the source document — never paraphrased."
+        ),
+        "input_schema": output_model.model_json_schema(),
+    }
+
+
+def call_claude_structured(
+    output_model: Type[T],
+    system: Union[str, list[dict[str, Any]]],
+    messages: list[dict[str, Any]],
+    *,
+    model: str = DEFAULT_MODEL,
+    max_tokens: int = 4096,
+    thinking: bool = False,
+) -> tuple[T, Message]:
+    """Call Claude and return a validated Pydantic instance of `output_model`.
+
+    Args:
+        output_model: The Pydantic class the response must fit. Strict
+            config (`extra="forbid"`) catches hallucinated extra fields.
+        system: Either a plain string, or a list of content blocks
+            (each block may carry `cache_control` for prompt caching).
+        messages: The user/assistant turns.
+        model: Model ID (default from ANTHROPIC_MODEL env var).
+        max_tokens: Hard cap on generated tokens for this single request.
+        thinking: If True, enables adaptive thinking. Adds tokens but
+            helps on complex reasoning (ChartMiner, LetterWriter).
+
+    Returns:
+        (parsed, raw) where `parsed` is the validated Pydantic instance
+        and `raw` is the full anthropic.types.Message so callers can
+        inspect `raw.usage` (input/output/cache tokens).
+
+    Raises:
+        RuntimeError if Claude did not return a tool_use block.
+        pydantic.ValidationError if the tool_use input failed schema validation.
+    """
+    tool = schema_to_tool(output_model)
+    request: dict[str, Any] = {
+        "model": model,
+        "max_tokens": max_tokens,
+        "system": system,
+        "messages": messages,
+        "tools": [tool],
+        "tool_choice": {"type": "tool", "name": tool["name"]},
+    }
+    if thinking:
+        request["thinking"] = {"type": "adaptive"}
+
+    response = get_client().messages.create(**request)
+
+    for block in response.content:
+        if block.type == "tool_use":
+            parsed = output_model.model_validate(block.input)
+            return parsed, response
+
+    raise RuntimeError(
+        "Claude returned no tool_use block. "
+        f"stop_reason={response.stop_reason} "
+        f"content_types={[b.type for b in response.content]}"
+    )
