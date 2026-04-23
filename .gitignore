@@ -23,11 +23,13 @@ build/
 *.egg-info/
 *.egg
 
-# Generated fixture case data — regenerable via `make fixtures`
-fixtures/case_*/
-
 # Pipeline outputs (generated appeal letters, verification reports)
 output/
+
+# Note: fixtures/case_*/ are committed so the recorded cassettes
+# (tests/cassettes/) can replay deterministically on a fresh clone.
+# `make fixtures` regenerates them in-place; if the PDFs change, the
+# request hashes change and the cassettes have to be re-recorded too.
 
 # OS
 .DS_Store

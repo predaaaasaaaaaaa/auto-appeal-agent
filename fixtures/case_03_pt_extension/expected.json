@@ -1,0 +1,15 @@
+{
+  "case_id": "case_03_pt_extension",
+  "expected_appeal": {
+    "key_claims": [
+      "Patient has NOT yet met functional goals (flexion 130/150, abduction 115/140).",
+      "Measurable improvement in four objective metrics in the last four weeks (flexion, abduction, ER, DASH).",
+      "Surgeon and PT document specific goal-attainment estimate within 8-12 sessions.",
+      "Progress is clearly ongoing, not plateaued."
+    ],
+    "must_cite_source_types": [
+      "payer_policy",
+      "patient_chart"
+    ]
+  }
+}

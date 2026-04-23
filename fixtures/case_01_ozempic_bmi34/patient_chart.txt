@@ -1,0 +1,32 @@
+PATIENT CHART - Jane A. Doe
+DOB: 1978-05-14  |  MRN: 00451892
+PCP: Dr. Maria Chen, MD
+Chart excerpt assembled 2026-04-02
+
+--- PROBLEM LIST ---
+Essential hypertension (I10) - diagnosed 2021
+Type 2 diabetes mellitus without complications (E11.9) - diagnosed 2023
+Obesity, class 2 (E66.01) - diagnosed 2024
+
+--- ACTIVE MEDICATIONS ---
+Lisinopril 10mg PO daily (since 2021)
+Metformin 1000mg PO BID (since 2023)
+Atorvastatin 20mg PO qHS (since 2024)
+
+--- VITALS / LABS (last 12 months) ---
+2025-04-10: BP 138/86, weight 208 lb, height 5'5", BMI 34.6
+2025-10-05: BP 134/82, weight 206 lb, BMI 34.3
+2026-02-15: BP 132/84, weight 205 lb, BMI 34.2, A1c 7.2%, LDL 108
+2026-03-10: BP 130/82, weight 204 lb, BMI 34.0, A1c 7.1%
+
+--- PROGRESS NOTE 2025-05-01 (Dr. Chen) ---
+Patient enrolled in structured Weight Watchers program today. Dietitian referral placed. Plan for supervised lifestyle modification x 6+ months before considering pharmacotherapy.
+
+--- PROGRESS NOTE 2025-11-20 (Dr. Chen) ---
+Six-month lifestyle modification review. Patient has attended 21 of 24 scheduled Weight Watchers group sessions. Food logs submitted weekly. Exercise log shows 150+ minutes moderate activity per week. Weight change: 208 -> 206 lb (2 lb loss over 6 months). A1c remains 7.2%. Will continue lifestyle plus consider adjunct pharmacotherapy.
+
+--- PROGRESS NOTE 2026-02-15 (Dr. Chen) ---
+10-month review. Weight 205 lb (3 lb loss over 10 months). Patient expresses frustration with limited progress despite full compliance. Reviewed risks/benefits of GLP-1 RA therapy. No personal or family history of medullary thyroid carcinoma or MEN2 (confirmed with patient today). Not pregnant; last menstrual period 2026-02-06. Plan: submit prior authorization for semaglutide.
+
+--- PROGRESS NOTE 2026-03-10 (Dr. Chen) ---
+Following PA denial. Patient has completed 10 months of documented structured lifestyle intervention (Weight Watchers attendance records on file). All GLP-1 RA eligibility criteria met per plan policy. Will file appeal.

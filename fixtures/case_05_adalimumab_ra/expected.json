@@ -1,0 +1,16 @@
+{
+  "case_id": "case_05_adalimumab_ra",
+  "expected_appeal": {
+    "key_claims": [
+      "Diagnosis confirmed by rheumatologist (Dr. Cole).",
+      "Disease activity moderate (DAS28 4.7-4.9 across multiple assessments).",
+      "Methotrexate trial of 11 months at maximum tolerated dose (25mg weekly) - exceeds 12-week requirement.",
+      "Documented hepatotoxicity on methotrexate (ALT >3x ULN) is a clinically significant adverse event requiring discontinuation - meets intolerance definition.",
+      "Additional failures of hydroxychloroquine and leflunomide further support biologic necessity."
+    ],
+    "must_cite_source_types": [
+      "payer_policy",
+      "patient_chart"
+    ]
+  }
+}

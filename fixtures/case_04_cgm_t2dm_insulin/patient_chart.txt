@@ -1,0 +1,26 @@
+PATIENT CHART - David T. Harrison
+DOB: 1961-02-11  |  MRN: 00518244
+Endocrinologist: Dr. Elena Vasquez, MD
+
+--- DIAGNOSES ---
+Type 2 diabetes mellitus with poor long-term control (E11.65), diagnosed 2009.
+
+--- CURRENT INSULIN REGIMEN ---
+Insulin glargine (Lantus) 38 units subcutaneous at bedtime
+Insulin lispro (Humalog) 8-12 units subcutaneous with each meal (3x daily)
+Total daily injections: 4
+
+--- RECENT A1C ---
+2025-04: 9.1%
+2025-07: 8.7%
+2025-10: 8.8%
+2026-01: 9.0%
+2026-04: 9.2%
+
+--- HYPOGLYCEMIA HISTORY ---
+2025-08-12: Hypoglycemic event requiring glucagon at home, fingerstick 42 mg/dL, symptoms of confusion and diaphoresis.
+2025-11-03: Emergency department visit for severe hypoglycemia, fingerstick 38 mg/dL.
+2026-02-18: Hypoglycemia while driving, fingerstick 46 mg/dL, self-treated with glucose tabs. No accident.
+
+--- PROGRESS NOTE 2026-04-06 (Dr. Vasquez) ---
+Patient has been on multiple daily insulin injections (MDI) for 14 years. Despite good adherence with SMBG 4-6 times per day, A1c has risen to 9.2% with three documented moderate-severe hypoglycemic episodes in the past 9 months. Recommending CGM to: (1) detect asymptomatic nocturnal and post-prandial hypoglycemia, (2) guide titration of multi-dose insulin, (3) reduce A1c while reducing hypoglycemia risk. Submitted PA for CGM.

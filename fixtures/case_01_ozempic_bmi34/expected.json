@@ -1,0 +1,15 @@
+{
+  "case_id": "case_01_ozempic_bmi34",
+  "expected_appeal": {
+    "key_claims": [
+      "Patient's BMI is 34.2, exceeding the policy threshold of 30.",
+      "Patient has documented 10 months of supervised Weight Watchers program (exceeds 6-month requirement).",
+      "Patient has no contraindications (no MTC, MEN2, pregnancy).",
+      "Patient has multiple qualifying comorbidities (HTN, T2DM)."
+    ],
+    "must_cite_source_types": [
+      "payer_policy",
+      "patient_chart"
+    ]
+  }
+}

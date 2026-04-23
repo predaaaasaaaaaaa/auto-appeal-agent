@@ -29,4 +29,4 @@ ui:
 	cd ui && PATH="$$HOME/.local/node/bin:$$PATH" npm run dev
 
 clean:
-	rm -rf .venv .pytest_cache .mypy_cache **/__pycache__ *.egg-info fixtures/case_*/ output/
+	rm -rf .venv .pytest_cache .mypy_cache **/__pycache__ *.egg-info output/

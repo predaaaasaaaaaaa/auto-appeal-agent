@@ -1,0 +1,15 @@
+{
+  "case_id": "case_02_brain_mri_headache",
+  "expected_appeal": {
+    "key_claims": [
+      "Patient exhibits red-flag (a): thunderclap headache 2026-03-05.",
+      "Patient exhibits red-flag (b): transient focal neurologic deficits on three separate dates.",
+      "Patient exhibits red-flag (c): significant change from established migraine pattern.",
+      "Policy explicitly states a negative CT does not preclude MRI when red flags are present."
+    ],
+    "must_cite_source_types": [
+      "payer_policy",
+      "patient_chart"
+    ]
+  }
+}

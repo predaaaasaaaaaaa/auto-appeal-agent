@@ -1,0 +1,23 @@
+PATIENT CHART - Maria S. Gonzalez
+DOB: 1967-08-22  |  MRN: 00734612
+Surgeon: Dr. Jin Park, MD (Orthopedic Surgery)
+PT: River Physical Therapy
+
+--- PROCEDURE ---
+2026-01-08: Arthroscopic repair of right rotator cuff (supraspinatus, full-thickness tear). Post-op protocol: 6 weeks sling, progressive PT thereafter.
+
+--- PT INITIAL EVAL 2026-02-19 ---
+R shoulder flexion: 65 deg active, 100 deg passive. Abduction: 55 deg active. External rotation: 15 deg. Pain at rest 4/10, with movement 7/10. DASH score: 72.
+Goals: functional flexion 150 deg, abduction 140 deg, return to work (bookkeeper, requires reaching overhead for files) by week 16.
+
+--- PT PROGRESS SUMMARY (visits 1-10, through 2026-03-15) ---
+Flexion: 65 -> 105 deg active. Abduction: 55 -> 90 deg. ER: 15 -> 30 deg. Pain with activity: 7/10 -> 4/10. DASH: 72 -> 54. Consistent measurable gains each week.
+
+--- PT PROGRESS SUMMARY (visits 11-20, through 2026-04-02) ---
+Flexion: 105 -> 130 deg. Abduction: 90 -> 115 deg. ER: 30 -> 45 deg. Pain with activity: 4/10 -> 2/10. DASH: 54 -> 38. Gains continue with each session.
+
+--- SURGEON PROGRESS NOTE 2026-04-03 (Dr. Park) ---
+Excellent post-op course. Continuing to demonstrate week-over-week functional gains. Not yet at full functional range (goal 150/140 flexion/abduction) but on track. Requires approximately 8-12 additional sessions to achieve work-readiness for her bookkeeping role (overhead reaching requirement). Discontinuing PT now would likely result in stiffness and need for manipulation under anesthesia.
+
+--- PT PLAN OF CARE 2026-04-03 ---
+Request 12 additional visits. Current objective goals: flexion 150, abduction 140, ER 60, DASH <= 20. Based on trajectory of prior 20 sessions, these goals are achievable within 8-12 sessions.

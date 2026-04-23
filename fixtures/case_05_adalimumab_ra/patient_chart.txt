@@ -1,0 +1,19 @@
+PATIENT CHART - Sarah M. O'Brien
+DOB: 1979-06-30  |  MRN: 00628190
+Rheumatologist: Dr. Amanda Cole, MD
+
+--- DIAGNOSES ---
+Rheumatoid arthritis, seropositive, moderate-to-severe activity (M05.79)
+Diagnosed 2024-08. CCP antibody 312 U/mL. RF 89 IU/mL. Erosive changes on hand X-ray at diagnosis.
+
+--- DMARD HISTORY ---
+2024-08 to 2024-11: Hydroxychloroquine 400mg daily. Discontinued due to inadequate response (DAS28 remained >5.1 after 12 weeks).
+
+2024-11 to 2025-10: Methotrexate. Started 10mg weekly, titrated to 25mg weekly (maximum tolerated) by 2025-02. Folate supplementation. 11 months of adequate-dose methotrexate. DAS28 at 2025-10: 4.9 (moderate disease activity, not remission). Hepatic enzymes progressively elevated: ALT rose from 24 to 96 U/L by 2025-09 (>3x upper limit of normal).
+
+2025-10: Methotrexate held due to hepatotoxicity. Discussed with hepatology; advised against resumption due to persistent elevation.
+
+2025-11 to 2026-03: Leflunomide 20mg daily as third DMARD trial. 20 weeks of treatment. DAS28 at 2026-03: 4.7 (moderate activity persists). Patient reports new hair thinning, GI upset.
+
+--- CURRENT STATUS (2026-04-05, Dr. Cole) ---
+Patient has failed/been intolerant to three conventional DMARDs: hydroxychloroquine (inadequate response), methotrexate (hepatotoxicity), leflunomide (inadequate response with side effects). Active erosive disease. Initiating biologic DMARD. Adalimumab selected due to moderate-severe activity and patient factors. Submitted PA.

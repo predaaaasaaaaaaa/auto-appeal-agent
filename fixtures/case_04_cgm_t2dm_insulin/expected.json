@@ -1,0 +1,16 @@
+{
+  "case_id": "case_04_cgm_t2dm_insulin",
+  "expected_appeal": {
+    "key_claims": [
+      "Patient has T2DM treated with 4 insulin injections per day (meets 2a).",
+      "Patient performs 4-6 fingerstick glucose tests per day (meets 2b).",
+      "Patient's A1c is 9.2%, above the 8.0% threshold (meets 2c-i).",
+      "Patient has documented history of multiple severe hypoglycemia episodes (meets 2c-ii).",
+      "Policy v4 explicitly covers insulin-intensive T2DM; denial cited outdated criteria."
+    ],
+    "must_cite_source_types": [
+      "payer_policy",
+      "patient_chart"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+PATIENT CHART - Robert K. Lee
+DOB: 1984-10-03  |  MRN: 00882341
+Treating provider: Dr. Samir Patel, MD, Neurology
+Chart excerpt assembled 2026-03-29
+
+--- PROBLEM LIST ---
+Chronic migraine without aura (G43.709) - diagnosed 2023
+New-onset focal neurologic symptoms (R41.89) - 2026-03
+
+--- PROGRESS NOTE 2025-09-12 (Dr. Patel) ---
+Established migraine. On topiramate 50mg BID with partial benefit. Continues 2-3 migraines per month. No aura. Plan: continue current therapy, consider CGRP mAb if inadequate response.
+
+--- PROGRESS NOTE 2026-01-20 (Dr. Patel) ---
+Added erenumab 70mg monthly. Patient reports 4-6 migraines/month now, down from baseline. No red flags. No imaging indicated.
+
+--- URGENT CARE VISIT 2026-03-05 ---
+Chief complaint: sudden worst headache of life while exercising, onset 30 minutes prior. Associated with brief (90-second) left-hand paresthesia. BP 148/92. Neuro exam: transiently diminished proprioception in left hand, resolved during exam. CT head without contrast: no acute intracranial abnormality. Discharged with neurology urgent follow-up.
+
+--- PROGRESS NOTE 2026-03-12 (Dr. Patel) ---
+Patient seen urgently following ED visit 2026-03-05. New-onset "thunderclap" headache with transient focal neurologic deficit is a significant change from his established migraine pattern. Second similar episode 2026-03-09 with right-sided visual blur lasting 2 minutes. These are NEW red-flag features not previously present. CT head was reassuring but has limited sensitivity for posterior fossa lesions, small vascular malformations, and early ischemia. MRI brain with and without contrast is clinically indicated to evaluate: (1) posterior fossa mass, (2) arteriovenous malformation, (3) small vessel ischemic change, (4) pituitary lesion.
+
+--- PROGRESS NOTE 2026-03-22 (Dr. Patel) ---
+Third episode of transient focal symptoms (right-sided facial droop, 3 minutes) overnight 2026-03-20. Strong indication for MRI. Prior authorization request submitted.
