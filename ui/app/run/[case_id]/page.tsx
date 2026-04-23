@@ -11,6 +11,7 @@ import {
 } from "react";
 import Link from "next/link";
 import {
+  type AppealReview,
   type CitationMarker,
   type ProgressEvent,
   type SourceType,
@@ -280,13 +281,18 @@ export default function RunPage({
           {/* Right: appeal draft */}
           <section className="flex min-h-0 flex-col bg-[color:color-mix(in_oklch,var(--background),var(--muted)_35%)]">
             <div className="flex-1 min-h-0 overflow-auto px-8 py-8">
-              <div className="mx-auto max-w-[680px]">
+              <div className="mx-auto flex max-w-[680px] flex-col gap-6">
                 {result ? (
-                  <DraftLetter
-                    result={result}
-                    verifiedKeys={verifiedKeys}
-                    onCitationClick={onCitationClick}
-                  />
+                  <>
+                    <DraftLetter
+                      result={result}
+                      verifiedKeys={verifiedKeys}
+                      onCitationClick={onCitationClick}
+                    />
+                    {result.second_pass_review && (
+                      <SecondPassReview review={result.second_pass_review} />
+                    )}
+                  </>
                 ) : (
                   <DraftSkeleton stages={stages} error={error} />
                 )}
@@ -637,11 +643,126 @@ function describeDoneStage(event: ProgressEvent): string {
       return `${event.citations ?? "?"} clinical guidelines cited`;
     case "letter_writer":
       return `${event.paragraphs ?? "?"} paragraphs · ${event.citations ?? "?"} citations drafted`;
-    case "verifier":
+    case "verifier": {
       const v = (event.verified_citations as number) ?? 0;
       const r = (event.rejected_citations as number) ?? 0;
       return `${v}/${v + r} citations verified`;
+    }
+    case "independent_reviewer": {
+      const verdict = (event.overall_verdict as string) ?? "?";
+      const concerns = (event.high_level_concerns as number) ?? 0;
+      return `${verdict.replace("_", " ")} · ${concerns} concern(s) flagged`;
+    }
     default:
       return "Done.";
   }
+}
+
+function SecondPassReview({ review }: { review: AppealReview }) {
+  const ready = review.overall_verdict === "sign_ready";
+  const verdictCounts = review.citation_verdicts.reduce<Record<string, number>>(
+    (acc, v) => {
+      acc[v.verdict] = (acc[v.verdict] ?? 0) + 1;
+      return acc;
+    },
+    {}
+  );
+
+  return (
+    <article className="rounded-sm border border-border bg-card p-6">
+      <header className="mb-4 flex items-baseline justify-between gap-4 border-b border-border pb-3">
+        <div className="flex flex-col gap-1">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            Independent second-pass review
+          </div>
+          <h2 className="text-base font-semibold">
+            Reviewer assessment
+          </h2>
+        </div>
+        <span
+          className={
+            "inline-flex items-center gap-1.5 rounded-sm px-2 py-0.5 text-xs font-medium " +
+            (ready
+              ? "bg-[--color-status-verified-bg] text-[--color-status-verified]"
+              : "bg-[--color-status-rejected-bg] text-[--color-status-rejected]")
+          }
+        >
+          <span
+            className={
+              "h-1.5 w-1.5 rounded-full " +
+              (ready
+                ? "bg-[--color-status-verified]"
+                : "bg-[--color-status-rejected]")
+            }
+          />
+          {ready ? "Sign-ready" : "Needs revision"}
+        </span>
+      </header>
+
+      <p className="text-sm leading-relaxed text-foreground">
+        {review.reviewer_summary}
+      </p>
+
+      {review.high_level_concerns.length > 0 && (
+        <div className="mt-4">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            Concerns to address before signing
+          </div>
+          <ul className="mt-2 flex flex-col gap-1 text-sm">
+            {review.high_level_concerns.map((c, i) => (
+              <li key={i} className="flex gap-2">
+                <span className="text-[--color-status-rejected]">•</span>
+                <span>{c}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="mt-4">
+        <div className="flex items-baseline justify-between text-[11px] uppercase tracking-wider text-muted-foreground">
+          <span>Per-citation verdicts</span>
+          <span className="tabular-nums">
+            {Object.entries(verdictCounts)
+              .map(([k, n]) => `${n} ${k}`)
+              .join(" · ")}
+          </span>
+        </div>
+        <ul className="mt-2 flex flex-col gap-1.5">
+          {review.citation_verdicts.map((v, i) => (
+            <li
+              key={i}
+              className="flex items-start gap-2 rounded-sm border border-border px-2 py-1.5 text-xs"
+            >
+              <VerdictDot verdict={v.verdict} />
+              <div className="flex flex-1 flex-col">
+                <span className="font-mono text-[11px] text-muted-foreground">
+                  paragraph {v.paragraph_index} · citation{" "}
+                  {v.citation_in_paragraph_index} · {v.source_id}
+                </span>
+                <span className="text-foreground">{v.rationale}</span>
+              </div>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                {v.verdict}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </article>
+  );
+}
+
+function VerdictDot({
+  verdict,
+}: {
+  verdict: "supports" | "partial" | "unsupported";
+}) {
+  const cls =
+    verdict === "supports"
+      ? "bg-[--color-status-verified]"
+      : verdict === "partial"
+        ? "bg-amber-500"
+        : "bg-[--color-status-rejected]";
+  return <span className={`mt-1 h-2 w-2 shrink-0 rounded-full ${cls}`} />;
 }
