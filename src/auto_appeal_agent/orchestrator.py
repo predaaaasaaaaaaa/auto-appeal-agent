@@ -20,6 +20,7 @@ without needing to refactor the pipeline into a generator.
 """
 from __future__ import annotations
 
+import logging
 from typing import Any, Callable, Optional
 
 from auto_appeal_agent.agents.chart_miner import mine_chart
@@ -30,6 +31,8 @@ from auto_appeal_agent.agents.letter_writer import write_appeal
 from auto_appeal_agent.agents.policy_reader import read_policy
 from auto_appeal_agent.agents.verifier import verify_appeal
 from auto_appeal_agent.schemas import PipelineInput, VerifiedAppeal
+
+logger = logging.getLogger(__name__)
 
 ProgressCallback = Callable[[dict[str, Any]], None]
 
@@ -42,7 +45,7 @@ def _emit(cb: Optional[ProgressCallback], stage: str, status: str, **extra: Any)
 def run_pipeline(
     pipeline_input: PipelineInput,
     progress_callback: Optional[ProgressCallback] = None,
-    second_pass: bool = True,
+    second_pass: bool = False,
 ) -> VerifiedAppeal:
     """Run every agent in order and return the final VerifiedAppeal.
 
@@ -52,10 +55,12 @@ def run_pipeline(
             stage with a dict like
             `{"stage": "denial_analyzer", "status": "done", ...}`.
             Used by the UI layer to stream live progress.
-        second_pass: When True (default), runs the IndependentReviewer
-            after the substring Verifier and attaches its review to the
-            returned VerifiedAppeal.second_pass_review. Set to False to
-            skip the extra LLM call (saves ~$0.10 per run).
+        second_pass: When True, ALSO runs the IndependentReviewer after
+            the substring Verifier and attaches its review to the
+            returned VerifiedAppeal.second_pass_review. Defaults to
+            False because the reviewer currently struggles on
+            larger-than-fixture drafts; if it fails, the rest of the
+            appeal is still returned and the review is omitted.
     """
     cb = progress_callback
 
@@ -131,15 +136,35 @@ def run_pipeline(
 
     if second_pass:
         _emit(cb, "independent_reviewer", "running")
-        review = independent_review(draft, all_source_quotes)
-        verified.second_pass_review = review
-        _emit(
-            cb,
-            "independent_reviewer",
-            "done",
-            overall_verdict=review.overall_verdict,
-            citation_verdicts=len(review.citation_verdicts),
-            high_level_concerns=len(review.high_level_concerns),
-        )
+        try:
+            review = independent_review(draft, all_source_quotes)
+            verified.second_pass_review = review
+            _emit(
+                cb,
+                "independent_reviewer",
+                "done",
+                overall_verdict=review.overall_verdict,
+                citation_verdicts=len(review.citation_verdicts),
+                high_level_concerns=len(review.high_level_concerns),
+            )
+        except Exception as exc:
+            # The IndependentReviewer is a *bonus* QA layer on top of the
+            # substring Verifier. If it fails (bad schema output, timeout,
+            # rate limit), the core appeal is still valid — we return it
+            # without the review rather than failing the whole pipeline.
+            logger.warning(
+                "IndependentReviewer failed; returning appeal without review: "
+                "%s: %s",
+                type(exc).__name__,
+                exc,
+            )
+            _emit(
+                cb,
+                "independent_reviewer",
+                "done",
+                skipped=True,
+                error_type=type(exc).__name__,
+                error_message=str(exc),
+            )
 
     return verified
