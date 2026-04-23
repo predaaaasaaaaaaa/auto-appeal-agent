@@ -59,6 +59,23 @@ def get_client() -> Anthropic:
     return Anthropic()
 
 
+def cached_system(text: str) -> list[dict[str, Any]]:
+    """Wrap a system prompt as a single cached content block.
+
+    Anthropic's prompt caching reuses the same prefix across requests
+    within the cache TTL (5 minutes by default). System prompts are
+    identical across pipeline runs, so caching them cuts ~90% of their
+    token cost on every call after the first within the window.
+    """
+    return [
+        {
+            "type": "text",
+            "text": text,
+            "cache_control": {"type": "ephemeral"},
+        }
+    ]
+
+
 def schema_to_tool(
     output_model: Type[T],
     tool_name: str = "emit_structured_output",
@@ -69,6 +86,12 @@ def schema_to_tool(
     synthetic tool whose input schema is the Pydantic model's JSON
     schema. Forcing `tool_choice` to this tool guarantees the response
     is an object matching the schema — or the call raises.
+
+    The tool also carries a `cache_control` marker, which (combined with
+    the system prompt above it) creates a cacheable prefix big enough to
+    cross Anthropic's ~1024-token cache threshold. On repeat calls
+    within the cache TTL, the system+tool prefix is billed at ~10% of
+    normal input cost.
     """
     return {
         "name": tool_name,
@@ -79,6 +102,7 @@ def schema_to_tool(
             "character from the source document — never paraphrased."
         ),
         "input_schema": output_model.model_json_schema(),
+        "cache_control": {"type": "ephemeral"},
     }
 
 
