@@ -11,6 +11,7 @@ import {
 } from "react";
 import Link from "next/link";
 import {
+  type AppealDraft,
   type AppealReview,
   type CitationMarker,
   type ProgressEvent,
@@ -56,8 +57,53 @@ export default function RunPage({
     )
   );
   const [result, setResult] = useState<VerifiedAppeal | null>(null);
+  const [editedDraft, setEditedDraft] = useState<AppealDraft | null>(null);
+  const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const startedRef = useRef(false);
+
+  // When the pipeline finishes, seed the editable draft once.
+  useEffect(() => {
+    if (result && !editedDraft) {
+      setEditedDraft(structuredClone(result.draft));
+    }
+  }, [result, editedDraft]);
+
+  const isEdited = useMemo(() => {
+    if (!result || !editedDraft) return false;
+    return JSON.stringify(result.draft) !== JSON.stringify(editedDraft);
+  }, [result, editedDraft]);
+
+  const downloadPdf = useCallback(async () => {
+    if (!editedDraft) return;
+    setDownloading(true);
+    try {
+      const res = await fetch("/api/export_pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editedDraft),
+      });
+      if (!res.ok) {
+        setError(`PDF export failed (${res.status})`);
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${editedDraft.case_id}_appeal.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } finally {
+      setDownloading(false);
+    }
+  }, [editedDraft]);
+
+  const resetEdits = useCallback(() => {
+    if (result) setEditedDraft(structuredClone(result.draft));
+  }, [result]);
 
   const [sources, setSources] = useState<Record<SourceKind, string>>({
     denial_letter: "",
@@ -282,12 +328,20 @@ export default function RunPage({
           <section className="flex min-h-0 flex-col bg-[color:color-mix(in_oklch,var(--background),var(--muted)_35%)]">
             <div className="flex-1 min-h-0 overflow-auto px-8 py-8">
               <div className="mx-auto flex max-w-[680px] flex-col gap-6">
-                {result ? (
+                {result && editedDraft ? (
                   <>
-                    <DraftLetter
-                      result={result}
+                    <LetterToolbar
+                      isEdited={isEdited}
+                      downloading={downloading}
+                      onDownload={downloadPdf}
+                      onReset={resetEdits}
+                    />
+                    <EditableLetter
+                      draft={editedDraft}
+                      onDraftChange={setEditedDraft}
                       verifiedKeys={verifiedKeys}
                       onCitationClick={onCitationClick}
+                      rejected={result.rejected_citations}
                     />
                     {result.second_pass_review && (
                       <SecondPassReview review={result.second_pass_review} />
@@ -473,38 +527,124 @@ function findSpan(
   }
 }
 
-function DraftLetter({
-  result,
+function LetterToolbar({
+  isEdited,
+  downloading,
+  onDownload,
+  onReset,
+}: {
+  isEdited: boolean;
+  downloading: boolean;
+  onDownload: () => void;
+  onReset: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-sm border border-border bg-card px-3 py-2">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        {isEdited ? (
+          <span className="inline-flex items-center gap-1.5 rounded-sm bg-amber-500/10 px-2 py-0.5 text-amber-700">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+            edited locally
+          </span>
+        ) : (
+          <span>Edit any paragraph in place — changes live in your browser only.</span>
+        )}
+      </div>
+      <div className="flex items-center gap-2">
+        {isEdited && (
+          <button
+            onClick={onReset}
+            className="rounded-sm border border-border px-3 py-1 text-xs font-medium hover:bg-muted"
+          >
+            Reset
+          </button>
+        )}
+        <button
+          onClick={onDownload}
+          disabled={downloading}
+          className="inline-flex items-center gap-1.5 rounded-sm border border-primary bg-primary px-3 py-1 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        >
+          {downloading ? "Generating…" : "Download PDF"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function EditableLetter({
+  draft,
+  onDraftChange,
   verifiedKeys,
   onCitationClick,
+  rejected,
 }: {
-  result: VerifiedAppeal;
+  draft: AppealDraft;
+  onDraftChange: (d: AppealDraft) => void;
   verifiedKeys: Set<string>;
   onCitationClick: (c: CitationMarker) => void;
+  rejected: VerifiedAppeal["rejected_citations"];
 }) {
+  const updateField = (
+    field: "subject_line" | "recipient_plan",
+    value: string
+  ) => {
+    onDraftChange({ ...draft, [field]: value });
+  };
+
+  const updateParagraph = (
+    idx: number,
+    field: "heading" | "text",
+    value: string
+  ) => {
+    onDraftChange({
+      ...draft,
+      paragraphs: draft.paragraphs.map((p, i) =>
+        i === idx ? { ...p, [field]: value } : p
+      ),
+    });
+  };
+
   return (
     <article className="rounded-sm border border-border bg-card p-10 shadow-sm">
       <header className="mb-6 border-b border-border pb-4">
         <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
           Appeal of prior authorization denial
         </div>
-        <h1 className="mt-1 text-lg font-semibold leading-snug tracking-tight">
-          {result.draft.subject_line}
-        </h1>
+        <input
+          type="text"
+          value={draft.subject_line}
+          onChange={(e) => updateField("subject_line", e.target.value)}
+          className="mt-1 w-full bg-transparent text-lg font-semibold leading-snug tracking-tight outline-none focus:ring-1 focus:ring-primary/40 rounded-sm px-1 -mx-1"
+        />
         <div className="mt-2 text-sm text-muted-foreground">
-          To: <span className="text-foreground">{result.draft.recipient_plan}</span>
+          To:{" "}
+          <input
+            type="text"
+            value={draft.recipient_plan}
+            onChange={(e) => updateField("recipient_plan", e.target.value)}
+            className="w-[80%] bg-transparent text-foreground outline-none focus:ring-1 focus:ring-primary/40 rounded-sm px-1 -mx-1"
+          />
         </div>
       </header>
 
       <div className="letter-body flex flex-col gap-5 text-[15px] leading-relaxed">
-        {result.draft.paragraphs.map((p, i) => (
+        {draft.paragraphs.map((p, i) => (
           <section key={i} className="flex flex-col gap-2">
-            {p.heading && (
-              <h2 className="font-serif text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                {p.heading}
-              </h2>
+            {p.heading !== null && p.heading !== undefined && (
+              <input
+                type="text"
+                value={p.heading}
+                onChange={(e) => updateParagraph(i, "heading", e.target.value)}
+                className="font-serif text-sm font-semibold uppercase tracking-wider text-muted-foreground bg-transparent outline-none focus:ring-1 focus:ring-primary/40 rounded-sm px-1 -mx-1"
+              />
             )}
-            <p className="whitespace-pre-wrap text-foreground">{p.text}</p>
+            <textarea
+              value={p.text}
+              onChange={(e) => updateParagraph(i, "text", e.target.value)}
+              rows={Math.max(3, p.text.split("\n").length + Math.ceil(p.text.length / 90))}
+              className="w-full bg-transparent text-foreground whitespace-pre-wrap resize-none outline-none focus:ring-1 focus:ring-primary/40 rounded-sm px-1 -mx-1 font-serif"
+              style={{ fieldSizing: "content" } as React.CSSProperties}
+            />
             {p.citations.length > 0 && (
               <div className="flex flex-wrap gap-1.5 pt-1 font-sans">
                 {p.citations.map((c, j) => {
@@ -526,13 +666,13 @@ function DraftLetter({
         ))}
       </div>
 
-      {result.rejected_citations.length > 0 && (
+      {rejected.length > 0 && (
         <aside className="mt-8 rounded-sm border border-[--color-status-rejected]/30 bg-[--color-status-rejected-bg] p-4">
           <div className="text-xs font-semibold uppercase tracking-wider text-[--color-status-rejected]">
-            Verifier stripped {result.rejected_citations.length} citation(s)
+            Verifier stripped {rejected.length} citation(s)
           </div>
           <ul className="mt-2 flex flex-col gap-2 text-xs">
-            {result.rejected_citations.map((r, i) => (
+            {rejected.map((r, i) => (
               <li key={i} className="flex flex-col gap-0.5">
                 <span className="font-mono text-[11px] text-[--color-status-rejected]">
                   {r.citation.source_id}
