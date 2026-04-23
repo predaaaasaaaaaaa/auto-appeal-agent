@@ -53,8 +53,7 @@ def _case_01_criteria() -> list[MedicalNecessityCriterion]:
     ]
 
 
-@pytest.mark.integration
-def test_chart_miner_finds_case_01_evidence(fixtures_dir: Path):
+def test_chart_miner_finds_case_01_evidence(cassette, fixtures_dir: Path):  # noqa: ARG001
     case_dir = fixtures_dir / "case_01_ozempic_bmi34"
     criteria = _case_01_criteria()
 
