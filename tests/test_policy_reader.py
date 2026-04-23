@@ -20,8 +20,7 @@ def _normalize(s: str) -> str:
     return " ".join(s.lower().split())
 
 
-@pytest.mark.integration
-def test_policy_reader_extracts_case_01(fixtures_dir: Path):
+def test_policy_reader_extracts_case_01(cassette, fixtures_dir: Path):  # noqa: ARG001
     case_dir = fixtures_dir / "case_01_ozempic_bmi34"
     policy = read_policy(
         "case_01_ozempic_bmi34",
@@ -75,8 +74,7 @@ def test_policy_reader_extracts_case_01(fixtures_dir: Path):
     )
 
 
-@pytest.mark.integration
-def test_policy_reader_categories_are_valid(fixtures_dir: Path):
+def test_policy_reader_categories_are_valid(cassette, fixtures_dir: Path):  # noqa: ARG001
     """Sanity: categories must be one of the allowed EvidenceCategory values."""
     allowed = {
         "clinical_history",
