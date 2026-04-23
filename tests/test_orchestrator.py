@@ -1,56 +1,23 @@
 """
-Orchestrator smoke tests.
+Verifier unit tests.
 
-Plain-language summary: these run the whole pipeline end-to-end on the
-current stubs and assert that:
-  (1) it finishes without error,
-  (2) the shape of the final VerifiedAppeal is valid,
-  (3) the Verifier correctly passes matching citations and rejects
-      mismatched ones.
+Plain-language summary: these test the Verifier directly (not via the
+orchestrator), with synthetic AppealDraft + SourceQuote objects. They
+need no API calls, so they run in the default `pytest` suite and form
+the innermost reliability gate.
 
-These tests DO NOT call the real Anthropic API — the stubs handle that.
+Full-pipeline end-to-end tests live in tests/test_fixtures.py and are
+marked @pytest.mark.integration.
 """
 from __future__ import annotations
 
-from pathlib import Path
-
 from auto_appeal_agent.agents.verifier import verify_appeal
-from auto_appeal_agent.orchestrator import run_pipeline
 from auto_appeal_agent.schemas import (
     AppealDraft,
     AppealParagraph,
     CitationMarker,
-    PipelineInput,
     SourceQuote,
 )
-
-
-def _smoke_input() -> PipelineInput:
-    return PipelineInput(
-        case_id="smoke",
-        denial_letter_path="x.pdf",
-        patient_chart_path="y.txt",
-        payer_policy_path="z.pdf",
-    )
-
-
-def test_stub_pipeline_runs_end_to_end():
-    result = run_pipeline(_smoke_input())
-    assert result.case_id == "smoke"
-
-
-def test_stub_pipeline_produces_ready_appeal():
-    result = run_pipeline(_smoke_input())
-    assert result.ready_to_send is True
-    assert result.verification_pass_rate == 1.0
-
-
-def test_stub_pipeline_has_expected_citation_counts():
-    result = run_pipeline(_smoke_input())
-    # LetterWriter stub produces one paragraph with two citations
-    # (chart + policy). Both should verify against upstream source quotes.
-    assert len(result.verified_citations) == 2
-    assert len(result.rejected_citations) == 0
 
 
 def test_verifier_rejects_quote_not_in_source():
