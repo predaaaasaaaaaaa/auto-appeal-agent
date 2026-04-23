@@ -110,13 +110,22 @@ def call_claude_structured(
         pydantic.ValidationError if the tool_use input failed schema validation.
     """
     tool = schema_to_tool(output_model)
+    # tool_choice rules (per Anthropic API):
+    #   - "tool"/"any": force tool use; NOT compatible with `thinking`.
+    #   - "auto": Claude chooses; compatible with `thinking`.
+    # When the caller wants adaptive thinking, we must use "auto" and
+    # rely on a strong system prompt to still elicit the tool call. If
+    # Claude skips the tool, we raise RuntimeError below.
+    tool_choice: dict[str, Any] = (
+        {"type": "auto"} if thinking else {"type": "any"}
+    )
     request: dict[str, Any] = {
         "model": model,
         "max_tokens": max_tokens,
         "system": system,
         "messages": messages,
         "tools": [tool],
-        "tool_choice": {"type": "tool", "name": tool["name"]},
+        "tool_choice": tool_choice,
     }
     if thinking:
         request["thinking"] = {"type": "adaptive"}
