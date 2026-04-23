@@ -169,8 +169,7 @@ def _case_01_upstream():
     return denial, policy, evidence, guidelines
 
 
-@pytest.mark.integration
-def test_letter_writer_produces_verifiable_appeal():
+def test_letter_writer_produces_verifiable_appeal(cassette):  # noqa: ARG001
     denial, policy, evidence, guidelines = _case_01_upstream()
 
     draft = write_appeal(
