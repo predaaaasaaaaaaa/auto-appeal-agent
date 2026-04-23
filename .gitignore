@@ -23,9 +23,8 @@ build/
 *.egg-info/
 *.egg
 
-# Generated fixture artifacts (regenerable)
-fixtures/**/*.pdf
-!fixtures/**/.gitkeep
+# Generated fixture case data — regenerable via `make fixtures`
+fixtures/case_*/
 
 # OS
 .DS_Store
