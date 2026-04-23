@@ -1,0 +1,54 @@
+{
+  "29b9242d97733034": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_017mdgDJp5YUVhCBhDxv2TQ8",
+        "input": {
+          "case_id": "case_bad_inference",
+          "citation_verdicts": [
+            {
+              "citation_in_paragraph_index": 0,
+              "paragraph_index": 0,
+              "rationale": "The quote 'BMI 34.2' reports body mass index and says nothing about diabetes diagnosis, let alone type 1 diabetes.",
+              "source_id": "chart_q1",
+              "verdict": "unsupported"
+            }
+          ],
+          "high_level_concerns": [
+            "The letter asserts a type 1 diabetes diagnosis that is not established anywhere in the provided source quotes; this is a fabricated/unsupported clinical claim that must be removed or backed by actual diagnostic documentation before signing.",
+            "BMI 34.2 is a morbid obesity-range finding unrelated to the claim being made; misusing it as evidence of T1DM suggests the drafting agent confused or conflated sources.",
+            "No clinical rationale, policy citation, or medical necessity argument is present in the draft \u2014 the letter is not substantively an appeal."
+          ],
+          "overall_verdict": "needs_revision",
+          "reviewer_summary": "The single citation in this draft is clearly unsupported: a BMI measurement cannot establish a diagnosis of type 1 diabetes. Beyond the citation error, the letter lacks any medical necessity argument, policy reference, or coherent appeal structure. This draft is not sign-ready and requires substantial revision, including removal of the unsupported diagnostic claim and addition of actual supporting documentation and reasoning."
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_017x5DCVNquu83t49pQi1xYz",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 2258,
+      "output_tokens": 613,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  }
+}
