@@ -12,19 +12,12 @@ This is the first agent that replaces its stub with a real Claude call.
 """
 from __future__ import annotations
 
-import base64
 from pathlib import Path
 from typing import Any
 
-import fitz  # PyMuPDF
-
 from auto_appeal_agent.anthropic_client import call_claude_structured
+from auto_appeal_agent.pdf_utils import render_pdf_to_image_blocks
 from auto_appeal_agent.schemas import DenialAnalysis
-
-# Render at 150 DPI: a US-Letter page becomes roughly 1275x1650 pixels,
-# which is well under Claude 4.7's 2576-pixel / 3.75-megapixel limits and
-# plenty of resolution to read denial-letter body text and footnotes.
-_RENDER_DPI = 150
 
 _SYSTEM_PROMPT = """\
 You are a healthcare prior-authorization specialist. Your job is to read
@@ -50,29 +43,6 @@ valid DenialAnalysis object.
 """
 
 
-def _pdf_to_image_blocks(pdf_path: Path, dpi: int = _RENDER_DPI) -> list[dict[str, Any]]:
-    """Convert a PDF to a list of Anthropic image content blocks (one per page)."""
-    doc = fitz.open(pdf_path)
-    blocks: list[dict[str, Any]] = []
-    try:
-        for page in doc:
-            pix = page.get_pixmap(dpi=dpi)
-            png_bytes = pix.tobytes("png")
-            blocks.append(
-                {
-                    "type": "image",
-                    "source": {
-                        "type": "base64",
-                        "media_type": "image/png",
-                        "data": base64.b64encode(png_bytes).decode("ascii"),
-                    },
-                }
-            )
-    finally:
-        doc.close()
-    return blocks
-
-
 def analyze_denial(case_id: str, denial_letter_path) -> DenialAnalysis:
     """Read the denial letter and return a verified structured analysis.
 
@@ -87,8 +57,7 @@ def analyze_denial(case_id: str, denial_letter_path) -> DenialAnalysis:
         a verbatim substring of the letter; the downstream Verifier will
         reject any citation whose quote cannot be found in the source.
     """
-    pdf_path = Path(denial_letter_path)
-    image_blocks = _pdf_to_image_blocks(pdf_path)
+    image_blocks = render_pdf_to_image_blocks(Path(denial_letter_path))
 
     user_content: list[dict[str, Any]] = [
         {
