@@ -60,7 +60,6 @@ export default function RunPage({
   const [editedDraft, setEditedDraft] = useState<AppealDraft | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const startedRef = useRef(false);
 
   // When the pipeline finishes, seed the editable draft once.
   useEffect(() => {
@@ -147,48 +146,60 @@ export default function RunPage({
     };
   }, [caseId]);
 
-  // Kick off the pipeline exactly once.
+  // Kick off the pipeline exactly once per case_id.
+  //
+  // Why the setTimeout(0): React Strict Mode (on by default in Next.js
+  // dev) double-invokes effects. Without deferring, we'd open a real
+  // EventSource on the first mount, close it in the Strict-Mode cleanup,
+  // re-mount, and either (a) burn a second pipeline run or (b) — if we
+  // gated with a ref — never create a new EventSource at all. Wrapping
+  // creation in a 0ms timer makes the first scheduled creation get
+  // cancelled by the Strict-Mode cleanup, and only the re-mounted
+  // effect's timer actually fires. Net: exactly one EventSource.
   useEffect(() => {
-    if (startedRef.current) return;
-    startedRef.current = true;
+    let es: EventSource | null = null;
+    const timer = setTimeout(() => {
+      es = new EventSource(`/api/run/${caseId}`);
 
-    const es = new EventSource(`/api/run/${caseId}`);
-    es.onmessage = (msg) => {
-      try {
-        const event = JSON.parse(msg.data) as ProgressEvent;
+      es.onmessage = (msg) => {
+        try {
+          const event = JSON.parse(msg.data) as ProgressEvent;
+          if (event.stage === "done" && event.result) {
+            setResult(event.result);
+            es?.close();
+            return;
+          }
+          if (event.stage === "error") {
+            setError(event.message ?? "Unknown error");
+            es?.close();
+            return;
+          }
+          if (PIPELINE_STAGES.includes(event.stage)) {
+            setStages((prev) => ({
+              ...prev,
+              [event.stage]: {
+                status: event.status === "done" ? "done" : "running",
+                detail:
+                  event.status === "done"
+                    ? describeDoneStage(event)
+                    : STAGE_DESCRIPTIONS[event.stage],
+              },
+            }));
+          }
+        } catch (e) {
+          console.error("SSE parse error", e);
+        }
+      };
+      es.onerror = () => {
+        setError("Connection to backend lost.");
+        es?.close();
+      };
+    }, 0);
 
-        if (event.stage === "done" && event.result) {
-          setResult(event.result);
-          es.close();
-          return;
-        }
-        if (event.stage === "error") {
-          setError(event.message ?? "Unknown error");
-          es.close();
-          return;
-        }
-        if (PIPELINE_STAGES.includes(event.stage)) {
-          setStages((prev) => ({
-            ...prev,
-            [event.stage]: {
-              status: event.status === "done" ? "done" : "running",
-              detail:
-                event.status === "done"
-                  ? describeDoneStage(event)
-                  : STAGE_DESCRIPTIONS[event.stage],
-            },
-          }));
-        }
-      } catch (e) {
-        console.error("SSE parse error", e);
-      }
+    return () => {
+      clearTimeout(timer);
+      es?.close();
     };
-    es.onerror = () => {
-      setError("Connection to backend lost.");
-      es.close();
-    };
-
-    return () => es.close();
   }, [caseId]);
 
   // When the active citation changes, scroll the source pane to the highlight.
