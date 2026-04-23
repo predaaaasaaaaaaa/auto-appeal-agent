@@ -71,6 +71,7 @@ def test_expected_json_parses(all_case_dirs: list[Path]):
         assert "key_claims" in data["expected_appeal"]
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize(
     "case_dir_name",
     [
@@ -82,9 +83,11 @@ def test_expected_json_parses(all_case_dirs: list[Path]):
     ],
 )
 def test_orchestrator_runs_on_each_case(fixtures_dir: Path, case_dir_name: str):
-    """End-to-end smoke: the (stubbed) pipeline produces a valid VerifiedAppeal
-    for every case. Real agent logic arrives in Phase 1; this test will then
-    become the real gate against regressions."""
+    """End-to-end: the pipeline produces a valid VerifiedAppeal for every case.
+
+    As Phase 1 un-stubs each agent, this test starts hitting the real API.
+    Marked @pytest.mark.integration so it runs only with `make test-integration`.
+    """
     case_dir = fixtures_dir / case_dir_name
     pipeline_input = PipelineInput(
         case_id=case_dir_name,
@@ -94,6 +97,6 @@ def test_orchestrator_runs_on_each_case(fixtures_dir: Path, case_dir_name: str):
     )
     result = run_pipeline(pipeline_input)
     assert result.case_id == case_dir_name
-    # On stubs, every generated citation verifies trivially.
+    # Phase 1 gate: 100% citation verification for every case.
     assert result.verification_pass_rate == 1.0
     assert result.ready_to_send is True
