@@ -46,6 +46,22 @@ export type RejectedCitation = {
   rejection_reason: string;
 };
 
+export type CitationVerdict = {
+  paragraph_index: number;
+  citation_in_paragraph_index: number;
+  source_id: string;
+  verdict: "supports" | "partial" | "unsupported";
+  rationale: string;
+};
+
+export type AppealReview = {
+  case_id: string;
+  overall_verdict: "sign_ready" | "needs_revision";
+  citation_verdicts: CitationVerdict[];
+  high_level_concerns: string[];
+  reviewer_summary: string;
+};
+
 export type VerifiedAppeal = {
   case_id: string;
   draft: AppealDraft;
@@ -53,6 +69,7 @@ export type VerifiedAppeal = {
   rejected_citations: RejectedCitation[];
   verification_pass_rate: number;
   ready_to_send: boolean;
+  second_pass_review: AppealReview | null;
 };
 
 export type CaseSummary = {
@@ -146,6 +163,7 @@ export const PIPELINE_STAGES: readonly string[] = [
   "guideline_citer",
   "letter_writer",
   "verifier",
+  "independent_reviewer",
 ] as const;
 
 // Human-readable labels for each stage.
@@ -156,6 +174,7 @@ export const STAGE_LABELS: Record<string, string> = {
   guideline_citer: "Guideline Citer",
   letter_writer: "Letter Writer",
   verifier: "Verifier",
+  independent_reviewer: "Independent Reviewer",
 };
 
 // Short descriptions shown while a stage runs.
@@ -166,6 +185,8 @@ export const STAGE_DESCRIPTIONS: Record<string, string> = {
   guideline_citer: "Looking up supporting clinical guidelines...",
   letter_writer: "Drafting appeal letter with citations...",
   verifier: "Re-checking every citation against its source...",
+  independent_reviewer:
+    "Fresh-context second opinion: do citations actually support the claims?",
 };
 
 export function humanCaseId(caseId: string): string {
