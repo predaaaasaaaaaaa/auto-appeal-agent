@@ -6,31 +6,31 @@
         "caller": {
           "type": "direct"
         },
-        "id": "toolu_017mdgDJp5YUVhCBhDxv2TQ8",
+        "id": "toolu_01DjDmVyNB5Q5kGfuQBfZZtB",
         "input": {
           "case_id": "case_bad_inference",
           "citation_verdicts": [
             {
               "citation_in_paragraph_index": 0,
               "paragraph_index": 0,
-              "rationale": "The quote 'BMI 34.2' reports body mass index and says nothing about diabetes diagnosis, let alone type 1 diabetes.",
+              "rationale": "The quote 'BMI 34.2' only reflects body mass index and says nothing about a diagnosis of type 1 diabetes.",
               "source_id": "chart_q1",
               "verdict": "unsupported"
             }
           ],
           "high_level_concerns": [
-            "The letter asserts a type 1 diabetes diagnosis that is not established anywhere in the provided source quotes; this is a fabricated/unsupported clinical claim that must be removed or backed by actual diagnostic documentation before signing.",
-            "BMI 34.2 is a morbid obesity-range finding unrelated to the claim being made; misusing it as evidence of T1DM suggests the drafting agent confused or conflated sources.",
-            "No clinical rationale, policy citation, or medical necessity argument is present in the draft \u2014 the letter is not substantively an appeal."
+            "The sole clinical claim (type 1 diabetes diagnosis) is not supported by any quote in the record; a diagnostic citation is required.",
+            "BMI 34.2 is irrelevant to establishing type 1 diabetes and if anything is more suggestive of type 2 \u2014 the inference is clinically inappropriate.",
+            "Letter is extremely thin: no policy criteria addressed, no treatment rationale, no requested service identified."
           ],
           "overall_verdict": "needs_revision",
-          "reviewer_summary": "The single citation in this draft is clearly unsupported: a BMI measurement cannot establish a diagnosis of type 1 diabetes. Beyond the citation error, the letter lacks any medical necessity argument, policy reference, or coherent appeal structure. This draft is not sign-ready and requires substantial revision, including removal of the unsupported diagnostic claim and addition of actual supporting documentation and reasoning."
+          "reviewer_summary": "The draft makes a diagnostic claim (type 1 diabetes) using a quote ('BMI 34.2') that is entirely unrelated to the claim. This is a clear bad inference and cannot be signed. The letter also lacks any substantive appeal argument, policy engagement, or description of the service being appealed."
         },
         "name": "emit_structured_output",
         "type": "tool_use"
       }
     ],
-    "id": "msg_017x5DCVNquu83t49pQi1xYz",
+    "id": "msg_01R6dRnbHH55s2rZw35fUyzW",
     "model": "claude-opus-4-7",
     "role": "assistant",
     "stop_details": null,
@@ -46,7 +46,7 @@
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
       "input_tokens": 2258,
-      "output_tokens": 613,
+      "output_tokens": 523,
       "server_tool_use": null,
       "service_tier": "standard"
     }

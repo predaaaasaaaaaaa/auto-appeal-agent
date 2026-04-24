@@ -6,7 +6,7 @@
         "caller": {
           "type": "direct"
         },
-        "id": "toolu_01UtAQtVonGMpfZ2xpchmB7r",
+        "id": "toolu_015aL49JL54JvjoC8xXkDDhR",
         "input": {
           "case_id": "case_01_ozempic_bmi34",
           "criteria": [
@@ -22,21 +22,21 @@
               "criterion_id": "mn_2",
               "quote": "Body Mass Index (BMI) at or above 30 kg/m^2, OR BMI at or above 27 kg/m^2 with at least one weight-related\ncomorbidity (hypertension, type 2 diabetes mellitus, dyslipidemia, or obstructive sleep apnea).",
               "quote_location": "Page 1, Medical Necessity Criteria, item 2",
-              "text": "Member must have BMI at or above 30 kg/m^2, OR BMI at or above 27 kg/m^2 with at least one weight-related comorbidity (hypertension, type 2 diabetes mellitus, dyslipidemia, or obstructive sleep apnea)."
+              "text": "Member must have a BMI at or above 30 kg/m^2, OR BMI at or above 27 kg/m^2 with at least one weight-related comorbidity (hypertension, type 2 diabetes mellitus, dyslipidemia, or obstructive sleep apnea)."
             },
             {
               "category": "prior_treatments",
               "criterion_id": "mn_3",
               "quote": "Documented participation in a supervised program of reduced-calorie diet, increased physical activity, and\nbehavior modification for a minimum of six months with objective measures of compliance.",
               "quote_location": "Page 1, Medical Necessity Criteria, item 3",
-              "text": "Member must have documented participation in a supervised program of reduced-calorie diet, increased physical activity, and behavior modification for a minimum of six months with objective measures of compliance."
+              "text": "Member must have documented participation in a supervised program of reduced-calorie diet, increased physical activity, and behavior modification for at least six months with objective measures of compliance."
             },
             {
               "category": "contraindications",
               "criterion_id": "mn_4",
               "quote": "Absence of contraindications, specifically: personal or family history of medullary thyroid carcinoma; personal\nhistory of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy.",
               "quote_location": "Page 1, Medical Necessity Criteria, item 4",
-              "text": "Member must not have personal or family history of medullary thyroid carcinoma, personal history of multiple endocrine neoplasia type 2, or pregnancy/active plans for pregnancy."
+              "text": "Member must not have contraindications: personal or family history of medullary thyroid carcinoma; personal history of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy."
             },
             {
               "category": "prior_treatments",
@@ -50,7 +50,7 @@
               "criterion_id": "mn_6",
               "quote": "Approvals are granted for 6 months. Continued coverage requires documented weight\nloss of at least 5% of baseline body weight.",
               "quote_location": "Page 1, Reauthorization",
-              "text": "For reauthorization (continued coverage beyond the initial 6-month approval), member must have documented weight loss of at least 5% of baseline body weight."
+              "text": "For reauthorization beyond the initial 6-month approval, member must have documented weight loss of at least 5% of baseline body weight."
             }
           ],
           "policy_effective_date": "January 1, 2026",
@@ -104,7 +104,7 @@
         "type": "tool_use"
       }
     ],
-    "id": "msg_01WnF36kz87SeTPiUZbsvQgL",
+    "id": "msg_0123iLzFcMZD4t7KMGYg2k4w",
     "model": "claude-opus-4-7",
     "role": "assistant",
     "stop_details": null,
@@ -120,7 +120,7 @@
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
       "input_tokens": 2946,
-      "output_tokens": 2253,
+      "output_tokens": 2249,
       "server_tool_use": null,
       "service_tier": "standard"
     }

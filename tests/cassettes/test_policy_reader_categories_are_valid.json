@@ -6,51 +6,44 @@
         "caller": {
           "type": "direct"
         },
-        "id": "toolu_01AnT6aY1am6V7h4y5YkevdE",
+        "id": "toolu_01V5ShVCdh1qzFbkiUTRkEBN",
         "input": {
           "case_id": "case_01_ozempic_bmi34",
           "criteria": [
             {
               "category": "clinical_history",
               "criterion_id": "mn_1",
-              "quote": "Age at least 18 years.",
+              "quote": "1. Age at least 18 years.",
               "quote_location": "Page 1, Medical Necessity Criteria, item 1",
               "text": "Member must be at least 18 years of age."
             },
             {
               "category": "diagnostics",
               "criterion_id": "mn_2",
-              "quote": "Body Mass Index (BMI) at or above 30 kg/m^2, OR BMI at or above 27 kg/m^2 with at least one weight-related\ncomorbidity (hypertension, type 2 diabetes mellitus, dyslipidemia, or obstructive sleep apnea).",
+              "quote": "2. Body Mass Index (BMI) at or above 30 kg/m^2, OR BMI at or above 27 kg/m^2 with at least one weight-related\ncomorbidity (hypertension, type 2 diabetes mellitus, dyslipidemia, or obstructive sleep apnea).",
               "quote_location": "Page 1, Medical Necessity Criteria, item 2",
               "text": "Member must have a BMI of at least 30 kg/m^2, OR a BMI of at least 27 kg/m^2 with at least one weight-related comorbidity (hypertension, type 2 diabetes mellitus, dyslipidemia, or obstructive sleep apnea)."
             },
             {
               "category": "prior_treatments",
               "criterion_id": "mn_3",
-              "quote": "Documented participation in a supervised program of reduced-calorie diet, increased physical activity, and\nbehavior modification for a minimum of six months with objective measures of compliance.",
+              "quote": "3. Documented participation in a supervised program of reduced-calorie diet, increased physical activity, and\nbehavior modification for a minimum of six months with objective measures of compliance.",
               "quote_location": "Page 1, Medical Necessity Criteria, item 3",
-              "text": "Member must have documented participation in a supervised program of reduced-calorie diet, increased physical activity, and behavior modification for at least six months with objective measures of compliance."
+              "text": "Member must have documented participation in a supervised program of reduced-calorie diet, increased physical activity, and behavior modification for a minimum of six months with objective measures of compliance."
             },
             {
               "category": "contraindications",
               "criterion_id": "mn_4",
-              "quote": "Absence of contraindications, specifically: personal or family history of medullary thyroid carcinoma; personal\nhistory of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy.",
+              "quote": "4. Absence of contraindications, specifically: personal or family history of medullary thyroid carcinoma; personal\nhistory of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy.",
               "quote_location": "Page 1, Medical Necessity Criteria, item 4",
-              "text": "Member must not have contraindications, specifically: personal or family history of medullary thyroid carcinoma; personal history of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy."
+              "text": "Member must have no contraindications, specifically: personal or family history of medullary thyroid carcinoma; personal history of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy."
             },
             {
               "category": "prior_treatments",
               "criterion_id": "mn_5",
-              "quote": "Before approval of tirzepatide or the obesity-specific formulations of\nsemaglutide, members must have a documented trial and inadequate response to at least one generic or\npreferred alternative pharmacotherapy, unless clinically contraindicated.",
-              "quote_location": "Page 1, Step Therapy Requirement",
+              "quote": "STEP THERAPY REQUIREMENT: Before approval of tirzepatide or the obesity-specific formulations of\nsemaglutide, members must have a documented trial and inadequate response to at least one generic or\npreferred alternative pharmacotherapy, unless clinically contraindicated.",
+              "quote_location": "Page 1, Step Therapy Requirement section",
               "text": "For tirzepatide or obesity-specific formulations of semaglutide, member must have a documented trial and inadequate response to at least one generic or preferred alternative pharmacotherapy, unless clinically contraindicated."
-            },
-            {
-              "category": "functional_status",
-              "criterion_id": "mn_6",
-              "quote": "Approvals are granted for 6 months. Continued coverage requires documented weight\nloss of at least 5% of baseline body weight.",
-              "quote_location": "Page 1, Reauthorization",
-              "text": "For reauthorization beyond the initial 6-month approval, member must have documented weight loss of at least 5% of baseline body weight."
             }
           ],
           "policy_effective_date": "January 1, 2026",
@@ -64,38 +57,32 @@
             },
             {
               "location": "Page 1, Medical Necessity Criteria, item 1",
-              "quote": "Age at least 18 years.",
+              "quote": "1. Age at least 18 years.",
               "quote_id": "policy_q2",
               "source_type": "payer_policy"
             },
             {
               "location": "Page 1, Medical Necessity Criteria, item 2",
-              "quote": "Body Mass Index (BMI) at or above 30 kg/m^2, OR BMI at or above 27 kg/m^2 with at least one weight-related\ncomorbidity (hypertension, type 2 diabetes mellitus, dyslipidemia, or obstructive sleep apnea).",
+              "quote": "2. Body Mass Index (BMI) at or above 30 kg/m^2, OR BMI at or above 27 kg/m^2 with at least one weight-related\ncomorbidity (hypertension, type 2 diabetes mellitus, dyslipidemia, or obstructive sleep apnea).",
               "quote_id": "policy_q3",
               "source_type": "payer_policy"
             },
             {
               "location": "Page 1, Medical Necessity Criteria, item 3",
-              "quote": "Documented participation in a supervised program of reduced-calorie diet, increased physical activity, and\nbehavior modification for a minimum of six months with objective measures of compliance.",
+              "quote": "3. Documented participation in a supervised program of reduced-calorie diet, increased physical activity, and\nbehavior modification for a minimum of six months with objective measures of compliance.",
               "quote_id": "policy_q4",
               "source_type": "payer_policy"
             },
             {
               "location": "Page 1, Medical Necessity Criteria, item 4",
-              "quote": "Absence of contraindications, specifically: personal or family history of medullary thyroid carcinoma; personal\nhistory of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy.",
+              "quote": "4. Absence of contraindications, specifically: personal or family history of medullary thyroid carcinoma; personal\nhistory of multiple endocrine neoplasia type 2; pregnancy or active plans for pregnancy.",
               "quote_id": "policy_q5",
               "source_type": "payer_policy"
             },
             {
-              "location": "Page 1, Step Therapy Requirement",
+              "location": "Page 1, Step Therapy Requirement section",
               "quote": "STEP THERAPY REQUIREMENT: Before approval of tirzepatide or the obesity-specific formulations of\nsemaglutide, members must have a documented trial and inadequate response to at least one generic or\npreferred alternative pharmacotherapy, unless clinically contraindicated.",
               "quote_id": "policy_q6",
-              "source_type": "payer_policy"
-            },
-            {
-              "location": "Page 1, Reauthorization",
-              "quote": "REAUTHORIZATION: Approvals are granted for 6 months. Continued coverage requires documented weight\nloss of at least 5% of baseline body weight.",
-              "quote_id": "policy_q7",
               "source_type": "payer_policy"
             }
           ]
@@ -104,7 +91,7 @@
         "type": "tool_use"
       }
     ],
-    "id": "msg_018N4mUwKgN84HYGF1FeUyoo",
+    "id": "msg_01E7EMgapquetsGvmcrgvxyE",
     "model": "claude-opus-4-7",
     "role": "assistant",
     "stop_details": null,
@@ -114,13 +101,13 @@
     "usage": {
       "cache_creation": {
         "ephemeral_1h_input_tokens": 0,
-        "ephemeral_5m_input_tokens": 0
+        "ephemeral_5m_input_tokens": 2927
       },
-      "cache_creation_input_tokens": 0,
+      "cache_creation_input_tokens": 2927,
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
-      "input_tokens": 2946,
-      "output_tokens": 2254,
+      "input_tokens": 19,
+      "output_tokens": 2024,
       "server_tool_use": null,
       "service_tier": "standard"
     }

@@ -6,7 +6,7 @@
         "caller": {
           "type": "direct"
         },
-        "id": "toolu_01HEoYonxWBuBJjvytWm6EEG",
+        "id": "toolu_01BwU8Xwmo3Sw5AxTQWMmEqH",
         "input": {
           "case_id": "case_01_ozempic_bmi34",
           "denial_date": "April 1, 2026",
@@ -14,14 +14,14 @@
             {
               "code": "MN-12",
               "quote": "Not medically necessary. Member does not meet all criteria for GLP-1 receptor agonist therapy per plan medical policy MEDPOL-GLP1-v3 (effective January 1, 2026).",
-              "quote_location": "page 1, paragraph 4 (Reason for denial)",
+              "quote_location": "page 1, reason for denial paragraph",
               "reason": "Not medically necessary - member does not meet all criteria for GLP-1 receptor agonist therapy per plan medical policy."
             },
             {
               "code": "STEP-03",
               "quote": "documentation does not establish that the member has completed the required six months of supervised diet, exercise, and behavior-modification program before pharmacologic therapy.",
-              "quote_location": "page 1, paragraph 5 (Specifically)",
-              "reason": "Step therapy not satisfied - documentation does not establish completion of the required six months of supervised diet, exercise, and behavior-modification program before pharmacologic therapy."
+              "quote_location": "page 1, specifically paragraph",
+              "reason": "Step therapy not satisfied - documentation does not establish completion of a required six-month supervised diet, exercise, and behavior-modification program before pharmacologic therapy."
             }
           ],
           "member_info": {
@@ -62,7 +62,7 @@
         "type": "tool_use"
       }
     ],
-    "id": "msg_01PbZqW5oquCY2tpb8TFVQzz",
+    "id": "msg_01GjZ3RmwCKzugWF3Xr7K5HU",
     "model": "claude-opus-4-7",
     "role": "assistant",
     "stop_details": null,
@@ -78,7 +78,7 @@
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
       "input_tokens": 5010,
-      "output_tokens": 1039,
+      "output_tokens": 1027,
       "server_tool_use": null,
       "service_tier": "standard"
     }

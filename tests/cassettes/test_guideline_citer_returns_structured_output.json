@@ -6,41 +6,43 @@
         "caller": {
           "type": "direct"
         },
-        "id": "toolu_01UaAoqjrmHLmPbuW5MKh15L",
+        "id": "toolu_01Dms1qaMZpZoc8sK1FdLAjc",
         "input": {
-          "$FUNCTION_NAME": "emit_structured_output",
-          "case_id": "case_01_ozempic_bmi34",
-          "citations": [
-            {
-              "citation_id": "guideline_q1",
-              "citation_title": "Obesity and Weight Management for the Prevention and Treatment of Type 2 Diabetes",
-              "guideline_source": "American Diabetes Association (ADA) 2024 Standards of Care in Diabetes",
-              "quote": "In adults with type 2 diabetes and overweight or obesity, pharmacologic therapy for weight management is recommended as adjunct to lifestyle intervention, with preference for agents such as semaglutide or tirzepatide that provide substantial weight loss and glycemic benefit.",
-              "supports_claim": "GLP-1 receptor agonist therapy (semaglutide/Ozempic) is a guideline-recommended treatment for patients with type 2 diabetes and BMI >= 30.",
-              "url": "https://diabetesjournals.org/care/issue/47/Supplement_1"
-            },
-            {
-              "citation_id": "guideline_q2",
-              "citation_title": "AACE Clinical Practice Guideline for the Medical Care of Patients with Obesity",
-              "guideline_source": "American Association of Clinical Endocrinology (AACE) 2022 Clinical Practice Guideline on Obesity",
-              "quote": "Pharmacotherapy for obesity is recommended as an adjunct to lifestyle therapy for patients with BMI >= 30, or >= 27 with weight-related comorbidities, to improve weight loss and reduce cardiometabolic risk.",
-              "supports_claim": "BMI >= 30 qualifies the patient for anti-obesity pharmacotherapy including GLP-1 receptor agonists.",
-              "url": null
-            },
-            {
-              "citation_id": "guideline_q3",
-              "guideline_source": "American Heart Association/American College of Cardiology/The Obesity Society (AHA/ACC/TOS) 2013 Guideline for the Management of Overweight and Obesity in Adults",
-              "quote": "Adults with BMI >= 30 should be offered comprehensive lifestyle intervention and may be considered for adjunctive pharmacotherapy when lifestyle measures alone are insufficient to achieve weight-loss goals.",
-              "supports_claim": "BMI >= 30 meets guideline thresholds for obesity pharmacotherapy in addition to diet and exercise.",
-              "url": null
-            }
-          ]
+          "$PARAMETER_NAME": {
+            "case_id": "case_01_ozempic_bmi34",
+            "citations": [
+              {
+                "citation_id": "guideline_q1",
+                "citation_title": "Standards of Care in Diabetes - Obesity and Weight Management for the Prevention and Treatment of Type 2 Diabetes",
+                "guideline_source": "American Diabetes Association (ADA) 2024 Standards of Care in Diabetes",
+                "quote": "In adults with type 2 diabetes and overweight or obesity, GLP-1 receptor agonists with greater weight loss efficacy (e.g., semaglutide, tirzepatide) are preferred pharmacotherapy options to support both glycemic and weight management goals.",
+                "supports_claim": "Semaglutide (Ozempic) is a guideline-preferred therapy for patients with type 2 diabetes and obesity (BMI >= 30), supporting medical necessity.",
+                "url": "https://diabetesjournals.org/care/issue/47/Supplement_1"
+              },
+              {
+                "citation_id": "guideline_q2",
+                "citation_title": "AHA/ACC/TOS Guideline for the Management of Overweight and Obesity in Adults",
+                "guideline_source": "American Heart Association / American College of Cardiology / The Obesity Society 2013 Guideline",
+                "quote": "Adults with a BMI of 30 or greater, or BMI of 27 or greater with weight-related comorbidities, should be offered comprehensive lifestyle intervention and may be candidates for adjunctive pharmacotherapy to achieve and sustain weight loss.",
+                "supports_claim": "BMI >= 30 qualifies the patient for pharmacologic weight-loss therapy in addition to lifestyle intervention.",
+                "url": "https://www.ahajournals.org/doi/10.1161/01.cir.0000437739.71477.ee"
+              },
+              {
+                "citation_id": "guideline_q3",
+                "citation_title": "AACE/ACE Comprehensive Clinical Practice Guidelines for Medical Care of Patients with Obesity",
+                "guideline_source": "American Association of Clinical Endocrinologists / American College of Endocrinology 2016 Obesity Guidelines",
+                "quote": "Pharmacotherapy for obesity is recommended as an adjunct to lifestyle intervention for patients with BMI >= 30, or BMI >= 27 with complications, when lifestyle therapy alone has been insufficient to achieve weight-loss goals.",
+                "supports_claim": "GLP-1 receptor agonist pharmacotherapy is medically appropriate for a patient with BMI 34 after lifestyle intervention.",
+                "url": "https://pro.aace.com/disease-state-resources/nutrition-and-obesity/clinical-practice-guidelines/aaceace-comprehensive"
+              }
+            ]
+          }
         },
         "name": "emit_structured_output",
         "type": "tool_use"
       }
     ],
-    "id": "msg_01BY11Qewyn12Et5sxB83dkK",
+    "id": "msg_01TYy2gXTgCN8TqneQaV5jjU",
     "model": "claude-opus-4-7",
     "role": "assistant",
     "stop_details": null,
@@ -56,7 +58,7 @@
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
       "input_tokens": 1969,
-      "output_tokens": 885,
+      "output_tokens": 1040,
       "server_tool_use": null,
       "service_tier": "standard"
     }

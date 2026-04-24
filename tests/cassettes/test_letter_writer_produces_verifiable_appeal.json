@@ -6,68 +6,68 @@
         "caller": {
           "type": "direct"
         },
-        "id": "toolu_018fjtyk1N8kBx6Rwra64VDQ",
+        "id": "toolu_019HB3ojkPTbUjd72ovW1ub7",
         "input": {
           "case_id": "case_01_ozempic_bmi34",
           "paragraphs": [
             {
               "citations": [
                 {
-                  "claim": "The denied service is semaglutide (Ozempic) 1mg weekly subcutaneous injection.",
+                  "claim": "The prior authorization for semaglutide (Ozempic) 1mg weekly was denied.",
                   "source_id": "denial_q1",
                   "source_type": "denial_letter",
                   "verbatim_quote": "your prior authorization request for semaglutide (Ozempic) 1mg weekly subcutaneous injection has been DENIED"
                 },
                 {
-                  "claim": "The denial rationale asserts the member does not meet all criteria for GLP-1 receptor agonist therapy.",
+                  "claim": "The stated basis for denial was that the member did not meet all criteria for GLP-1 therapy.",
                   "source_id": "denial_q2",
                   "source_type": "denial_letter",
                   "verbatim_quote": "Member does not meet all criteria for GLP-1 receptor agonist therapy"
                 }
               ],
               "heading": "Patient and Requested Service",
-              "text": "I am writing on behalf of my patient, Jane A. Doe (member ID BS-A1234567, date of birth May 14, 1978), enrolled in BlueSun Health Premium HMO, to formally appeal the April 1, 2026 denial of her prior authorization request for semaglutide (Ozempic) 1mg weekly subcutaneous injection. The denial letter states that the request has been denied on the grounds that the member purportedly does not meet all criteria for GLP-1 receptor agonist therapy. As set forth below, the medical record demonstrates that Ms. Doe meets each applicable medical necessity criterion under policy MEDPOL-GLP1-v3, and the denial should be overturned."
+              "text": "I am writing on behalf of my patient, Jane A. Doe (Member ID: BS-A1234567; DOB: May 14, 1978), enrolled in BlueSun Health Premium HMO, to formally appeal the April 1, 2026 denial of her prior authorization request for semaglutide (Ozempic) 1mg weekly subcutaneous injection. The denial letter states that the request has been denied on the grounds that the member does not meet all criteria for GLP-1 receptor agonist therapy. As outlined below, the medical record demonstrates that Ms. Doe in fact satisfies each applicable criterion under policy MEDPOL-GLP1-v3, and I respectfully request that the denial be overturned."
             },
             {
               "citations": [
                 {
-                  "claim": "Policy MEDPOL-GLP1-v3 requires a BMI at or above 30 kg/m^2.",
+                  "claim": "The policy requires a BMI at or above 30 kg/m^2.",
                   "source_id": "policy_q1",
                   "source_type": "payer_policy",
                   "verbatim_quote": "Body Mass Index (BMI) at or above 30 kg/m^2"
                 },
                 {
-                  "claim": "The patient's recorded BMI is 34.2, above the policy threshold.",
+                  "claim": "The patient's recorded BMI is 34.2.",
                   "source_id": "chart_q1",
                   "source_type": "patient_chart",
                   "verbatim_quote": "BMI 34.2"
                 }
               ],
-              "heading": "Medical necessity met: BMI threshold",
-              "text": "Policy MEDPOL-GLP1-v3 requires a Body Mass Index (BMI) at or above 30 kg/m^2. Ms. Doe's most recent progress note, dated February 15, 2026, documents a BMI of 34.2, which exceeds the policy threshold by more than four points. This is also consistent with the American Diabetes Association 2024 Standards of Care, which recommend pharmacologic weight-management therapy for adults with BMI >= 30."
+              "heading": "Medical necessity met: BMI at or above 30 kg/m^2",
+              "text": "Policy MEDPOL-GLP1-v3 requires a Body Mass Index (BMI) at or above 30 kg/m^2. Ms. Doe's documented BMI is 34.2, as recorded in the 2026-02-15 progress note, which comfortably exceeds the policy threshold. This is also consistent with the American Diabetes Association 2024 Standards of Care, which recommend pharmacologic weight-management therapy for adults with BMI \u2265 30."
             },
             {
               "citations": [
                 {
-                  "claim": "Policy requires a supervised diet, exercise, and behavior-modification program of at least six months.",
+                  "claim": "The policy requires at least six months of supervised diet, exercise, and behavior modification.",
                   "source_id": "policy_q2",
                   "source_type": "payer_policy",
                   "verbatim_quote": "supervised program of reduced-calorie diet, increased physical activity, and behavior modification for a minimum of six months"
                 },
                 {
-                  "claim": "The patient has documented participation in a supervised Weight Watchers program exceeding six months.",
+                  "claim": "The patient's documented participation in supervised Weight Watchers sessions exceeds six months.",
                   "source_id": "chart_q2",
                   "source_type": "patient_chart",
                   "verbatim_quote": "Patient has attended 21 of 24 scheduled Weight Watchers group sessions"
                 }
               ],
-              "heading": "Medical necessity met: Supervised diet and exercise program",
-              "text": "Policy MEDPOL-GLP1-v3 further requires documented participation in a supervised program of reduced-calorie diet, increased physical activity, and behavior modification for a minimum of six months. Ms. Doe has exceeded this requirement: per the November 20, 2025 progress note, she has attended 21 of 24 scheduled Weight Watchers group sessions \u2014 a structured, supervised program of diet, activity, and behavior modification spanning approximately ten months, well beyond the six-month minimum. Her sustained engagement despite inadequate weight reduction supports the addition of pharmacologic therapy."
+              "heading": "Medical necessity met: Six months of supervised diet, exercise, and behavior modification",
+              "text": "The policy further requires participation in a supervised program of reduced-calorie diet, increased physical activity, and behavior modification for a minimum of six months. Ms. Doe has exceeded this requirement through her sustained participation in a supervised Weight Watchers program: per the 2025-11-20 progress note, she had attended 21 of 24 scheduled Weight Watchers group sessions, reflecting approximately ten months of consistent supervised engagement in diet, activity, and behavior-modification counseling well beyond the six-month minimum."
             },
             {
               "citations": [],
               "heading": "Conclusion and Request",
-              "text": "The medical record establishes that Ms. Doe satisfies every applicable criterion under MEDPOL-GLP1-v3: her BMI of 34.2 exceeds the 30 kg/m^2 threshold, and her participation in a supervised Weight Watchers program for approximately ten months exceeds the six-month supervised diet-and-exercise requirement. The stated basis for denial \u2014 that she does not meet all criteria \u2014 is not supported by the chart. I therefore respectfully request that BlueSun Health Premium HMO overturn the denial and approve semaglutide (Ozempic) 1mg weekly subcutaneous injection for this patient. I am available to discuss this case further and to provide any additional documentation required."
+              "text": "Ms. Doe meets every applicable medical-necessity criterion under MEDPOL-GLP1-v3: her BMI of 34.2 exceeds the 30 kg/m^2 threshold, and she has completed well over six months of supervised diet, exercise, and behavior-modification therapy through Weight Watchers. The stated rationale for denial is therefore not supported by the record. I respectfully request that BlueSun Health Premium HMO overturn the denial and approve coverage of semaglutide (Ozempic) 1mg weekly subcutaneous injection without further delay. Thank you for your prompt reconsideration of this appeal."
             }
           ],
           "recipient_plan": "BlueSun Health Premium HMO",
@@ -77,7 +77,7 @@
         "type": "tool_use"
       }
     ],
-    "id": "msg_013M5n2oXFavyU9ScXJsFacK",
+    "id": "msg_01FL9uPn8YC4gQBBP14PwNyE",
     "model": "claude-opus-4-7",
     "role": "assistant",
     "stop_details": null,
@@ -93,7 +93,7 @@
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
       "input_tokens": 4404,
-      "output_tokens": 1894,
+      "output_tokens": 1703,
       "server_tool_use": null,
       "service_tier": "standard"
     }
