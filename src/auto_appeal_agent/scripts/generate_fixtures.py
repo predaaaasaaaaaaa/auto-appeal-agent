@@ -44,9 +44,25 @@ class FixtureCase:
     expected_appeal: dict[str, Any] = field(default_factory=dict)
 
 
+from datetime import datetime, timezone
+
+# Pinned timestamp so every `make fixtures` run produces byte-identical
+# PDFs. Without this, fpdf2 stamps datetime.now() into the PDF metadata
+# and every regeneration dirties `git status` + invalidates any tool
+# that hashes the fixture bytes.
+_PINNED_CREATION = datetime(2026, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+
+
 def _write_pdf(title: str, body_text: str, out_path: Path) -> None:
-    """Render body_text into a simple single-column PDF at out_path."""
+    """Render body_text into a simple single-column PDF at out_path.
+
+    Output is byte-deterministic: the PDF metadata timestamp and producer
+    are pinned so regenerating fixtures from the same source strings
+    yields identical bytes.
+    """
     pdf = FPDF(format="Letter")
+    pdf.set_creation_date(_PINNED_CREATION)
+    pdf.set_producer("auto-appeal-agent fixtures")
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
     pdf.set_font("Helvetica", "B", 13)

@@ -19,6 +19,7 @@ import pytest
 
 from auto_appeal_agent.orchestrator import run_pipeline
 from auto_appeal_agent.schemas import PipelineInput
+from auto_appeal_agent.scripts.generate_fixtures import generate_all
 
 REQUIRED_FILES = ("denial_letter.pdf", "patient_chart.txt", "payer_policy.pdf", "expected.json")
 
@@ -28,6 +29,39 @@ def test_all_cases_present(all_case_dirs: list[Path]):
     assert len(all_case_dirs) == 5, (
         f"expected 5 cases, found {len(all_case_dirs)}: {[p.name for p in all_case_dirs]}"
     )
+
+
+def test_fixture_generation_is_byte_deterministic(tmp_path: Path):
+    """Two consecutive `make fixtures` runs must produce byte-identical
+    files.
+
+    Reason: cassette keys and CI hashes depend on fixture bytes. If
+    fpdf2 leaves `datetime.now()` in PDF metadata (the default), every
+    regen dirties `git status` and silently shifts hashes that anything
+    downstream might be pinning to.
+    """
+    import hashlib
+
+    def snapshot(root: Path) -> dict[str, str]:
+        return {
+            p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in sorted(root.rglob("*"))
+            if p.is_file()
+        }
+
+    root_a = tmp_path / "a"
+    root_b = tmp_path / "b"
+    generate_all(root_a)
+    generate_all(root_b)
+
+    hashes_a = snapshot(root_a)
+    hashes_b = snapshot(root_b)
+    assert hashes_a == hashes_b, (
+        "fixture generation is non-deterministic — two consecutive "
+        "runs produced different bytes"
+    )
+    # Sanity: we didn't accidentally compare two empty trees.
+    assert len(hashes_a) >= 5 * 3, hashes_a
 
 
 @pytest.mark.parametrize(
