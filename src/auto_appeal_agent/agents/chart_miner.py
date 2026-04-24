@@ -97,7 +97,10 @@ def mine_chart(
         output_model=ChartEvidence,
         system=cached_system(_SYSTEM_PROMPT),
         messages=[{"role": "user", "content": user_content}],
-        max_tokens=8192,
+        # 16k gives adaptive thinking room to reason AND still leave
+        # headroom for the full ChartEvidence tool call. With only 8k,
+        # thinking was exhausting the budget before emitting the tool.
+        max_tokens=16384,
         thinking=True,
     )
     return evidence

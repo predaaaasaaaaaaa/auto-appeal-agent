@@ -114,6 +114,7 @@ def call_claude_structured(
     model: str = DEFAULT_MODEL,
     max_tokens: int = 4096,
     thinking: bool = False,
+    thinking_effort: str = "medium",
     max_retries: int = 0,
     retry_sleep_seconds: float = 1.0,
 ) -> tuple[T, Message]:
@@ -129,6 +130,12 @@ def call_claude_structured(
         max_tokens: Hard cap on generated tokens for this single request.
         thinking: If True, enables adaptive thinking. Adds tokens but
             helps on complex reasoning (ChartMiner, LetterWriter).
+        thinking_effort: Caps adaptive-thinking spend. Valid values
+            (per Anthropic SDK): "low", "medium", "high", "xhigh",
+            "max". Ignored when thinking=False. Without a cap, Opus
+            4.7's adaptive thinking can exhaust the entire max_tokens
+            budget reasoning *before* it emits the tool call, causing
+            the response to stop without a tool_use block.
         max_retries: Number of additional attempts if the first call
             raises ValidationError (bad shape) or RuntimeError (no
             tool_use block returned). Default is 0 — fail fast. Each
@@ -168,6 +175,10 @@ def call_claude_structured(
     }
     if thinking:
         request["thinking"] = {"type": "adaptive"}
+        # Cap the adaptive-thinking budget so the model can't burn the
+        # entire max_tokens window on reasoning and then fail to emit
+        # the tool call.
+        request["output_config"] = {"effort": thinking_effort}
 
     last_error: Optional[Exception] = None
     total_attempts = max_retries + 1

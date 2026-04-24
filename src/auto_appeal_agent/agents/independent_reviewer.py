@@ -120,7 +120,9 @@ def independent_review(
         output_model=AppealReview,
         system=cached_system(_SYSTEM_PROMPT),
         messages=[{"role": "user", "content": user_content}],
-        max_tokens=4096,
+        # 8k gives adaptive thinking headroom for per-citation verdicts
+        # on typical drafts. Raise if reviews start truncating.
+        max_tokens=8192,
         thinking=True,
         max_retries=0,
     )

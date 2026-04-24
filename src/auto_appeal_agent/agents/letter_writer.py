@@ -126,7 +126,9 @@ def write_appeal(
         output_model=AppealDraft,
         system=cached_system(_SYSTEM_PROMPT),
         messages=[{"role": "user", "content": user_content}],
-        max_tokens=8192,
+        # 16k gives adaptive thinking room to reason AND still leave
+        # headroom for a full multi-paragraph AppealDraft tool call.
+        max_tokens=16384,
         thinking=True,
     )
     return draft
