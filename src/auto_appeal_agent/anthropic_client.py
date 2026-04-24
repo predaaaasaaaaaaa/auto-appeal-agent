@@ -114,7 +114,7 @@ def call_claude_structured(
     model: str = DEFAULT_MODEL,
     max_tokens: int = 4096,
     thinking: bool = False,
-    max_retries: int = 2,
+    max_retries: int = 0,
     retry_sleep_seconds: float = 1.0,
 ) -> tuple[T, Message]:
     """Call Claude and return a validated Pydantic instance of `output_model`.
@@ -131,8 +131,12 @@ def call_claude_structured(
             helps on complex reasoning (ChartMiner, LetterWriter).
         max_retries: Number of additional attempts if the first call
             raises ValidationError (bad shape) or RuntimeError (no
-            tool_use block returned). These are typically non-
-            deterministic LLM failures; retries usually succeed.
+            tool_use block returned). Default is 0 — fail fast. Each
+            retry is a full-priced API call, and the common failure
+            modes (adaptive thinking eating all tokens, model skipping
+            the tool) are deterministic given the same prompt, so
+            retries usually just burn money. Opt in by passing
+            `max_retries=N` if a specific agent genuinely benefits.
         retry_sleep_seconds: Seconds to wait before each retry.
 
     Returns:
