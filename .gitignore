@@ -47,3 +47,4 @@ logs/
 # Node (for future UI phase)
 node_modules/
 .next/
+.logs/
