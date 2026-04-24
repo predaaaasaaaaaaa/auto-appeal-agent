@@ -28,6 +28,8 @@ import time
 from functools import lru_cache
 from typing import Any, Optional, Type, TypeVar, Union
 
+import httpx
+
 from anthropic import Anthropic
 from anthropic.types import Message
 from dotenv import load_dotenv
@@ -43,20 +45,34 @@ T = TypeVar("T", bound=BaseModel)
 DEFAULT_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-7")
 
 
+# Per-request ceiling. 120s is enough for Opus 4.7 with adaptive
+# thinking + large context, but short enough that a truly stuck call
+# surfaces quickly instead of hanging for 10 min (the SDK default).
+_REQUEST_TIMEOUT = httpx.Timeout(connect=10.0, read=120.0, write=30.0, pool=30.0)
+
+
 @lru_cache(maxsize=1)
 def get_client() -> Anthropic:
-    """Return a singleton Anthropic client.
+    """Return a singleton Anthropic client with fail-fast network policy.
 
     The SDK reads ANTHROPIC_API_KEY from the environment on its own; we
     just check here to raise a friendly error if the key is missing,
     instead of letting the first API call blow up with a cryptic 401.
+
+    We also pin `timeout` and `max_retries=0` so the client:
+      - Fails within ~2 minutes rather than the SDK default 10-minute
+        read timeout (adaptive thinking can legitimately take 30-60s,
+        but 120s is the UX ceiling — past that the UI is unusable).
+      - Does NOT transparently retry on 429/529/network errors. Those
+        retries multiply spend during incidents. Surface the failure
+        to the caller fast; the user or operator can retry manually.
     """
     if not os.getenv("ANTHROPIC_API_KEY"):
         raise RuntimeError(
             "ANTHROPIC_API_KEY is not set. Copy .env.template to .env "
             "and paste your key there."
         )
-    return Anthropic()
+    return Anthropic(timeout=_REQUEST_TIMEOUT, max_retries=0)
 
 
 def cached_system(text: str) -> list[dict[str, Any]]:
