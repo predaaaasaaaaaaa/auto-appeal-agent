@@ -22,8 +22,18 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
+import os
 from pathlib import Path
 from typing import Any
+
+# Configure root logging so auto_appeal_agent.* loggers surface in
+# the uvicorn terminal. LOG_LEVEL env var (from .env) wins if set;
+# otherwise INFO is sensible for live diagnosis.
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO"),
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+)
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware

@@ -122,6 +122,41 @@ def schema_to_tool(
     }
 
 
+def _log_call(
+    model_name: str,
+    response: Message,
+    *,
+    elapsed_ms: float,
+    attempt: int,
+    total_attempts: int,
+) -> None:
+    """Emit one INFO line summarizing a Claude call for live diagnosis.
+
+    Captures stop_reason + usage + elapsed_ms so that a hung or
+    over-spending agent can be diagnosed from logs alone. Critical
+    when real-API issues only surface in production-like runs.
+    """
+    u = response.usage
+    cache_c = getattr(u, "cache_creation_input_tokens", 0) or 0
+    cache_r = getattr(u, "cache_read_input_tokens", 0) or 0
+    content_types = [b.type for b in response.content]
+    logger.info(
+        "claude_call model=%s attempt=%d/%d elapsed_ms=%.0f "
+        "stop_reason=%s input_tokens=%d output_tokens=%d "
+        "cache_creation=%d cache_read=%d content_types=%s",
+        model_name,
+        attempt,
+        total_attempts,
+        elapsed_ms,
+        response.stop_reason,
+        u.input_tokens,
+        u.output_tokens,
+        cache_c,
+        cache_r,
+        content_types,
+    )
+
+
 def call_claude_structured(
     output_model: Type[T],
     system: Union[str, list[dict[str, Any]]],
@@ -199,8 +234,16 @@ def call_claude_structured(
     last_error: Optional[Exception] = None
     total_attempts = max_retries + 1
     for attempt in range(1, total_attempts + 1):
+        call_started = time.monotonic()
         try:
             response = get_client().messages.create(**request)
+            _log_call(
+                output_model.__name__,
+                response,
+                elapsed_ms=(time.monotonic() - call_started) * 1000,
+                attempt=attempt,
+                total_attempts=total_attempts,
+            )
             for block in response.content:
                 if block.type == "tool_use":
                     # Claude occasionally leaks tool-schema metadata fields
