@@ -7,8 +7,11 @@ a CitationMarker (a "receipt" pointing at a specific SourceQuote). The
 Verifier ignores the draft's prose and does an independent pass: for
 every CitationMarker, it looks at the original SourceQuote and checks
 whether the claimed `verbatim_quote` actually appears there. Anything
-that doesn't verify is moved to `rejected_citations` and the letter is
-NOT marked ready-to-send. No hallucinated citation ever ships.
+that doesn't verify is moved to `rejected_citations` AND physically
+stripped from the returned draft — so downstream renderers (PDF, UI,
+/api/export_pdf) are safe by construction and cannot accidentally ship
+an unverified citation. The letter is additionally not marked
+ready-to-send when any citation was rejected.
 
 Phase 0 status: real string-match logic implemented (this is the core
 reliability mechanism — we don't want to stub it). Phase 2 may add
@@ -18,6 +21,8 @@ from __future__ import annotations
 
 from auto_appeal_agent.schemas import (
     AppealDraft,
+    AppealParagraph,
+    CitationMarker,
     RejectedCitation,
     SourceQuote,
     VerifiedAppeal,
@@ -49,8 +54,15 @@ def verify_appeal(
 
     verified: list[VerifiedCitation] = []
     rejected: list[RejectedCitation] = []
+    # As we walk the draft we rebuild each paragraph with only the
+    # citation markers that passed verification. The returned
+    # VerifiedAppeal.draft is therefore safe to hand to any downstream
+    # renderer (PDF, UI, /api/export_pdf) without a separate gate — no
+    # unverified citation can ship because none of them are there.
+    filtered_paragraphs: list[AppealParagraph] = []
 
     for paragraph in draft.paragraphs:
+        kept: list[CitationMarker] = []
         for citation in paragraph.citations:
             source = source_by_id.get(citation.source_id)
             if source is None:
@@ -84,6 +96,7 @@ def verify_appeal(
                         verification_method="exact_substring",
                     )
                 )
+                kept.append(citation)
                 continue
 
             normalized_hit = _normalize(citation.verbatim_quote) in _normalize(source.quote)
@@ -96,6 +109,7 @@ def verify_appeal(
                         notes="matched after whitespace/case normalization",
                     )
                 )
+                kept.append(citation)
                 continue
 
             rejected.append(
@@ -107,13 +121,28 @@ def verify_appeal(
                 )
             )
 
+        filtered_paragraphs.append(
+            AppealParagraph(
+                heading=paragraph.heading,
+                text=paragraph.text,
+                citations=kept,
+            )
+        )
+
+    filtered_draft = AppealDraft(
+        case_id=draft.case_id,
+        recipient_plan=draft.recipient_plan,
+        subject_line=draft.subject_line,
+        paragraphs=filtered_paragraphs,
+    )
+
     total = len(verified) + len(rejected)
     pass_rate = 1.0 if total == 0 else len(verified) / total
     ready = (pass_rate == 1.0) and len(verified) > 0
 
     return VerifiedAppeal(
         case_id=draft.case_id,
-        draft=draft,
+        draft=filtered_draft,
         verified_citations=verified,
         rejected_citations=rejected,
         verification_pass_rate=pass_rate,
