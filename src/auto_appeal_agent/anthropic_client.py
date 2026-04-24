@@ -157,6 +157,71 @@ def _log_call(
     )
 
 
+# Keys Claude has been observed to wrap real payloads inside, instead
+# of emitting the payload at the top level. Each is treated as an
+# envelope: if the input dict has only this key and its value is a
+# dict, peel one level and use the inner dict as the payload.
+_ENVELOPE_KEYS = ("parameter", "$PARAMETER_NAME")
+
+
+def _normalize_tool_input(raw_input: Any) -> Any:
+    """Defensively clean a tool_use input before Pydantic validation.
+
+    Plain-language summary: Claude usually returns the tool input
+    exactly matching our Pydantic schema, but occasionally — observed
+    at roughly 1-in-6 calls during live re-recording on 2026-04-24 —
+    it leaks meta-schema artifacts into the payload. Three known leak
+    shapes, all of which crash strict Pydantic validation:
+
+      1. Bare meta-keys: top-level keys prefixed with "$"
+         (e.g. "$FUNCTION_NAME") sit alongside the real fields. The
+         model is echoing tool-schema description text. Strip them.
+      2. "parameter" envelope: the entire real payload is wrapped one
+         level deeper under a single "parameter" key — i.e.
+         {"parameter": {"case_id": ...}} instead of {"case_id": ...}.
+         The inner content is correct; the model just over-wrapped.
+      3. "$PARAMETER_NAME" envelope: same as (2) but the wrap key is
+         the literal "$PARAMETER_NAME". Looks like a meta-key but
+         actually carries the real payload.
+
+    Since none of our schemas use top-level "$"-prefixed fields and
+    none has a sole envelope field, peeling these defensively is safe
+    and makes the parser tolerant of model flakiness instead of
+    brittle to it. Strip-then-unwrap order matters: a dict like
+    {"$FUNCTION_NAME": "...", "parameter": {...}} should first lose
+    the meta key, then unwrap the envelope.
+    """
+    if not isinstance(raw_input, dict):
+        return raw_input
+
+    def _strip_meta(d: dict[str, Any]) -> dict[str, Any]:
+        return {
+            k: v
+            for k, v in d.items()
+            if not (isinstance(k, str) and k.startswith("$"))
+        }
+
+    # Check for an envelope BEFORE stripping `$`-keys, because one of
+    # the envelope keys ("$PARAMETER_NAME") would itself be stripped
+    # and the real payload lost. If the input has only one key and
+    # that key is an envelope key with a dict value, peel it.
+    if len(raw_input) == 1:
+        only_key = next(iter(raw_input))
+        only_val = raw_input[only_key]
+        if only_key in _ENVELOPE_KEYS and isinstance(only_val, dict):
+            return _strip_meta(only_val)
+
+    # Otherwise: just strip meta keys at the top level. If the result
+    # then has a single envelope key, peel it.
+    cleaned = _strip_meta(raw_input)
+    if len(cleaned) == 1:
+        only_key = next(iter(cleaned))
+        only_val = cleaned[only_key]
+        if only_key in _ENVELOPE_KEYS and isinstance(only_val, dict):
+            return _strip_meta(only_val)
+    return cleaned
+
+
 def call_claude_structured(
     output_model: Type[T],
     system: Union[str, list[dict[str, Any]]],
@@ -246,18 +311,7 @@ def call_claude_structured(
             )
             for block in response.content:
                 if block.type == "tool_use":
-                    # Claude occasionally leaks tool-schema metadata fields
-                    # ("$FUNCTION_NAME", "$PARAMETER_NAME", etc.) into the
-                    # tool input payload. These aren't part of any user-
-                    # defined schema and break strict Pydantic models, so
-                    # strip them defensively before validation.
-                    raw_input = block.input
-                    if isinstance(raw_input, dict):
-                        raw_input = {
-                            k: v
-                            for k, v in raw_input.items()
-                            if not (isinstance(k, str) and k.startswith("$"))
-                        }
+                    raw_input = _normalize_tool_input(block.input)
                     parsed = output_model.model_validate(raw_input)
                     return parsed, response
             raise RuntimeError(
