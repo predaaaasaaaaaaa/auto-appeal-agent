@@ -137,6 +137,12 @@ class GuidelineCitation(Strict):
 class GuidelineCitations(Strict):
     case_id: str
     citations: list[GuidelineCitation]
+    # The corpus excerpts referenced by `citations`, materialized as
+    # SourceQuotes so the Verifier can substring-match guideline
+    # CitationMarkers exactly like denial/policy/chart ones. Each
+    # SourceQuote.quote_id corresponds to the GuidelineCitation.citation_id
+    # of the citation that uses it.
+    source_quotes: list[SourceQuote] = Field(default_factory=list)
 
 
 class AppealParagraph(Strict):
