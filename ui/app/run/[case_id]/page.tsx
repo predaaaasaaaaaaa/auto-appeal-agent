@@ -26,6 +26,8 @@ import {
 type StageState = {
   status: "pending" | "running" | "done" | "error";
   detail?: string;
+  startedAt?: number; // performance.now() when "running" arrived
+  elapsedMs?: number; // ms between "running" and "done"
 };
 
 type SourceKind = "denial_letter" | "patient_chart" | "payer_policy";
@@ -73,6 +75,17 @@ export default function RunPage({
   // sets cancel_event — orchestrator then aborts at the next agent
   // boundary (worst-case wasted spend: one in-flight Claude call).
   const esRef = useRef<EventSource | null>(null);
+
+  // Tick once a second while a pipeline is running, so the waiting UI
+  // can re-render and update "12.4s elapsed" counters. Setting and
+  // clearing the interval based on pipelineActive keeps the page idle
+  // (no needless re-renders) once the result has landed.
+  const [tickNow, setTickNow] = useState(() => performance.now());
+  useEffect(() => {
+    if (!pipelineActive) return;
+    const id = setInterval(() => setTickNow(performance.now()), 500);
+    return () => clearInterval(id);
+  }, [pipelineActive]);
 
   // When the pipeline finishes, seed the editable draft once.
   useEffect(() => {
@@ -181,16 +194,33 @@ export default function RunPage({
           return;
         }
         if (PIPELINE_STAGES.includes(event.stage)) {
-          setStages((prev) => ({
-            ...prev,
-            [event.stage]: {
-              status: event.status === "done" ? "done" : "running",
-              detail:
-                event.status === "done"
-                  ? describeDoneStage(event)
-                  : STAGE_DESCRIPTIONS[event.stage],
-            },
-          }));
+          setStages((prev) => {
+            const now = performance.now();
+            const prevStage = prev[event.stage];
+            // Capture per-stage timing so the waiting UI can show
+            // "12.4s elapsed" instead of just a spinner — judges and
+            // demo viewers can SEE that work is happening, not guess.
+            const startedAt =
+              event.status === "running" && prevStage.status !== "running"
+                ? now
+                : prevStage.startedAt;
+            const elapsedMs =
+              event.status === "done" && startedAt !== undefined
+                ? now - startedAt
+                : prevStage.elapsedMs;
+            return {
+              ...prev,
+              [event.stage]: {
+                status: event.status === "done" ? "done" : "running",
+                detail:
+                  event.status === "done"
+                    ? describeDoneStage(event)
+                    : STAGE_DESCRIPTIONS[event.stage],
+                startedAt,
+                elapsedMs,
+              },
+            };
+          });
         }
       } catch (e) {
         console.error("SSE parse error", e);
@@ -419,7 +449,11 @@ export default function RunPage({
                     )}
                   </>
                 ) : (
-                  <DraftSkeleton stages={stages} error={error} />
+                  <PipelineProgress
+                    stages={stages}
+                    error={error}
+                    tickNow={tickNow}
+                  />
                 )}
               </div>
             </div>
@@ -797,62 +831,204 @@ function CitationChip({
   );
 }
 
-function DraftSkeleton({
+/**
+ * PipelineProgress — the prominent waiting UI shown while the agents
+ * are working on the appeal. Replaces the previous tiny DraftSkeleton
+ * because a 90-120 second wait with a thin progress bar at the top
+ * felt frozen even when stages were ticking. This component:
+ *
+ *   - Big header with total elapsed time, ticking every 500ms.
+ *   - One card per agent (denial → policy → chart → guideline → letter
+ *     → verifier), showing pending / running / done state with a
+ *     visible icon, the agent's job description, and per-stage
+ *     elapsed time.
+ *   - The currently-running card has an animated dot ring so it's
+ *     obvious where the work is happening.
+ *
+ * Errors fall through to a clear red panel (unchanged behavior).
+ */
+function PipelineProgress({
   stages,
   error,
+  tickNow,
 }: {
   stages: Record<string, StageState>;
   error: string | null;
+  tickNow: number;
 }) {
-  // The skeleton text used to read the FIRST stage with status="running".
-  // Between agents the orchestrator emits "X done" microseconds before
-  // "Y running"; with React batching that's usually merged into one
-  // render — but if ANY render lands between the two, no stage is
-  // running and the text reverted to "Starting pipeline…", making the
-  // pipeline look stuck. Instead, surface the LAST stage that's fired
-  // at all (running OR done). Once denial_analyzer has emitted
-  // anything, the skeleton always shows a real description.
-  const stageInProgress = PIPELINE_STAGES.find(
-    (s) => stages[s].status === "running"
-  );
-  const lastFiredStage = [...PIPELINE_STAGES]
-    .reverse()
-    .find((s) => stages[s].status !== "pending");
-  const headlineStage = stageInProgress ?? lastFiredStage;
-  const completed = PIPELINE_STAGES.filter(
-    (s) => stages[s].status === "done"
-  ).length;
-  const headlineText = headlineStage
-    ? stages[headlineStage].status === "done"
-      ? `Finished ${STAGE_LABELS[headlineStage] ?? headlineStage}…`
-      : (STAGE_DESCRIPTIONS[headlineStage] ?? "Running…")
-    : "Starting pipeline…";
-
   if (error) {
     return (
-      <div className="rounded-sm border border-[--color-status-rejected]/30 bg-[--color-status-rejected-bg] p-6">
+      <div className="rounded-md border border-[--color-status-rejected]/30 bg-[--color-status-rejected-bg] p-6">
         <div className="text-sm font-medium text-[--color-status-rejected]">
           Pipeline error
         </div>
-        <div className="mt-1 text-sm text-foreground">{error}</div>
+        <div className="mt-1 text-sm text-foreground whitespace-pre-wrap">
+          {error}
+        </div>
       </div>
     );
   }
 
+  // Total elapsed = max(now - earliest stage start, 0). Counts from
+  // the first agent's "running" event so we don't include any pre-
+  // pipeline render time.
+  const earliestStart = PIPELINE_STAGES.map((s) => stages[s].startedAt).filter(
+    (t): t is number => typeof t === "number",
+  ).reduce<number | null>(
+    (acc, t) => (acc === null || t < acc ? t : acc),
+    null,
+  );
+  const totalElapsedMs =
+    earliestStart === null ? 0 : Math.max(0, tickNow - earliestStart);
+  const completed = PIPELINE_STAGES.filter(
+    (s) => stages[s].status === "done",
+  ).length;
+
   return (
-    <div className="flex flex-col gap-4 rounded-sm border border-dashed border-border bg-card/60 p-10">
-      <div className="text-sm text-muted-foreground">{headlineText}</div>
-      <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-        <div
-          className="h-full bg-[--color-status-running] transition-all"
-          style={{ width: `${(completed / PIPELINE_STAGES.length) * 100}%` }}
-        />
+    <div className="flex flex-col gap-5">
+      {/* Hero header */}
+      <div className="flex flex-col gap-2 rounded-md border border-border bg-card p-6">
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-lg font-semibold tracking-tight">
+            Drafting your appeal
+          </h2>
+          <span className="font-mono text-sm tabular-nums text-muted-foreground">
+            {formatElapsed(totalElapsedMs)}
+          </span>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Six specialist agents are reading the denial letter, the patient
+          chart, and the plan&rsquo;s medical policy, then drafting a fully
+          cited appeal letter. Typical run: 90&ndash;120 seconds.
+        </p>
+        <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+          <div
+            className="h-full bg-[--color-status-running] transition-all duration-500"
+            style={{
+              width: `${(completed / PIPELINE_STAGES.length) * 100}%`,
+            }}
+          />
+        </div>
+        <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+          {completed} of {PIPELINE_STAGES.length} agents complete
+        </div>
       </div>
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-        {completed} of {PIPELINE_STAGES.length} stages complete
-      </div>
+
+      {/* Per-agent vertical timeline */}
+      <ol className="flex flex-col gap-2">
+        {PIPELINE_STAGES.map((s, i) => {
+          const st = stages[s];
+          const isRunning = st.status === "running";
+          const isDone = st.status === "done";
+          const isPending = st.status === "pending";
+          const liveElapsed =
+            isRunning && st.startedAt !== undefined
+              ? Math.max(0, tickNow - st.startedAt)
+              : st.elapsedMs;
+          const cardClass = isRunning
+            ? "border-[--color-status-running]/50 bg-[--color-status-running-bg]/40"
+            : isDone
+              ? "border-[--color-status-verified]/30 bg-card"
+              : "border-border bg-card/40";
+          return (
+            <li
+              key={s}
+              className={
+                "flex items-start gap-4 rounded-md border p-4 transition-colors " +
+                cardClass
+              }
+            >
+              <PipelineProgressIcon
+                index={i + 1}
+                running={isRunning}
+                done={isDone}
+                pending={isPending}
+              />
+              <div className="flex flex-1 flex-col gap-1 min-w-0">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span
+                    className={
+                      "text-sm font-medium " +
+                      (isPending ? "text-muted-foreground" : "text-foreground")
+                    }
+                  >
+                    {STAGE_LABELS[s] ?? s}
+                  </span>
+                  {liveElapsed !== undefined && (
+                    <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+                      {formatElapsed(liveElapsed)}
+                    </span>
+                  )}
+                </div>
+                <span
+                  className={
+                    "text-xs " +
+                    (isPending
+                      ? "text-muted-foreground/70"
+                      : "text-muted-foreground")
+                  }
+                >
+                  {st.detail ??
+                    STAGE_DESCRIPTIONS[s] ??
+                    (isPending ? "Waiting…" : "")}
+                </span>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
+}
+
+function PipelineProgressIcon({
+  index,
+  running,
+  done,
+  pending,
+}: {
+  index: number;
+  running: boolean;
+  done: boolean;
+  pending: boolean;
+}) {
+  if (done) {
+    return (
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[--color-status-verified] text-[--color-status-verified-bg] text-sm font-semibold">
+        ✓
+      </span>
+    );
+  }
+  if (running) {
+    return (
+      <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[--color-status-running] text-[--color-status-running-bg] text-sm font-semibold">
+        {index}
+        <span className="absolute inset-0 rounded-full ring-4 ring-[--color-status-running]/30 animate-pulse" />
+      </span>
+    );
+  }
+  return (
+    <span
+      className={
+        "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-medium " +
+        (pending
+          ? "border-muted-foreground/30 text-muted-foreground/60"
+          : "border-border text-muted-foreground")
+      }
+    >
+      {index}
+    </span>
+  );
+}
+
+function formatElapsed(ms: number): string {
+  const total = Math.floor(ms / 1000);
+  if (total < 60) {
+    return `${total}s`;
+  }
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}m ${String(s).padStart(2, "0")}s`;
 }
 
 function describeDoneStage(event: ProgressEvent): string {
