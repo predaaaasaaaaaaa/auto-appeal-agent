@@ -140,5 +140,17 @@ def write_appeal(
         # headroom for a full multi-paragraph AppealDraft tool call.
         max_tokens=16384,
         thinking=True,
+        # Live UI test on 2026-04-25 surfaced a model failure mode:
+        # Claude with adaptive thinking sometimes emits a tool_use
+        # block whose input is literally `{}` — no case_id, no
+        # paragraphs, nothing. Pydantic raises 4 "field required"
+        # errors and the user sees "Pipeline error". The empty-input
+        # case is non-deterministic (a fresh call usually succeeds),
+        # so allow exactly ONE retry. Worst-case cost: 2 LetterWriter
+        # calls (~$1) instead of 1 (~$0.50). Best-case: same as today.
+        # Acceptable bargain for the appeal NEVER silently dying at
+        # the last agent before the verifier.
+        max_retries=1,
+        retry_sleep_seconds=2.0,
     )
     return draft

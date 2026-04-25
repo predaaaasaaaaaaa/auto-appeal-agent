@@ -13,6 +13,8 @@ Both are reliability regressions that block the whole project.
 """
 from __future__ import annotations
 
+from unittest.mock import MagicMock, patch
+
 import pytest
 
 from auto_appeal_agent.agents.letter_writer import write_appeal
@@ -255,3 +257,157 @@ def test_letter_writer_produces_verifiable_appeal(cassette):  # noqa: ARG001
         in ("denial_letter", "payer_policy", "patient_chart", "clinical_guideline")
         for vc in verified.verified_citations
     )
+
+
+# ---------------------------------------------------------------------------
+# Empty-AppealDraft retry — simulates the live failure mode from
+# 2026-04-25 17:26 UTC where Claude returned `{}` for tool input.
+# ---------------------------------------------------------------------------
+
+
+def _mock_message_with_tool_input(tool_input: dict, *, with_thinking: bool = True):
+    """Build an anthropic.types.Message-shaped mock whose first content
+    block is a tool_use carrying `tool_input` as its input.
+
+    We mirror the exact shape `call_claude_structured` walks:
+      response.content -> [block, ...]
+      block.type == "tool_use"
+      block.input == tool_input
+    """
+    tool_block = MagicMock()
+    tool_block.type = "tool_use"
+    tool_block.input = tool_input
+    blocks = []
+    if with_thinking:
+        thinking_block = MagicMock()
+        thinking_block.type = "thinking"
+        blocks.append(thinking_block)
+    blocks.append(tool_block)
+
+    msg = MagicMock()
+    msg.content = blocks
+    msg.stop_reason = "tool_use"
+    usage = MagicMock()
+    usage.input_tokens = 100
+    usage.output_tokens = 50
+    usage.cache_creation_input_tokens = 0
+    usage.cache_read_input_tokens = 0
+    msg.usage = usage
+    return msg
+
+
+def _valid_appeal_draft_input() -> dict:
+    """Minimal valid AppealDraft fields for the mock to return."""
+    return {
+        "case_id": "case_01_ozempic_bmi34",
+        "recipient_plan": "BlueSun Health Premium HMO",
+        "subject_line": (
+            "Appeal of prior authorization denial — semaglutide — "
+            "member BS-A1234567"
+        ),
+        "paragraphs": [
+            {
+                "heading": "Patient and Requested Service",
+                "text": "Test paragraph.",
+                "citations": [
+                    {
+                        "claim": "test",
+                        "source_type": "denial_letter",
+                        "source_id": "denial_q1",
+                        "verbatim_quote": (
+                            "your prior authorization request for semaglutide"
+                        ),
+                    }
+                ],
+            }
+        ],
+    }
+
+
+def test_letter_writer_retries_once_when_claude_returns_empty_input():
+    """Real-world failure mode (2026-04-25 17:26): Claude with adaptive
+    thinking sometimes emits a tool_use block with literally `{}` as
+    its input — Pydantic raises 4 'field required' errors. Without
+    retry, the user sees a wall of validation errors at the very last
+    agent. With max_retries=1 the second call succeeds and the user
+    never sees the blip.
+    """
+    denial, policy, evidence, guidelines = _case_01_upstream()
+
+    empty_msg = _mock_message_with_tool_input({})
+    valid_msg = _mock_message_with_tool_input(_valid_appeal_draft_input())
+    fake_create = MagicMock(side_effect=[empty_msg, valid_msg])
+
+    with patch(
+        "auto_appeal_agent.anthropic_client.get_client"
+    ) as get_client_mock:
+        get_client_mock.return_value.messages.create = fake_create
+        with patch("auto_appeal_agent.anthropic_client.time.sleep"):
+            draft = write_appeal(
+                case_id="case_01_ozempic_bmi34",
+                denial=denial,
+                policy=policy,
+                evidence=evidence,
+                guidelines=guidelines,
+            )
+
+    # The retry kicked in and the second call's valid response wins.
+    assert draft.case_id == "case_01_ozempic_bmi34"
+    assert draft.recipient_plan == "BlueSun Health Premium HMO"
+    assert len(draft.paragraphs) == 1
+    # Two underlying SDK calls — one empty, one valid.
+    assert fake_create.call_count == 2
+
+
+def test_letter_writer_surfaces_validation_error_after_retry_also_empty():
+    """Edge case: both attempts return empty. The user must see the
+    validation error rather than a hung pipeline. We don't want the
+    retry budget to grow unboundedly — one retry only.
+    """
+    denial, policy, evidence, guidelines = _case_01_upstream()
+
+    empty_msg = _mock_message_with_tool_input({})
+    fake_create = MagicMock(side_effect=[empty_msg, empty_msg])
+
+    with patch(
+        "auto_appeal_agent.anthropic_client.get_client"
+    ) as get_client_mock:
+        get_client_mock.return_value.messages.create = fake_create
+        with patch("auto_appeal_agent.anthropic_client.time.sleep"):
+            from pydantic import ValidationError
+
+            with pytest.raises(ValidationError):
+                write_appeal(
+                    case_id="case_01_ozempic_bmi34",
+                    denial=denial,
+                    policy=policy,
+                    evidence=evidence,
+                    guidelines=guidelines,
+                )
+
+    # Two attempts total — one initial + one retry. NOT three.
+    assert fake_create.call_count == 2
+
+
+def test_letter_writer_does_not_retry_on_first_call_success():
+    """Common path — no extra spend on a successful first attempt."""
+    denial, policy, evidence, guidelines = _case_01_upstream()
+
+    valid_msg = _mock_message_with_tool_input(_valid_appeal_draft_input())
+    fake_create = MagicMock(side_effect=[valid_msg])
+
+    with patch(
+        "auto_appeal_agent.anthropic_client.get_client"
+    ) as get_client_mock:
+        get_client_mock.return_value.messages.create = fake_create
+        with patch("auto_appeal_agent.anthropic_client.time.sleep"):
+            draft = write_appeal(
+                case_id="case_01_ozempic_bmi34",
+                denial=denial,
+                policy=policy,
+                evidence=evidence,
+                guidelines=guidelines,
+            )
+
+    assert draft.case_id == "case_01_ozempic_bmi34"
+    assert fake_create.call_count == 1
