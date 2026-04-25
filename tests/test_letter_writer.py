@@ -152,16 +152,49 @@ def _case_01_upstream():
         ],
     )
 
+    # Corpus-backed guideline citation. citation_id matches an excerpt
+    # in fixtures/guidelines/corpus.json, and source_quotes echoes that
+    # excerpt as a SourceQuote so the Verifier can substring-check
+    # any CitationMarker the LetterWriter emits against it.
+    guideline_quote_text = (
+        "Adults with a BMI of 30 kg/m2 or greater, or a BMI of 27 kg/m2 or "
+        "greater with weight-related comorbidities such as hypertension or "
+        "type 2 diabetes mellitus, should be offered comprehensive lifestyle "
+        "interventions, and pharmacotherapy is an appropriate adjunct in "
+        "these BMI categories when lifestyle measures alone do not achieve "
+        "sufficient weight loss."
+    )
     guidelines = GuidelineCitations(
         case_id="case_01_ozempic_bmi34",
         citations=[
             GuidelineCitation(
-                citation_id="guideline_q1",
-                guideline_source="American Diabetes Association 2024 Standards of Care",
-                citation_title="Obesity and Weight Management for Prevention and Treatment of Type 2 Diabetes",
-                quote="Pharmacologic therapy for weight management is recommended for adults with BMI >= 30",
-                url=None,
-                supports_claim="BMI >= 30 qualifies the patient for GLP-1 therapy",
+                citation_id="guideline_aha_acc_tos_2013_q1",
+                guideline_source=(
+                    "American Heart Association / American College of "
+                    "Cardiology / The Obesity Society"
+                ),
+                citation_title=(
+                    "2013 AHA/ACC/TOS Guideline for the Management of "
+                    "Overweight and Obesity in Adults"
+                ),
+                quote=guideline_quote_text,
+                url="https://www.ahajournals.org/doi/10.1161/01.cir.0000437739.71477.ee",
+                supports_claim=(
+                    "BMI >= 30 with weight-related comorbidity qualifies "
+                    "the patient for obesity pharmacotherapy"
+                ),
+            )
+        ],
+        source_quotes=[
+            SourceQuote(
+                quote_id="guideline_aha_acc_tos_2013_q1",
+                source_type="clinical_guideline",
+                quote=guideline_quote_text,
+                location=(
+                    "American Heart Association / American College of "
+                    "Cardiology / The Obesity Society 2013 — Treatment "
+                    "recommendations"
+                ),
             )
         ],
     )
@@ -186,8 +219,15 @@ def test_letter_writer_produces_verifiable_appeal(cassette):  # noqa: ARG001
     assert len(draft.paragraphs) >= 3, "expect at least 3 paragraphs"
     assert any(p.citations for p in draft.paragraphs), "expect at least one CitationMarker"
 
-    # Hand all upstream source quotes to the Verifier.
-    all_quotes = denial.source_quotes + policy.source_quotes + evidence.source_quotes
+    # Hand all upstream source quotes — including guideline-corpus
+    # excerpts — to the Verifier so guideline CitationMarkers get the
+    # same substring re-check as denial/policy/chart ones.
+    all_quotes = (
+        denial.source_quotes
+        + policy.source_quotes
+        + evidence.source_quotes
+        + guidelines.source_quotes
+    )
     verified = verify_appeal(draft, all_quotes)
 
     # The reliability gate.
@@ -208,8 +248,10 @@ def test_letter_writer_produces_verifiable_appeal(cassette):  # noqa: ARG001
     assert len(verified.verified_citations) >= 2, (
         "expect at least two verified citations (chart + policy)"
     )
-    # No guideline-type citations should leak through.
+    # Every verified citation must point at a known source type. Guideline
+    # citations are now first-class, so clinical_guideline is allowed too.
     assert all(
-        vc.citation.source_type in ("denial_letter", "payer_policy", "patient_chart")
+        vc.citation.source_type
+        in ("denial_letter", "payer_policy", "patient_chart", "clinical_guideline")
         for vc in verified.verified_citations
     )
