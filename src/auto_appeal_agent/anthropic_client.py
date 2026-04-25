@@ -30,7 +30,7 @@ from typing import Any, Optional, Type, TypeVar, Union
 
 import httpx
 
-from anthropic import Anthropic
+from anthropic import Anthropic, APIConnectionError, APIStatusError
 from anthropic.types import Message
 from dotenv import load_dotenv
 from pydantic import BaseModel, ValidationError
@@ -49,6 +49,17 @@ DEFAULT_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-7")
 # thinking + large context, but short enough that a truly stuck call
 # surfaces quickly instead of hanging for 10 min (the SDK default).
 _REQUEST_TIMEOUT = httpx.Timeout(connect=10.0, read=120.0, write=30.0, pool=30.0)
+
+
+# Transient-infra retry policy. These are Anthropic-side / network
+# blips that almost always succeed on a second try; retrying once
+# costs almost nothing relative to a failed pipeline run. We
+# DELIBERATELY do NOT retry validation errors (deterministic given
+# same prompt — wastes money) or 4xx errors (auth/rate-limit/bad
+# request — the caller needs to see them).
+_TRANSIENT_HTTP_STATUS_CODES = (502, 503, 504, 529)
+_TRANSIENT_HTTP_RETRIES = 1
+_TRANSIENT_HTTP_BACKOFF_SECONDS = 2.0
 
 
 @lru_cache(maxsize=1)
@@ -162,6 +173,59 @@ def _log_call(
 # envelope: if the input dict has only this key and its value is a
 # dict, peel one level and use the inner dict as the payload.
 _ENVELOPE_KEYS = ("parameter", "$PARAMETER_NAME")
+
+
+def _is_transient_api_error(exc: BaseException) -> bool:
+    """Return True if `exc` is a transient Anthropic / network error worth
+    a single quick retry.
+
+    Plain-language summary: the model isn't broken, our request isn't
+    broken, the upstream API just had a momentary capacity hiccup
+    (529 overloaded), routing blip (502/503/504), or our connection
+    died mid-flight. One retry after a short backoff almost always
+    succeeds and keeps the live UI demo from crashing on a hiccup.
+
+    Explicitly NOT transient: 4xx (caller bug — auth, rate limit,
+    bad request, schema mismatch). Those should surface immediately.
+    """
+    if isinstance(exc, APIConnectionError):
+        return True
+    if isinstance(exc, APIStatusError):
+        return exc.status_code in _TRANSIENT_HTTP_STATUS_CODES
+    return False
+
+
+def _create_message_with_transient_retry(request: dict[str, Any]) -> Message:
+    """Wrap `client.messages.create(**request)` with one retry on transient errors.
+
+    On a transient error (see `_is_transient_api_error`), sleep
+    `_TRANSIENT_HTTP_BACKOFF_SECONDS` and try again — at most
+    `_TRANSIENT_HTTP_RETRIES` extra attempts. Anything else
+    propagates immediately so the caller sees the real failure.
+    """
+    last_error: Optional[BaseException] = None
+    total_attempts = _TRANSIENT_HTTP_RETRIES + 1
+    for attempt in range(1, total_attempts + 1):
+        try:
+            return get_client().messages.create(**request)
+        except (APIConnectionError, APIStatusError) as exc:
+            if not _is_transient_api_error(exc):
+                raise
+            last_error = exc
+            if attempt >= total_attempts:
+                raise
+            logger.warning(
+                "Anthropic transient error (attempt %d/%d, retrying in %.1fs): %s",
+                attempt,
+                total_attempts,
+                _TRANSIENT_HTTP_BACKOFF_SECONDS,
+                exc,
+            )
+            time.sleep(_TRANSIENT_HTTP_BACKOFF_SECONDS)
+    # Unreachable — the loop either returns, raises non-transient,
+    # or raises on the final attempt — but mypy doesn't know that.
+    assert last_error is not None
+    raise last_error
 
 
 def _normalize_tool_input(raw_input: Any) -> Any:
@@ -301,7 +365,11 @@ def call_claude_structured(
     for attempt in range(1, total_attempts + 1):
         call_started = time.monotonic()
         try:
-            response = get_client().messages.create(**request)
+            # Single retry on transient Anthropic/network errors (529
+            # overloaded, 502/503/504, dropped connection). Validation
+            # retries (max_retries) sit OUTSIDE this — different
+            # failure mode, different policy.
+            response = _create_message_with_transient_retry(request)
             _log_call(
                 output_model.__name__,
                 response,

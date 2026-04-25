@@ -8,10 +8,16 @@ when you explicitly pass `-m integration`.
 """
 from __future__ import annotations
 
+from unittest.mock import MagicMock, patch
+
+import httpx
 import pytest
+from anthropic import APIConnectionError, APIStatusError
 from pydantic import BaseModel, ConfigDict, Field
 
 from auto_appeal_agent.anthropic_client import (
+    _create_message_with_transient_retry,
+    _is_transient_api_error,
     _normalize_tool_input,
     call_claude_structured,
     schema_to_tool,
@@ -116,6 +122,112 @@ def test_normalize_tool_input_passes_non_dict_through():
     assert _normalize_tool_input("string") == "string"
     assert _normalize_tool_input(None) is None
     assert _normalize_tool_input([1, 2]) == [1, 2]
+
+
+# ---------------------------------------------------------------------------
+# Transient-error retry
+# ---------------------------------------------------------------------------
+
+
+def _api_status_error(status_code: int) -> APIStatusError:
+    """Build a real APIStatusError with the given status_code."""
+    response = httpx.Response(status_code=status_code, request=httpx.Request("POST", "https://api.anthropic.com"))
+    return APIStatusError("simulated", response=response, body=None)
+
+
+def _api_connection_error() -> APIConnectionError:
+    """Build a real APIConnectionError (network died)."""
+    return APIConnectionError(request=httpx.Request("POST", "https://api.anthropic.com"))
+
+
+def test_is_transient_api_error_recognizes_529():
+    """529 Overloaded — Anthropic capacity blip — is transient."""
+    assert _is_transient_api_error(_api_status_error(529)) is True
+
+
+def test_is_transient_api_error_recognizes_503_504():
+    """5xx infra errors are transient."""
+    assert _is_transient_api_error(_api_status_error(503)) is True
+    assert _is_transient_api_error(_api_status_error(504)) is True
+
+
+def test_is_transient_api_error_recognizes_connection_error():
+    """Dropped TCP / TLS / DNS — pipeline dies mid-flight, retry helps."""
+    assert _is_transient_api_error(_api_connection_error()) is True
+
+
+def test_is_transient_api_error_does_not_retry_4xx():
+    """4xx is the caller's bug — auth, rate limit, bad request, schema.
+    Retrying multiplies spend during incidents and hides real errors."""
+    assert _is_transient_api_error(_api_status_error(400)) is False
+    assert _is_transient_api_error(_api_status_error(401)) is False
+    assert _is_transient_api_error(_api_status_error(429)) is False
+
+
+def test_is_transient_api_error_passes_other_exceptions_through():
+    """Plain exceptions never count as transient."""
+    assert _is_transient_api_error(ValueError("nope")) is False
+    assert _is_transient_api_error(RuntimeError("nope")) is False
+
+
+def test_create_message_retries_once_on_529_then_succeeds():
+    """The killer real-world case: 529 first, success second."""
+    expected_message = MagicMock()
+    fake_create = MagicMock(side_effect=[_api_status_error(529), expected_message])
+
+    with patch("auto_appeal_agent.anthropic_client.get_client") as get_client_mock:
+        get_client_mock.return_value.messages.create = fake_create
+        # Patch sleep so the test doesn't actually wait 2s.
+        with patch("auto_appeal_agent.anthropic_client.time.sleep"):
+            result = _create_message_with_transient_retry({"foo": "bar"})
+
+    assert result is expected_message
+    assert fake_create.call_count == 2
+
+
+def test_create_message_propagates_after_retries_exhausted():
+    """Two 529s in a row — surface the second one to the caller."""
+    fake_create = MagicMock(
+        side_effect=[_api_status_error(529), _api_status_error(529)]
+    )
+
+    with patch("auto_appeal_agent.anthropic_client.get_client") as get_client_mock:
+        get_client_mock.return_value.messages.create = fake_create
+        with patch("auto_appeal_agent.anthropic_client.time.sleep"):
+            with pytest.raises(APIStatusError) as exc_info:
+                _create_message_with_transient_retry({"foo": "bar"})
+
+    assert exc_info.value.status_code == 529
+    assert fake_create.call_count == 2  # 1 initial + 1 retry
+
+
+def test_create_message_does_not_retry_4xx():
+    """A 401 must surface immediately, not be retried."""
+    fake_create = MagicMock(side_effect=_api_status_error(401))
+
+    with patch("auto_appeal_agent.anthropic_client.get_client") as get_client_mock:
+        get_client_mock.return_value.messages.create = fake_create
+        with patch("auto_appeal_agent.anthropic_client.time.sleep") as sleep_mock:
+            with pytest.raises(APIStatusError) as exc_info:
+                _create_message_with_transient_retry({"foo": "bar"})
+
+    assert exc_info.value.status_code == 401
+    assert fake_create.call_count == 1
+    sleep_mock.assert_not_called()
+
+
+def test_create_message_retries_connection_error():
+    """Network died once, came back — succeed on retry."""
+    expected_message = MagicMock()
+    fake_create = MagicMock(side_effect=[_api_connection_error(), expected_message])
+
+    with patch("auto_appeal_agent.anthropic_client.get_client") as get_client_mock:
+        get_client_mock.return_value.messages.create = fake_create
+        with patch("auto_appeal_agent.anthropic_client.time.sleep"):
+            result = _create_message_with_transient_retry({"foo": "bar"})
+
+    assert result is expected_message
+    assert fake_create.call_count == 2
 
 
 def test_structured_output_roundtrip(cassette):
