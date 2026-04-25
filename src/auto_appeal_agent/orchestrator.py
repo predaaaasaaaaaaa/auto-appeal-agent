@@ -120,8 +120,15 @@ def run_pipeline(
     )
 
     _emit(cb, "verifier", "running")
+    # Guideline source_quotes are corpus-backed and now first-class
+    # verifiable: any CitationMarker the LetterWriter emitted with a
+    # guideline_<...> source_id is substring-checked here, exactly
+    # like denial/policy/chart citations.
     all_source_quotes = (
-        denial.source_quotes + policy.source_quotes + evidence.source_quotes
+        denial.source_quotes
+        + policy.source_quotes
+        + evidence.source_quotes
+        + guidelines.source_quotes
     )
     verified = verify_appeal(draft, all_source_quotes)
     _emit(

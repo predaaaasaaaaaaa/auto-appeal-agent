@@ -44,18 +44,23 @@ Hard reliability rules:
 
   1. Every CitationMarker in the draft must reference a `source_id`
      exactly matching a `quote_id` from the AVAILABLE SOURCE QUOTES
-     list the user provides (ids of the form denial_qN, policy_qN,
-     chart_qN). Never invent an id. Never use a guideline id.
+     list the user provides. Valid id prefixes are denial_qN,
+     policy_qN, chart_qN, and guideline_<...> (corpus-backed). Never
+     invent an id.
   2. Every CitationMarker's `verbatim_quote` must be a substring of the
      referenced SourceQuote's `quote` (you may shorten — you may not
-     paraphrase, reorder, or modify punctuation). Claude 4.7's
-     Verifier will reject any citation that fails this check, and the
-     letter will not be sent.
+     paraphrase, reorder, or modify punctuation). The Verifier will
+     reject any citation that fails this check, and the rejected
+     citation will not appear in the final letter.
   3. Every CitationMarker's `source_type` must match the SourceQuote's
-     source_type (denial_letter, payer_policy, patient_chart).
-  4. Guideline citations are for PROSE CONTEXT only. Reference them in
-     the paragraph text like "consistent with ADA Standards of Care
-     (2024)" — do NOT emit them as CitationMarkers.
+     source_type (denial_letter, payer_policy, patient_chart, or
+     clinical_guideline).
+  4. Guideline citations are now first-class verifiable citations.
+     When a paragraph references a clinical guideline, emit a
+     CitationMarker pointing at the guideline's source_quote (id
+     starts "guideline_"); do not leave guideline mentions as
+     un-cited prose. The audit page will show these alongside chart
+     and policy citations.
   5. Never invent facts. If the evidence does not support a claim,
      don't make the claim. Fewer strong claims beats more weak claims.
 
@@ -87,9 +92,13 @@ def _serialize_all_sources(
     denial: DenialAnalysis,
     policy: PolicyCriteria,
     evidence: ChartEvidence,
+    guidelines: GuidelineCitations,
 ) -> str:
     all_quotes: list[SourceQuote] = (
-        denial.source_quotes + policy.source_quotes + evidence.source_quotes
+        denial.source_quotes
+        + policy.source_quotes
+        + evidence.source_quotes
+        + guidelines.source_quotes
     )
     return "\n".join(
         f"  - quote_id={sq.quote_id}  source_type={sq.source_type}\n"
@@ -113,11 +122,12 @@ def write_appeal(
         f"DENIAL ANALYSIS:\n{denial.model_dump_json(indent=2)}\n\n"
         f"POLICY CRITERIA:\n{policy.model_dump_json(indent=2)}\n\n"
         f"CHART EVIDENCE:\n{evidence.model_dump_json(indent=2)}\n\n"
-        f"GUIDELINE CITATIONS (prose support only, NOT CitationMarkers):\n"
+        f"GUIDELINE CITATIONS (corpus-backed; cite in CitationMarkers using\n"
+        f"the guideline_<...> source_quotes listed below):\n"
         f"{guidelines.model_dump_json(indent=2)}\n\n"
         f"AVAILABLE SOURCE QUOTES (use these quote_ids as CitationMarker.source_id;\n"
         f"verbatim_quote must be a substring of each quoted string):\n"
-        f"{_serialize_all_sources(denial, policy, evidence)}\n"
+        f"{_serialize_all_sources(denial, policy, evidence, guidelines)}\n"
     )
 
     user_content: list[dict[str, Any]] = [{"type": "text", "text": user_text}]
