@@ -17,10 +17,18 @@ Pipeline order:
 
 Optional progress_callback lets UI layers stream stage-by-stage updates
 without needing to refactor the pipeline into a generator.
+
+Cooperative cancellation: pass a `threading.Event` as `cancel_event`
+to allow the caller (typically the SSE handler whose client just
+disconnected) to abort the pipeline at the next agent boundary. The
+in-flight Claude call CANNOT be interrupted (we cannot kill an
+HTTP request mid-flight from another thread), but every later agent
+will be skipped — capping worst-case wasted spend at one agent.
 """
 from __future__ import annotations
 
 import logging
+import threading
 from typing import Any, Callable, Optional
 
 from auto_appeal_agent.agents.chart_miner import mine_chart
@@ -37,6 +45,25 @@ logger = logging.getLogger(__name__)
 ProgressCallback = Callable[[dict[str, Any]], None]
 
 
+class PipelineCancelled(Exception):
+    """Raised when the supplied cancel_event is set between agents.
+
+    Callers should catch this as a non-error termination — the user
+    asked to stop, no failure happened. The API layer treats it
+    that way (no spurious "pipeline error" emitted to a gone client).
+    """
+
+
+def _check_cancel(cancel_event: Optional[threading.Event]) -> None:
+    """Raise PipelineCancelled if the caller has requested abort.
+
+    Called between every agent so a Cancel click costs at most one
+    in-flight Claude call.
+    """
+    if cancel_event is not None and cancel_event.is_set():
+        raise PipelineCancelled("client disconnected mid-pipeline")
+
+
 def _emit(cb: Optional[ProgressCallback], stage: str, status: str, **extra: Any) -> None:
     if cb is not None:
         # INFO log every emitted event so the API server log shows
@@ -51,6 +78,7 @@ def run_pipeline(
     pipeline_input: PipelineInput,
     progress_callback: Optional[ProgressCallback] = None,
     second_pass: bool = False,
+    cancel_event: Optional[threading.Event] = None,
 ) -> VerifiedAppeal:
     """Run every agent in order and return the final VerifiedAppeal.
 
@@ -66,9 +94,15 @@ def run_pipeline(
             False because the reviewer currently struggles on
             larger-than-fixture drafts; if it fails, the rest of the
             appeal is still returned and the review is omitted.
+        cancel_event: Optional threading.Event. When set by the
+            caller (e.g. the SSE handler in api/main.py noticing
+            client disconnect), the pipeline raises PipelineCancelled
+            at the next agent boundary, capping worst-case spend at
+            one in-flight Claude call.
     """
     cb = progress_callback
 
+    _check_cancel(cancel_event)
     _emit(cb, "denial_analyzer", "running")
     denial = analyze_denial(pipeline_input.case_id, pipeline_input.denial_letter_path)
     _emit(
@@ -79,6 +113,7 @@ def run_pipeline(
         source_quotes=len(denial.source_quotes),
     )
 
+    _check_cancel(cancel_event)
     _emit(cb, "policy_reader", "running")
     policy = read_policy(pipeline_input.case_id, pipeline_input.payer_policy_path)
     _emit(
@@ -89,6 +124,7 @@ def run_pipeline(
         source_quotes=len(policy.source_quotes),
     )
 
+    _check_cancel(cancel_event)
     _emit(cb, "chart_miner", "running")
     evidence = mine_chart(
         pipeline_input.case_id,
@@ -103,6 +139,7 @@ def run_pipeline(
         source_quotes=len(evidence.source_quotes),
     )
 
+    _check_cancel(cancel_event)
     _emit(cb, "guideline_citer", "running")
     guidelines = cite_guidelines(
         pipeline_input.case_id,
@@ -111,6 +148,7 @@ def run_pipeline(
     )
     _emit(cb, "guideline_citer", "done", citations=len(guidelines.citations))
 
+    _check_cancel(cancel_event)
     _emit(cb, "letter_writer", "running")
     draft = write_appeal(
         pipeline_input.case_id, denial, policy, evidence, guidelines
@@ -124,6 +162,7 @@ def run_pipeline(
         citations=total_citations,
     )
 
+    _check_cancel(cancel_event)
     _emit(cb, "verifier", "running")
     # Guideline source_quotes are corpus-backed and now first-class
     # verifiable: any CitationMarker the LetterWriter emitted with a
@@ -147,6 +186,7 @@ def run_pipeline(
     )
 
     if second_pass:
+        _check_cancel(cancel_event)
         _emit(cb, "independent_reviewer", "running")
         try:
             review = independent_review(draft, all_source_quotes)

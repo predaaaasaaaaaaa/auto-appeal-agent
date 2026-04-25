@@ -24,6 +24,7 @@ import asyncio
 import json
 import logging
 import os
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -40,7 +41,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from sse_starlette.sse import EventSourceResponse
 
-from auto_appeal_agent.orchestrator import run_pipeline
+from auto_appeal_agent.orchestrator import PipelineCancelled, run_pipeline
 from auto_appeal_agent.pdf_export import render_appeal_pdf
 from auto_appeal_agent.pdf_utils import extract_text
 from auto_appeal_agent.schemas import AppealDraft, PipelineInput
@@ -148,6 +149,14 @@ async def run_case(case_id: str) -> EventSourceResponse:
         # and this asyncio coroutine (which yields SSE events).
         queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
         loop = asyncio.get_event_loop()
+        # Cooperative cancel signal. Set in the finally block below
+        # whenever this stream ends — whether the pipeline finished
+        # normally, errored, or the client disconnected (asyncio
+        # raises CancelledError on the active yield). The orchestrator
+        # checks this between every agent and aborts at the next
+        # boundary, capping wasted spend at one in-flight Claude call
+        # instead of running the remaining 4-5 agents on a gone client.
+        cancel_event = threading.Event()
 
         def progress_cb(event: dict[str, Any]) -> None:
             loop.call_soon_threadsafe(queue.put_nowait, event)
@@ -155,11 +164,20 @@ async def run_case(case_id: str) -> EventSourceResponse:
         async def runner() -> None:
             try:
                 verified = await asyncio.to_thread(
-                    run_pipeline, pipeline_input, progress_cb
+                    run_pipeline,
+                    pipeline_input,
+                    progress_cb,
+                    False,  # second_pass
+                    cancel_event,
                 )
                 await queue.put(
                     {"stage": "done", "result": verified.model_dump()}
                 )
+            except PipelineCancelled:
+                # Client disconnected. The queue consumer is already
+                # gone; no point emitting an error event. Just exit
+                # cleanly so the task's done() flips True.
+                logger.info("pipeline cancelled by client disconnect")
             except Exception as exc:  # pragma: no cover - streamed to client
                 await queue.put(
                     {
@@ -177,6 +195,21 @@ async def run_case(case_id: str) -> EventSourceResponse:
                 if event.get("stage") in ("done", "error"):
                     break
         finally:
-            await task
+            # Whether we got here via normal completion (break above),
+            # an exception inside the generator, or asyncio raising
+            # CancelledError on a yield because the client closed the
+            # connection, we ALWAYS signal the worker thread to stop
+            # at its next agent boundary. This is the $-saving step.
+            cancel_event.set()
+            # Best-effort shutdown wait. If the worker is mid-Claude-
+            # call (40s LetterWriter with thinking is the realistic
+            # worst case), we cannot interrupt the thread — let it
+            # finish in the background, it'll see cancel_event when
+            # it returns. Don't block the response handler past 1s.
+            if not task.done():
+                try:
+                    await asyncio.wait_for(asyncio.shield(task), timeout=1.0)
+                except (asyncio.TimeoutError, asyncio.CancelledError, Exception):
+                    pass
 
     return EventSourceResponse(event_stream())

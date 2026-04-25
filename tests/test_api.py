@@ -11,6 +11,8 @@ Covers:
 from __future__ import annotations
 
 import json
+import threading
+import time
 
 from fastapi.testclient import TestClient
 
@@ -94,7 +96,12 @@ def test_run_emits_sse_error_when_pipeline_raises(monkeypatch):
     stream must deliver the running event AND then a well-formed
     `{"stage":"error"}` event before closing.
     """
-    def fake_pipeline(pipeline_input, progress_callback=None, second_pass=False):
+    def fake_pipeline(
+        pipeline_input,
+        progress_callback=None,
+        second_pass=False,
+        cancel_event=None,
+    ):
         if progress_callback is not None:
             progress_callback({"stage": "denial_analyzer", "status": "running"})
         raise RuntimeError(
@@ -121,3 +128,71 @@ def test_run_emits_sse_error_when_pipeline_raises(monkeypatch):
     err = error_events[0]
     assert err["error_type"] == "RuntimeError"
     assert "no tool_use block" in err["message"]
+
+
+def test_run_passes_cancel_event_to_pipeline(monkeypatch):
+    """Wiring check: every call to /api/run/{case_id} must pass a
+    threading.Event as `cancel_event` to run_pipeline. Without it,
+    the orchestrator's cooperative cancellation has nothing to
+    check — and a client disconnect would leave the pipeline
+    burning Claude calls until natural completion.
+
+    The end-to-end disconnect-propagation behavior is hard to test
+    via fastapi.testclient.TestClient (which doesn't faithfully
+    emulate ASGI disconnect signals on stream exit). The
+    orchestrator-level cancellation primitive is fully covered in
+    tests/test_pipeline_cancellation.py — 9 tests prove
+    `cancel_event.set()` aborts the pipeline at the next agent
+    boundary. This test pins the remaining contract: the API
+    actually constructs and passes one.
+    """
+    captured: dict = {}
+
+    def fake_pipeline(
+        pipeline_input,
+        progress_callback=None,
+        second_pass=False,
+        cancel_event=None,
+    ):
+        captured["cancel_event"] = cancel_event
+        captured["second_pass"] = second_pass
+        if progress_callback is not None:
+            progress_callback({"stage": "denial_analyzer", "status": "running"})
+        # Return a minimal valid VerifiedAppeal so the response
+        # completes cleanly and we can inspect captured state.
+        from auto_appeal_agent.schemas import (
+            AppealDraft,
+            AppealParagraph,
+            VerifiedAppeal,
+        )
+
+        return VerifiedAppeal(
+            case_id="case_01_ozempic_bmi34",
+            draft=AppealDraft(
+                case_id="case_01_ozempic_bmi34",
+                recipient_plan="x",
+                subject_line="x",
+                paragraphs=[AppealParagraph(text="x", citations=[])],
+            ),
+            verified_citations=[],
+            rejected_citations=[],
+            verification_pass_rate=1.0,
+            ready_to_send=True,
+        )
+
+    monkeypatch.setattr(api_main, "run_pipeline", fake_pipeline)
+
+    with client.stream("GET", "/api/run/case_01_ozempic_bmi34") as r:
+        assert r.status_code == 200
+        # Drain the stream so the runner task completes.
+        for _ in r.iter_lines():
+            pass
+
+    assert isinstance(captured.get("cancel_event"), threading.Event), (
+        f"API must pass a threading.Event as cancel_event; "
+        f"got {type(captured.get('cancel_event'))!r}"
+    )
+    # Sanity: second_pass is False by default; the API doesn't (yet)
+    # surface a query param to flip it on. If that ever changes,
+    # this assertion catches an accidental flip.
+    assert captured.get("second_pass") is False
