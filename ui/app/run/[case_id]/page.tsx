@@ -804,12 +804,29 @@ function DraftSkeleton({
   stages: Record<string, StageState>;
   error: string | null;
 }) {
+  // The skeleton text used to read the FIRST stage with status="running".
+  // Between agents the orchestrator emits "X done" microseconds before
+  // "Y running"; with React batching that's usually merged into one
+  // render — but if ANY render lands between the two, no stage is
+  // running and the text reverted to "Starting pipeline…", making the
+  // pipeline look stuck. Instead, surface the LAST stage that's fired
+  // at all (running OR done). Once denial_analyzer has emitted
+  // anything, the skeleton always shows a real description.
   const stageInProgress = PIPELINE_STAGES.find(
     (s) => stages[s].status === "running"
   );
+  const lastFiredStage = [...PIPELINE_STAGES]
+    .reverse()
+    .find((s) => stages[s].status !== "pending");
+  const headlineStage = stageInProgress ?? lastFiredStage;
   const completed = PIPELINE_STAGES.filter(
     (s) => stages[s].status === "done"
   ).length;
+  const headlineText = headlineStage
+    ? stages[headlineStage].status === "done"
+      ? `Finished ${STAGE_LABELS[headlineStage] ?? headlineStage}…`
+      : (STAGE_DESCRIPTIONS[headlineStage] ?? "Running…")
+    : "Starting pipeline…";
 
   if (error) {
     return (
@@ -824,11 +841,7 @@ function DraftSkeleton({
 
   return (
     <div className="flex flex-col gap-4 rounded-sm border border-dashed border-border bg-card/60 p-10">
-      <div className="text-sm text-muted-foreground">
-        {stageInProgress
-          ? STAGE_DESCRIPTIONS[stageInProgress] ?? "Running…"
-          : "Starting pipeline…"}
-      </div>
+      <div className="text-sm text-muted-foreground">{headlineText}</div>
       <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
         <div
           className="h-full bg-[--color-status-running] transition-all"
