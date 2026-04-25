@@ -164,6 +164,19 @@ export default function RunPage({
       es.onmessage = (msg) => {
         try {
           const event = JSON.parse(msg.data) as ProgressEvent;
+          // Diagnostic — keeps a real-time trail in the browser
+          // console showing exactly when each SSE event arrives,
+          // so timing mismatches between server emit and UI render
+          // are visible at a glance.
+          // eslint-disable-next-line no-console
+          console.log(
+            "[SSE]",
+            new Date().toISOString(),
+            "stage=",
+            event.stage,
+            "status=",
+            event.status,
+          );
           if (event.stage === "done" && event.result) {
             setResult(event.result);
             es?.close();

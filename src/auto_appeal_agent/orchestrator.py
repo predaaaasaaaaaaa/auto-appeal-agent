@@ -39,6 +39,11 @@ ProgressCallback = Callable[[dict[str, Any]], None]
 
 def _emit(cb: Optional[ProgressCallback], stage: str, status: str, **extra: Any) -> None:
     if cb is not None:
+        # INFO log every emitted event so the API server log shows
+        # exactly when each SSE frame is pushed onto the wire — useful
+        # when diagnosing UI / browser timing issues against
+        # backend-side reality.
+        logger.info("emit_event stage=%s status=%s", stage, status)
         cb({"stage": stage, "status": status, **extra})
 
 
