@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   type AppealDraft,
   type AppealReview,
@@ -50,6 +50,7 @@ export default function RunPage({
 }) {
   const { case_id: caseId } = use(params);
   const meta = caseMeta(caseId);
+  const router = useRouter();
 
   const [stages, setStages] = useState<Record<string, StageState>>(() =>
     Object.fromEntries(
@@ -60,6 +61,18 @@ export default function RunPage({
   const [editedDraft, setEditedDraft] = useState<AppealDraft | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Pipeline is "active" until we have a result OR an error. Used to:
+  // (a) block accidental tab close via beforeunload, and
+  // (b) gate the "← worklist" navigation behind a confirm so the user
+  //     doesn't navigate away by reflex and burn the rest of the run.
+  const pipelineActive = !result && !error;
+
+  // Holds the live EventSource so the Cancel button can close it. Closing
+  // it triggers the SSE generator's finally block on the server, which
+  // sets cancel_event — orchestrator then aborts at the next agent
+  // boundary (worst-case wasted spend: one in-flight Claude call).
+  const esRef = useRef<EventSource | null>(null);
 
   // When the pipeline finishes, seed the editable draft once.
   useEffect(() => {
@@ -152,6 +165,7 @@ export default function RunPage({
   // no risk of a double pipeline run on initial render.
   useEffect(() => {
     const es = new EventSource(`/api/run/${caseId}`);
+    esRef.current = es;
 
     es.onmessage = (msg) => {
       try {
@@ -195,8 +209,45 @@ export default function RunPage({
 
     return () => {
       es.close();
+      esRef.current = null;
     };
   }, [caseId]);
+
+  // Warn before tab close / refresh if a pipeline is still running —
+  // closing without cancelling means the server-side cooperative cancel
+  // STILL fires (SSE finally block flips cancel_event), so spend is
+  // bounded. But the user might lose visibility of an in-flight run, so
+  // a confirm is friendlier than a silent disappearance.
+  useEffect(() => {
+    if (!pipelineActive) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      // Modern browsers ignore the message string; the truthy
+      // returnValue is what triggers the prompt.
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [pipelineActive]);
+
+  // Cancel button: close the EventSource (triggers server-side cancel
+  // via finally → cancel_event.set), reset local state so the page
+  // doesn't render a stale "Pipeline running…" pill, navigate home.
+  const cancelAndGoHome = useCallback(() => {
+    if (
+      pipelineActive &&
+      !window.confirm(
+        "Cancel the running pipeline and return to the worklist?\n\n" +
+          "The server will stop at the next agent boundary " +
+          "(worst case: one in-flight Claude call still completes)."
+      )
+    ) {
+      return;
+    }
+    esRef.current?.close();
+    esRef.current = null;
+    router.push("/");
+  }, [pipelineActive, router]);
 
   // When the active citation changes, scroll the source pane to the highlight.
   useLayoutEffect(() => {
@@ -261,12 +312,13 @@ export default function RunPage({
       {/* Patient identifier strip */}
       <div className="border-b border-border bg-card">
         <div className="mx-auto max-w-[1600px] px-6 py-3">
-          <Link
-            href="/"
+          <button
+            type="button"
+            onClick={cancelAndGoHome}
             className="text-xs text-muted-foreground hover:text-foreground"
           >
             ← worklist
-          </Link>
+          </button>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-8 gap-y-1 text-sm">
             <IdField label="Patient" value={meta?.patient_name ?? caseId} bold />
             <IdField label="DOB" value={meta?.date_of_birth ?? "—"} mono />
@@ -281,7 +333,19 @@ export default function RunPage({
               value={meta?.denial_date ?? "—"}
               mono
             />
-            <div className="ml-auto">{readinessBadge}</div>
+            <div className="ml-auto flex items-center gap-2">
+              {pipelineActive && (
+                <button
+                  type="button"
+                  onClick={cancelAndGoHome}
+                  className="rounded-sm border border-[--color-status-rejected]/40 bg-transparent px-2 py-1 text-[11px] font-medium text-[--color-status-rejected] hover:bg-[--color-status-rejected-bg]"
+                  title="Stop the pipeline and return to the worklist"
+                >
+                  Cancel
+                </button>
+              )}
+              {readinessBadge}
+            </div>
           </div>
         </div>
         <PipelineStepper stages={stages} />
