@@ -1,4 +1,169 @@
 {
+  "304d06398ac61378": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01CLUTXfsdh6ga2pdnJz2Far",
+        "input": {
+          "case_id": "case_04_cgm_t2dm_insulin",
+          "paragraphs": [
+            {
+              "citations": [
+                {
+                  "claim": "CGM request was denied.",
+                  "source_id": "denial_q1",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Your request for a continuous glucose monitoring (CGM) system (HCPCS A9276/A9277/A9278) has been DENIED."
+                },
+                {
+                  "claim": "Stated denial rationale.",
+                  "source_id": "denial_q2",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "Per policy DME-CGM-v4, CGM is covered for members with Type 1 diabetes mellitus. Member's diagnosis is Type 2 diabetes. Denial code: DME-DX-02."
+                },
+                {
+                  "claim": "Appeal is timely.",
+                  "source_id": "denial_q3",
+                  "source_type": "denial_letter",
+                  "verbatim_quote": "You have the right to appeal within 60 days."
+                }
+              ],
+              "heading": "Patient and Requested Service",
+              "text": "I am writing on behalf of my patient David T. Harrison (member ID SC-22019445), enrolled in Summit Care Select, to appeal the April 7, 2026 denial of his prior authorization request for a continuous glucose monitoring (CGM) system (HCPCS A9276/A9277/A9278). The denial letter states that the request 'has been DENIED' and cites the rationale that 'CGM is covered for members with Type 1 diabetes mellitus' and that the 'Member's diagnosis is Type 2 diabetes' (denial code DME-DX-02). This appeal is submitted within the 60-day window noted in the denial. As described below, Mr. Harrison fully meets the Type 2 diabetes pathway under policy DME-CGM-v4, and the denial appears to have overlooked that pathway."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "Policy includes a Type 2 diabetes pathway.",
+                  "source_id": "policy_q3",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Diagnosis of Type 2 diabetes mellitus AND ALL of the following:"
+                },
+                {
+                  "claim": "Patient has Type 2 diabetes since 2009.",
+                  "source_id": "chart_q1",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Type 2 diabetes mellitus with poor long-term control (E11.65), diagnosed 2009."
+                }
+              ],
+              "heading": "Medical necessity met: Type 2 diabetes mellitus diagnosis (Type 2 pathway)",
+              "text": "Policy DME-CGM-v4 expressly provides a Type 2 pathway, covering members with a 'Diagnosis of Type 2 diabetes mellitus AND ALL of the following' criteria. The denial's premise \u2014 that CGM is limited to Type 1 diabetes \u2014 is therefore incorrect on its face. Mr. Harrison's chart documents 'Type 2 diabetes mellitus with poor long-term control (E11.65), diagnosed 2009,' satisfying the threshold diagnosis for the Type 2 pathway."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "Policy requires \u22653 injections/day or insulin pump.",
+                  "source_id": "policy_q4",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Treated with three or more insulin injections per day OR with an insulin pump;"
+                },
+                {
+                  "claim": "Patient receives 4 daily insulin injections.",
+                  "source_id": "chart_q2",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Total daily injections: 4"
+                },
+                {
+                  "claim": "ADA recommends CGM for T2DM on MDI.",
+                  "source_id": "guideline_ada_2024_cgm_q1",
+                  "source_type": "clinical_guideline",
+                  "verbatim_quote": "Continuous glucose monitoring should be offered to adults with type 2 diabetes treated with multiple daily injections or continuous subcutaneous insulin infusion"
+                }
+              ],
+              "heading": "Medical necessity met: Three or more daily insulin injections",
+              "text": "The Type 2 pathway requires that the member be 'Treated with three or more insulin injections per day OR with an insulin pump.' Mr. Harrison's current insulin regimen documents 'Total daily injections: 4' (basal plus three mealtime doses), exceeding this threshold. This pattern of multiple daily injections is precisely the population for which the American Diabetes Association recommends CGM: 'Continuous glucose monitoring should be offered to adults with type 2 diabetes treated with multiple daily injections or continuous subcutaneous insulin infusion.'"
+            },
+            {
+              "citations": [
+                {
+                  "claim": "Policy requires \u22654 fingersticks/day.",
+                  "source_id": "policy_q5",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Requires frequent self-monitoring of blood glucose (four or more fingerstick tests per day);"
+                },
+                {
+                  "claim": "Patient performs SMBG 4-6 times per day.",
+                  "source_id": "chart_q3",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "Despite good adherence with SMBG 4-6 times per day"
+                }
+              ],
+              "heading": "Medical necessity met: Frequent self-monitoring of blood glucose",
+              "text": "The policy further requires that the member 'Requires frequent self-monitoring of blood glucose (four or more fingerstick tests per day).' Mr. Harrison's progress note of April 6, 2026 documents 'good adherence with SMBG 4-6 times per day,' meeting and exceeding this requirement."
+            },
+            {
+              "citations": [
+                {
+                  "claim": "Policy A1c/hypoglycemia sub-criterion.",
+                  "source_id": "policy_q6",
+                  "source_type": "payer_policy",
+                  "verbatim_quote": "Meets at least one of the following: (i) A1c greater than or equal to 8.0%; (ii) documented history of one or\nmore episodes of severe or problematic hypoglycemia; (iii) hypoglycemia unawareness."
+                },
+                {
+                  "claim": "Most recent A1c is 9.2%.",
+                  "source_id": "chart_q4",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "2026-04: 9.2%"
+                },
+                {
+                  "claim": "Severe hypoglycemia requiring glucagon at home.",
+                  "source_id": "chart_q5",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "2025-08-12: Hypoglycemic event requiring glucagon at home, fingerstick 42 mg/dL, symptoms of confusion and diaphoresis."
+                },
+                {
+                  "claim": "ED visit for severe hypoglycemia.",
+                  "source_id": "chart_q6",
+                  "source_type": "patient_chart",
+                  "verbatim_quote": "2025-11-03: Emergency department visit for severe hypoglycemia, fingerstick 38 mg/dL."
+                },
+                {
+                  "claim": "ADA: CGM improves A1C and reduces hypoglycemia.",
+                  "source_id": "guideline_ada_2024_cgm_q1",
+                  "source_type": "clinical_guideline",
+                  "verbatim_quote": "CGM is associated with improved A1C and reduced hypoglycemia compared with self-monitoring of blood glucose"
+                }
+              ],
+              "heading": "Medical necessity met: A1c \u2265 8.0% and documented severe hypoglycemia",
+              "text": "The final Type 2 criterion requires that the member 'Meets at least one of the following: (i) A1c greater than or equal to 8.0%; (ii) documented history of one or more episodes of severe or problematic hypoglycemia; (iii) hypoglycemia unawareness.' Mr. Harrison meets two of the three sub-criteria. His most recent A1c, drawn in April 2026, is 9.2%, well above the 8.0% threshold. In addition, his chart documents recurrent severe hypoglycemia, including a 2025-08-12 'Hypoglycemic event requiring glucagon at home, fingerstick 42 mg/dL, symptoms of confusion and diaphoresis,' and a 2025-11-03 'Emergency department visit for severe hypoglycemia, fingerstick 38 mg/dL.' The ADA notes that CGM in this population 'is associated with improved A1C and reduced hypoglycemia compared with self-monitoring of blood glucose,' directly addressing both of Mr. Harrison's clinical problems."
+            },
+            {
+              "citations": [],
+              "heading": "Conclusion and Request",
+              "text": "The denial rests on a single premise \u2014 that CGM coverage is limited to Type 1 diabetes \u2014 but policy DME-CGM-v4 itself provides an explicit Type 2 diabetes pathway, and Mr. Harrison meets every element of that pathway: a documented Type 2 diabetes diagnosis, four daily insulin injections, SMBG 4\u20136 times per day, an A1c of 9.2%, and two documented episodes of severe hypoglycemia (one requiring home glucagon and one requiring an ED visit). His clinical picture is precisely the scenario for which the American Diabetes Association recommends CGM. I respectfully request that Summit Care Select overturn the denial and approve the CGM system (HCPCS A9276/A9277/A9278) without further delay. Thank you for your prompt reconsideration."
+            }
+          ],
+          "recipient_plan": "Summit Care Select",
+          "subject_line": "Appeal of prior authorization denial \u2014 Continuous glucose monitoring (CGM) system (HCPCS A9276/A9277/A9278) \u2014 member SC-22019445"
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_019TBbtZmAWhMoixyQkCGkzH",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 8309,
+      "output_tokens": 3380,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
   "431811648c4b3a2a": {
     "container": null,
     "content": [
@@ -6,7 +171,7 @@
         "caller": {
           "type": "direct"
         },
-        "id": "toolu_01DNwKAiaL1VAGy7Y1SeZJfk",
+        "id": "toolu_01816Qy3ZwjdRQKWifaNNdn3",
         "input": {
           "case_id": "case_04_cgm_t2dm_insulin",
           "denial_date": "April 7, 2026",
@@ -14,8 +179,8 @@
             {
               "code": "DME-DX-02",
               "quote": "Per policy DME-CGM-v4, CGM is covered for members with Type 1 diabetes mellitus. Member's diagnosis is Type 2 diabetes.",
-              "quote_location": "page 1, paragraph 4 (Reason for denial)",
-              "reason": "Plan policy restricts CGM coverage to Type 1 diabetes; member's diagnosis is Type 2 diabetes."
+              "quote_location": "page 1, paragraph 5 (Reason for denial)",
+              "reason": "Per policy DME-CGM-v4, CGM coverage is limited to members with Type 1 diabetes mellitus; member's diagnosis is Type 2 diabetes."
             }
           ],
           "member_info": {
@@ -27,19 +192,19 @@
           "requested_service": "Continuous glucose monitoring (CGM) system (HCPCS A9276/A9277/A9278)",
           "source_quotes": [
             {
-              "location": "page 1, paragraph 3",
+              "location": "page 1, paragraph 4",
               "quote": "Your request for a continuous glucose monitoring (CGM) system (HCPCS A9276/A9277/A9278) has been DENIED.",
               "quote_id": "denial_q1",
               "source_type": "denial_letter"
             },
             {
-              "location": "page 1, paragraph 4",
+              "location": "page 1, paragraph 5",
               "quote": "Reason for denial: Per policy DME-CGM-v4, CGM is covered for members with Type 1 diabetes mellitus. Member's diagnosis is Type 2 diabetes. Denial code: DME-DX-02.",
               "quote_id": "denial_q2",
               "source_type": "denial_letter"
             },
             {
-              "location": "page 1, paragraph 5",
+              "location": "page 1, paragraph 6",
               "quote": "You have the right to appeal within 60 days.",
               "quote_id": "denial_q3",
               "source_type": "denial_letter"
@@ -50,7 +215,7 @@
         "type": "tool_use"
       }
     ],
-    "id": "msg_01MEmXnC7Fk75b9LT6GyQGyP",
+    "id": "msg_01LLL9KCJqZZz4CyshqskM2x",
     "model": "claude-opus-4-7",
     "role": "assistant",
     "stop_details": null,
@@ -66,7 +231,7 @@
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
       "input_tokens": 5013,
-      "output_tokens": 724,
+      "output_tokens": 739,
       "server_tool_use": null,
       "service_tier": "standard"
     }
@@ -732,6 +897,186 @@
       "service_tier": "standard"
     }
   },
+  "becfcbf2080f2968": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01UCSHk14P62uT9A3zP4WQXZ",
+        "input": {
+          "case_id": "case_04_cgm_t2dm_insulin",
+          "citations": [
+            {
+              "citation_id": "guideline_ada_2024_cgm_q1",
+              "citation_title": "Standards of Care in Diabetes \u2014 2024",
+              "guideline_source": "American Diabetes Association (2024)",
+              "quote": "Continuous glucose monitoring should be offered to adults with type 2 diabetes treated with multiple daily injections or continuous subcutaneous insulin infusion who are capable of using the device safely, as CGM is associated with improved A1C and reduced hypoglycemia compared with self-monitoring of blood glucose.",
+              "supports_claim": "CGM is indicated for adults with type 2 diabetes on multiple daily insulin injections or insulin pump therapy, directly rebutting the policy's T1DM-only restriction.",
+              "url": "https://diabetesjournals.org/care/issue/47/Supplement_1"
+            }
+          ]
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01KpDgZX1meT9gQRS4WCXoX9",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 5899,
+      "output_tokens": 369,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
+  "cdc215b1a34475ef": {
+    "container": null,
+    "content": [
+      {
+        "caller": {
+          "type": "direct"
+        },
+        "id": "toolu_01BFBjHgTB3GnNjkFT8GBSVG",
+        "input": {
+          "parameter": {
+            "case_id": "case_04_cgm_t2dm_insulin",
+            "criteria_met": {
+              "mn_1": false,
+              "mn_2": true,
+              "mn_3": true,
+              "mn_4": true,
+              "mn_5": true
+            },
+            "evidence_items": [
+              {
+                "criterion_id": "mn_2",
+                "finding": "Patient has Type 2 diabetes mellitus diagnosis since 2009.",
+                "quote": "Type 2 diabetes mellitus with poor long-term control (E11.65), diagnosed 2009.",
+                "quote_location": "Diagnoses section",
+                "supports_appeal": true
+              },
+              {
+                "criterion_id": "mn_3",
+                "finding": "Patient is on 4 daily insulin injections (basal + 3 mealtime), exceeding the 3+ injection threshold.",
+                "quote": "Total daily injections: 4",
+                "quote_location": "Current Insulin Regimen section",
+                "supports_appeal": true
+              },
+              {
+                "criterion_id": "mn_4",
+                "finding": "Patient performs SMBG 4-6 times per day, meeting the frequent self-monitoring requirement.",
+                "quote": "Despite good adherence with SMBG 4-6 times per day",
+                "quote_location": "Progress Note 2026-04-06",
+                "supports_appeal": true
+              },
+              {
+                "criterion_id": "mn_5",
+                "finding": "Most recent A1c is 9.2%, well above the 8.0% threshold.",
+                "quote": "2026-04: 9.2%",
+                "quote_location": "Recent A1c section",
+                "supports_appeal": true
+              },
+              {
+                "criterion_id": "mn_5",
+                "finding": "Documented severe hypoglycemia requiring glucagon at home.",
+                "quote": "2025-08-12: Hypoglycemic event requiring glucagon at home, fingerstick 42 mg/dL, symptoms of confusion and diaphoresis.",
+                "quote_location": "Hypoglycemia History section",
+                "supports_appeal": true
+              },
+              {
+                "criterion_id": "mn_5",
+                "finding": "ED visit for severe hypoglycemia.",
+                "quote": "2025-11-03: Emergency department visit for severe hypoglycemia, fingerstick 38 mg/dL.",
+                "quote_location": "Hypoglycemia History section",
+                "supports_appeal": true
+              },
+              {
+                "criterion_id": "mn_1",
+                "finding": "Chart documents Type 2, not Type 1 diabetes.",
+                "quote": "Type 2 diabetes mellitus with poor long-term control (E11.65), diagnosed 2009.",
+                "quote_location": "Diagnoses section",
+                "supports_appeal": false
+              }
+            ],
+            "source_quotes": [
+              {
+                "location": "Diagnoses section",
+                "quote": "Type 2 diabetes mellitus with poor long-term control (E11.65), diagnosed 2009.",
+                "quote_id": "chart_q1",
+                "source_type": "patient_chart"
+              },
+              {
+                "location": "Current Insulin Regimen section",
+                "quote": "Total daily injections: 4",
+                "quote_id": "chart_q2",
+                "source_type": "patient_chart"
+              },
+              {
+                "location": "Progress Note 2026-04-06 (Dr. Vasquez)",
+                "quote": "Despite good adherence with SMBG 4-6 times per day",
+                "quote_id": "chart_q3",
+                "source_type": "patient_chart"
+              },
+              {
+                "location": "Recent A1c section",
+                "quote": "2026-04: 9.2%",
+                "quote_id": "chart_q4",
+                "source_type": "patient_chart"
+              },
+              {
+                "location": "Hypoglycemia History section",
+                "quote": "2025-08-12: Hypoglycemic event requiring glucagon at home, fingerstick 42 mg/dL, symptoms of confusion and diaphoresis.",
+                "quote_id": "chart_q5",
+                "source_type": "patient_chart"
+              },
+              {
+                "location": "Hypoglycemia History section",
+                "quote": "2025-11-03: Emergency department visit for severe hypoglycemia, fingerstick 38 mg/dL.",
+                "quote_id": "chart_q6",
+                "source_type": "patient_chart"
+              }
+            ]
+          }
+        },
+        "name": "emit_structured_output",
+        "type": "tool_use"
+      }
+    ],
+    "id": "msg_01LjZBRs3vjNWNEeKJTozvBt",
+    "model": "claude-opus-4-7",
+    "role": "assistant",
+    "stop_details": null,
+    "stop_reason": "tool_use",
+    "stop_sequence": null,
+    "type": "message",
+    "usage": {
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 0,
+      "inference_geo": "global",
+      "input_tokens": 3425,
+      "output_tokens": 1400,
+      "server_tool_use": null,
+      "service_tier": "standard"
+    }
+  },
   "f5bb5b17808595a0": {
     "container": null,
     "content": [
@@ -807,7 +1152,7 @@
         "caller": {
           "type": "direct"
         },
-        "id": "toolu_01WER76CSpnv31D6udx4BvrJ",
+        "id": "toolu_0195K7oXkjtQX5FhRLB7UwTu",
         "input": {
           "case_id": "case_04_cgm_t2dm_insulin",
           "criteria": [
@@ -816,50 +1161,50 @@
               "criterion_id": "mn_1",
               "quote": "Diagnosis of Type 1 diabetes mellitus.",
               "quote_location": "Page 1, Medical Necessity Criteria, item 1",
-              "text": "Member has a diagnosis of Type 1 diabetes mellitus (satisfies coverage alone)."
+              "text": "Member has a diagnosis of Type 1 diabetes mellitus (qualifies on its own)."
             },
             {
               "category": "clinical_history",
               "criterion_id": "mn_2",
               "quote": "Diagnosis of Type 2 diabetes mellitus AND ALL of the following:",
               "quote_location": "Page 1, Medical Necessity Criteria, item 2",
-              "text": "Member has a diagnosis of Type 2 diabetes mellitus (required as part of the Type 2 pathway, in conjunction with all sub-criteria)."
+              "text": "Member has a diagnosis of Type 2 diabetes mellitus (required as part of the Type 2 pathway)."
             },
             {
               "category": "prior_treatments",
               "criterion_id": "mn_3",
               "quote": "Treated with three or more insulin injections per day OR with an insulin pump;",
               "quote_location": "Page 1, Medical Necessity Criteria, item 2(a)",
-              "text": "Member is being treated with three or more insulin injections per day OR with an insulin pump."
+              "text": "Under the Type 2 pathway, member is treated with three or more insulin injections per day or with an insulin pump."
             },
             {
               "category": "diagnostics",
               "criterion_id": "mn_4",
               "quote": "Requires frequent self-monitoring of blood glucose (four or more fingerstick tests per day);",
               "quote_location": "Page 1, Medical Necessity Criteria, item 2(b)",
-              "text": "Member requires frequent self-monitoring of blood glucose (four or more fingerstick tests per day)."
+              "text": "Under the Type 2 pathway, member requires frequent self-monitoring of blood glucose (four or more fingerstick tests per day)."
             },
             {
               "category": "diagnostics",
               "criterion_id": "mn_5",
               "quote": "Meets at least one of the following: (i) A1c greater than or equal to 8.0%; (ii) documented history of one or\nmore episodes of severe or problematic hypoglycemia; (iii) hypoglycemia unawareness.",
               "quote_location": "Page 1, Medical Necessity Criteria, item 2(c)",
-              "text": "Member meets at least one glycemic-control trigger: A1c \u2265 8.0%, documented severe/problematic hypoglycemia, or hypoglycemia unawareness."
+              "text": "Under the Type 2 pathway, member meets at least one of the following: A1c \u2265 8.0%, documented history of one or more episodes of severe or problematic hypoglycemia, or hypoglycemia unawareness."
             },
             {
               "category": "clinical_history",
               "criterion_id": "mn_6",
               "quote": "Pregnant with any form of diabetes mellitus requiring insulin.",
               "quote_location": "Page 1, Medical Necessity Criteria, item 3",
-              "text": "Member is pregnant with any form of diabetes mellitus requiring insulin (satisfies coverage alone)."
+              "text": "Member is pregnant with any form of diabetes mellitus requiring insulin (qualifies on its own)."
             }
           ],
           "policy_effective_date": "January 1, 2026",
           "policy_name": "DME-CGM-v4: Continuous Glucose Monitoring Systems",
           "source_quotes": [
             {
-              "location": "Page 1, Medical Necessity Criteria introduction",
-              "quote": "CGM is considered medically necessary when the member meets at least\nONE of the following:",
+              "location": "Page 1, Medical Necessity Criteria header",
+              "quote": "MEDICAL NECESSITY CRITERIA. CGM is considered medically necessary when the member meets at least\nONE of the following:",
               "quote_id": "policy_q1",
               "source_type": "payer_policy"
             },
@@ -898,12 +1243,6 @@
               "quote": "Pregnant with any form of diabetes mellitus requiring insulin.",
               "quote_id": "policy_q7",
               "source_type": "payer_policy"
-            },
-            {
-              "location": "Page 1, NOTE",
-              "quote": "CGM policy was expanded in version 4 to include insulin-intensive Type 2 diabetes. Earlier denials that\nreferenced Type 1 requirement only are no longer consistent with current policy.",
-              "quote_id": "policy_q8",
-              "source_type": "payer_policy"
             }
           ]
         },
@@ -911,7 +1250,7 @@
         "type": "tool_use"
       }
     ],
-    "id": "msg_01Rvqg3FxGriH7qBFHcqjr6k",
+    "id": "msg_01XqKeti74zyJHMkeCy12U9M",
     "model": "claude-opus-4-7",
     "role": "assistant",
     "stop_details": null,
@@ -927,7 +1266,7 @@
       "cache_read_input_tokens": 0,
       "inference_geo": "global",
       "input_tokens": 2791,
-      "output_tokens": 1817,
+      "output_tokens": 1735,
       "server_tool_use": null,
       "service_tier": "standard"
     }
