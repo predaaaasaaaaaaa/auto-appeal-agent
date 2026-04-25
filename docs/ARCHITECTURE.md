@@ -82,7 +82,18 @@ verbatim quote from the chart that supports (or refutes) it.
 Professional societies (like the American Diabetes Association or the
 American College of Rheumatology) publish clinical guidelines that tell
 doctors what the standard of care is. Citing these guidelines strengthens
-an appeal. The GuidelineCiter pulls supporting guideline quotes.
+an appeal.
+
+The GuidelineCiter does NOT generate guideline citations from the model's
+training. It picks excerpts from a **local clinical-guideline corpus**
+shipped under `fixtures/guidelines/corpus.json`. Each excerpt has a
+stable id; the GuidelineCiter cites by id and emits the verbatim text
+straight from the corpus. The downstream Verifier then substring-checks
+the cited text against the corpus excerpt — exactly the same primitive
+used for chart, denial-letter, and policy citations. A real-world
+deployment would swap the corpus for licensed verbatim text from each
+guideline (UpToDate, the society's open-access publication, or a
+licensed vendor); this module's interface does not change.
 
 ### 5. LetterWriter — "Put it all together."
 
