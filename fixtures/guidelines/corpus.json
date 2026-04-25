@@ -1,0 +1,161 @@
+{
+  "_about": "Local clinical-guideline corpus used by GuidelineCiter and the Verifier. Each entry's `excerpts` text is what the Verifier substring-matches against. Quote IDs are stable so cassettes remain deterministic across runs.",
+  "_demo_disclaimer": "These excerpts paraphrase real published recommendations from real professional societies. They capture the substance of each guideline's relevant recommendation but are NOT word-for-word verbatim text from the source publications. Production deployment should replace this corpus with licensed verbatim excerpts from the original guideline PDFs (e.g. via UpToDate, the society's open-access publication, or a licensed vendor).",
+  "guidelines": [
+    {
+      "id": "aha_acc_tos_2013",
+      "society": "American Heart Association / American College of Cardiology / The Obesity Society",
+      "title": "2013 AHA/ACC/TOS Guideline for the Management of Overweight and Obesity in Adults",
+      "year": 2013,
+      "url": "https://www.ahajournals.org/doi/10.1161/01.cir.0000437739.71477.ee",
+      "topics": ["obesity", "BMI", "weight management", "lifestyle modification", "pharmacotherapy"],
+      "excerpts": [
+        {
+          "quote_id": "guideline_aha_acc_tos_2013_q1",
+          "section": "Treatment recommendations",
+          "text": "Adults with a BMI of 30 kg/m2 or greater, or a BMI of 27 kg/m2 or greater with weight-related comorbidities such as hypertension or type 2 diabetes mellitus, should be offered comprehensive lifestyle interventions, and pharmacotherapy is an appropriate adjunct in these BMI categories when lifestyle measures alone do not achieve sufficient weight loss."
+        }
+      ]
+    },
+    {
+      "id": "endocrine_society_2015",
+      "society": "Endocrine Society",
+      "title": "Pharmacological Management of Obesity: An Endocrine Society Clinical Practice Guideline",
+      "year": 2015,
+      "url": "https://academic.oup.com/jcem/article/100/2/342/2813109",
+      "topics": ["obesity", "pharmacotherapy", "weight loss", "GLP-1"],
+      "excerpts": [
+        {
+          "quote_id": "guideline_endocrine_2015_q1",
+          "section": "Indications for pharmacotherapy",
+          "text": "Weight-loss pharmacotherapy is recommended for patients with a BMI of 30 kg/m2 or greater, or a BMI of 27 kg/m2 or greater with at least one weight-related comorbidity, who have been unable to achieve or sustain clinically meaningful weight loss with a structured lifestyle intervention alone, as an adjunct to ongoing diet, exercise, and behavior modification."
+        }
+      ]
+    },
+    {
+      "id": "aace_ace_2016",
+      "society": "American Association of Clinical Endocrinologists / American College of Endocrinology",
+      "title": "AACE/ACE Comprehensive Clinical Practice Guidelines for Medical Care of Patients with Obesity",
+      "year": 2016,
+      "url": "https://www.endocrinepractice.org/article/S1530-891X(20)44630-1/fulltext",
+      "topics": ["obesity", "complications-centric", "lifestyle and pharmacotherapy"],
+      "excerpts": [
+        {
+          "quote_id": "guideline_aace_ace_2016_q1",
+          "section": "Treatment intensification",
+          "text": "Pharmacotherapy may be initiated concurrently with comprehensive lifestyle intervention in patients with obesity-related complications, rather than being reserved exclusively for patients who have failed a trial of lifestyle change in isolation."
+        }
+      ]
+    },
+    {
+      "id": "ada_standards_2024",
+      "society": "American Diabetes Association",
+      "title": "Standards of Care in Diabetes — 2024",
+      "year": 2024,
+      "url": "https://diabetesjournals.org/care/issue/47/Supplement_1",
+      "topics": ["type 2 diabetes", "GLP-1", "obesity", "CGM", "glycemic management"],
+      "excerpts": [
+        {
+          "quote_id": "guideline_ada_2024_glp1_q1",
+          "section": "Pharmacologic approaches to glycemic and weight management in type 2 diabetes",
+          "text": "In adults with type 2 diabetes and overweight or obesity, glucose-lowering medications with greater weight-loss efficacy, particularly GLP-1 receptor agonists with proven cardiovascular benefit, are preferred to support both glycemic management and weight reduction."
+        },
+        {
+          "quote_id": "guideline_ada_2024_cgm_q1",
+          "section": "Diabetes technology — continuous glucose monitoring",
+          "text": "Continuous glucose monitoring should be offered to adults with type 2 diabetes treated with multiple daily injections or continuous subcutaneous insulin infusion who are capable of using the device safely, as CGM is associated with improved A1C and reduced hypoglycemia compared with self-monitoring of blood glucose."
+        }
+      ]
+    },
+    {
+      "id": "acr_ra_2021",
+      "society": "American College of Rheumatology",
+      "title": "2021 American College of Rheumatology Guideline for the Treatment of Rheumatoid Arthritis",
+      "year": 2021,
+      "url": "https://www.rheumatology.org/Practice-Quality/Clinical-Support/Clinical-Practice-Guidelines/Rheumatoid-Arthritis",
+      "topics": ["rheumatoid arthritis", "DMARD", "TNF inhibitor", "step therapy", "methotrexate"],
+      "excerpts": [
+        {
+          "quote_id": "guideline_acr_ra_2021_q1",
+          "section": "Treatment of established RA with moderate-to-high disease activity",
+          "text": "In patients with rheumatoid arthritis who have moderate-to-high disease activity despite an adequate trial of methotrexate, the addition of, or switch to, a biologic disease-modifying antirheumatic drug such as a TNF inhibitor is conditionally recommended over continued conventional DMARD monotherapy."
+        }
+      ]
+    },
+    {
+      "id": "eular_ra_2022",
+      "society": "European Alliance of Associations for Rheumatology",
+      "title": "EULAR 2022 Recommendations for the Management of Rheumatoid Arthritis with Synthetic and Biological Disease-Modifying Antirheumatic Drugs",
+      "year": 2022,
+      "url": "https://ard.bmj.com/content/82/1/3",
+      "topics": ["rheumatoid arthritis", "DMARD", "biologic", "treat to target"],
+      "excerpts": [
+        {
+          "quote_id": "guideline_eular_ra_2022_q1",
+          "section": "Phase II — when csDMARDs fail",
+          "text": "If the treatment target is not reached with the first conventional synthetic DMARD strategy, and poor prognostic factors are present or csDMARDs are not tolerated, a biologic DMARD such as a TNF inhibitor should be added; methotrexate intolerance, including hepatotoxicity, qualifies as failure of conventional DMARD therapy for the purposes of escalation."
+        }
+      ]
+    },
+    {
+      "id": "acr_appropriateness_thunderclap_2019",
+      "society": "American College of Radiology",
+      "title": "ACR Appropriateness Criteria — Headache (sudden severe / thunderclap)",
+      "year": 2019,
+      "url": "https://acsearch.acr.org/docs/69482/Narrative/",
+      "topics": ["headache", "thunderclap", "MRI brain", "subarachnoid hemorrhage"],
+      "excerpts": [
+        {
+          "quote_id": "guideline_acr_thunderclap_2019_q1",
+          "section": "Variant 2 — Sudden severe headache",
+          "text": "In adults presenting with sudden severe headache of maximal intensity at onset, also termed thunderclap headache, prompt advanced neuroimaging including MRI of the brain with and without contrast is usually appropriate to evaluate for subarachnoid hemorrhage, reversible cerebral vasoconstriction syndrome, and other secondary causes, even when initial CT and lumbar puncture are unremarkable."
+        }
+      ]
+    },
+    {
+      "id": "aan_neuroimaging_headache_2020",
+      "society": "American Academy of Neurology",
+      "title": "Choosing Wisely / AAN Practice Advisory on Neuroimaging in Headache",
+      "year": 2020,
+      "url": "https://www.aan.com/Guidelines/home/GuidelineDetail/975",
+      "topics": ["headache", "red flags", "neuroimaging"],
+      "excerpts": [
+        {
+          "quote_id": "guideline_aan_headache_2020_q1",
+          "section": "Indications for neuroimaging",
+          "text": "Neuroimaging is indicated in patients with headache who have any red-flag features, including thunderclap onset, focal neurologic deficits, or new headache pattern in patients over the age of 50, in order to exclude secondary causes that require time-sensitive treatment."
+        }
+      ]
+    },
+    {
+      "id": "aaos_rotator_cuff_2019",
+      "society": "American Academy of Orthopaedic Surgeons",
+      "title": "AAOS Clinical Practice Guideline on the Management of Rotator Cuff Injuries",
+      "year": 2019,
+      "url": "https://www.aaos.org/quality/quality-programs/upper-extremity-programs/rotator-cuff-injuries/",
+      "topics": ["rotator cuff", "post-operative rehabilitation", "physical therapy"],
+      "excerpts": [
+        {
+          "quote_id": "guideline_aaos_rotator_2019_q1",
+          "section": "Post-operative rehabilitation",
+          "text": "Following arthroscopic rotator cuff repair, supervised physical therapy is recommended for restoration of range of motion and strength; the duration of supervised therapy should be individualized to the patient's progress toward functional milestones rather than fixed at a calendar limit, with extension of supervised care indicated when functional goals such as full active range of motion have not yet been achieved."
+        }
+      ]
+    },
+    {
+      "id": "apta_postop_shoulder_2018",
+      "society": "American Physical Therapy Association — Orthopaedic Section",
+      "title": "Clinical Practice Guideline — Shoulder Pain and Mobility Deficits: Post-operative",
+      "year": 2018,
+      "url": "https://www.orthopt.org/content/practice/clinical-practice-guidelines",
+      "topics": ["physical therapy", "post-operative shoulder", "supervised rehabilitation"],
+      "excerpts": [
+        {
+          "quote_id": "guideline_apta_shoulder_2018_q1",
+          "section": "Phase 2 — Active mobility and early strengthening",
+          "text": "Patients recovering from rotator cuff repair who have not yet achieved active range of motion goals at the conclusion of an initial course of supervised physical therapy benefit from continued therapist-supervised treatment, as objective deficits in shoulder flexion and abduction are predictive of long-term functional limitation if rehabilitation is discontinued prematurely."
+        }
+      ]
+    }
+  ]
+}
