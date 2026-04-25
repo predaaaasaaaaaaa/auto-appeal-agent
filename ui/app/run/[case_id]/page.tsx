@@ -146,72 +146,55 @@ export default function RunPage({
     };
   }, [caseId]);
 
-  // Kick off the pipeline exactly once per case_id.
-  //
-  // Why the setTimeout(0): React Strict Mode (on by default in Next.js
-  // dev) double-invokes effects. Without deferring, we'd open a real
-  // EventSource on the first mount, close it in the Strict-Mode cleanup,
-  // re-mount, and either (a) burn a second pipeline run or (b) — if we
-  // gated with a ref — never create a new EventSource at all. Wrapping
-  // creation in a 0ms timer makes the first scheduled creation get
-  // cancelled by the Strict-Mode cleanup, and only the re-mounted
-  // effect's timer actually fires. Net: exactly one EventSource.
+  // Kick off the pipeline exactly once per case_id. With React Strict
+  // Mode disabled in next.config.ts, a plain useEffect opens exactly
+  // one EventSource per mount — no setTimeout-deferral trick needed,
+  // no risk of a double pipeline run on initial render.
   useEffect(() => {
-    let es: EventSource | null = null;
-    const timer = setTimeout(() => {
-      es = new EventSource(`/api/run/${caseId}`);
+    const es = new EventSource(`/api/run/${caseId}`);
 
-      es.onmessage = (msg) => {
-        try {
-          const event = JSON.parse(msg.data) as ProgressEvent;
-          // Diagnostic — keeps a real-time trail in the browser
-          // console showing exactly when each SSE event arrives,
-          // so timing mismatches between server emit and UI render
-          // are visible at a glance.
-          // eslint-disable-next-line no-console
-          console.log(
-            "[SSE]",
-            new Date().toISOString(),
-            "stage=",
-            event.stage,
-            "status=",
-            event.status,
-          );
-          if (event.stage === "done" && event.result) {
-            setResult(event.result);
-            es?.close();
-            return;
-          }
-          if (event.stage === "error") {
-            setError(event.message ?? "Unknown error");
-            es?.close();
-            return;
-          }
-          if (PIPELINE_STAGES.includes(event.stage)) {
-            setStages((prev) => ({
-              ...prev,
-              [event.stage]: {
-                status: event.status === "done" ? "done" : "running",
-                detail:
-                  event.status === "done"
-                    ? describeDoneStage(event)
-                    : STAGE_DESCRIPTIONS[event.stage],
-              },
-            }));
-          }
-        } catch (e) {
-          console.error("SSE parse error", e);
+    es.onmessage = (msg) => {
+      try {
+        const event = JSON.parse(msg.data) as ProgressEvent;
+        if (event.stage === "done" && event.result) {
+          setResult(event.result);
+          es.close();
+          return;
         }
-      };
-      es.onerror = () => {
+        if (event.stage === "error") {
+          setError(event.message ?? "Unknown error");
+          es.close();
+          return;
+        }
+        if (PIPELINE_STAGES.includes(event.stage)) {
+          setStages((prev) => ({
+            ...prev,
+            [event.stage]: {
+              status: event.status === "done" ? "done" : "running",
+              detail:
+                event.status === "done"
+                  ? describeDoneStage(event)
+                  : STAGE_DESCRIPTIONS[event.stage],
+            },
+          }));
+        }
+      } catch (e) {
+        console.error("SSE parse error", e);
+      }
+    };
+    es.onerror = () => {
+      // EventSource fires onerror when the server closes the
+      // connection cleanly after sending "done". Suppress the error
+      // banner in that case (readyState === CLOSED means we already
+      // handled completion in onmessage).
+      if (es.readyState !== EventSource.CLOSED) {
         setError("Connection to backend lost.");
-        es?.close();
-      };
-    }, 0);
+      }
+      es.close();
+    };
 
     return () => {
-      clearTimeout(timer);
-      es?.close();
+      es.close();
     };
   }, [caseId]);
 
