@@ -116,11 +116,19 @@ class Cassette:
     def __init__(self, name: str) -> None:
         self.path = CASSETTES_DIR / f"{name}.json"
         self.data: dict[str, Any] = {}
-        if self.path.exists():
-            self.data = json.loads(self.path.read_text(encoding="utf-8"))
 
         # Record when explicitly asked, OR when no cassette exists yet.
         self.record: bool = RECORD_MODE or not self.path.exists()
+
+        # In replay mode, load the existing cassette as the lookup
+        # table. In record mode, we deliberately START EMPTY so the
+        # rewritten file contains ONLY entries from this recording
+        # run — no dead entries from past recordings whose request
+        # shape changed. Past behavior was to merge old + new, which
+        # bloated cassettes over time and made auditing them harder.
+        if self.path.exists() and not self.record:
+            self.data = json.loads(self.path.read_text(encoding="utf-8"))
+
         self.real: Optional[Any] = None
         if self.record:
             from anthropic import Anthropic
