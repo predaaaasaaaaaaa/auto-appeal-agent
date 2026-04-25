@@ -59,16 +59,21 @@ export default function RunPage({
       PIPELINE_STAGES.map((s) => [s, { status: "pending" as const }])
     )
   );
+  // Pipeline only fires when the user explicitly clicks the Start
+  // button — NOT on page mount. Critical real-world reliability:
+  // without this gate, just navigating to /run/{case_id} burns ~$1
+  // in API calls. Users would accidentally rack up cost while just
+  // browsing the worklist.
+  const [pipelineStarted, setPipelineStarted] = useState(false);
   const [result, setResult] = useState<VerifiedAppeal | null>(null);
   const [editedDraft, setEditedDraft] = useState<AppealDraft | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Pipeline is "active" until we have a result OR an error. Used to:
-  // (a) block accidental tab close via beforeunload, and
-  // (b) gate the "← worklist" navigation behind a confirm so the user
-  //     doesn't navigate away by reflex and burn the rest of the run.
-  const pipelineActive = !result && !error;
+  // Pipeline is "active" once Start has been clicked AND it hasn't
+  // finished or errored yet. Used to gate the waiting UI, the cancel
+  // button, the beforeunload prompt, and the worklist-nav confirm.
+  const pipelineActive = pipelineStarted && !result && !error;
 
   // Holds the live EventSource so the Cancel button can close it. Closing
   // it triggers the SSE generator's finally block on the server, which
@@ -172,11 +177,13 @@ export default function RunPage({
     };
   }, [caseId]);
 
-  // Kick off the pipeline exactly once per case_id. With React Strict
-  // Mode disabled in next.config.ts, a plain useEffect opens exactly
-  // one EventSource per mount — no setTimeout-deferral trick needed,
-  // no risk of a double pipeline run on initial render.
+  // Kick off the pipeline exactly once per case_id, but ONLY after the
+  // user has clicked Start. Pre-Start the right pane shows a case-
+  // preview with a Start button, and no EventSource is opened (no $
+  // spent). Once pipelineStarted flips to true, this effect re-runs
+  // and the SSE stream begins.
   useEffect(() => {
+    if (!pipelineStarted) return;
     const es = new EventSource(`/api/run/${caseId}`);
     esRef.current = es;
 
@@ -241,7 +248,7 @@ export default function RunPage({
       es.close();
       esRef.current = null;
     };
-  }, [caseId]);
+  }, [caseId, pipelineStarted]);
 
   // Warn before tab close / refresh if a pipeline is still running —
   // closing without cancelling means the server-side cooperative cancel
@@ -310,6 +317,13 @@ export default function RunPage({
       return (
         <StatusPill tone="rejected">
           Pipeline error
+        </StatusPill>
+      );
+    }
+    if (!pipelineStarted) {
+      return (
+        <StatusPill tone="running">
+          Ready to draft
         </StatusPill>
       );
     }
@@ -448,6 +462,10 @@ export default function RunPage({
                       <SecondPassReview review={result.second_pass_review} />
                     )}
                   </>
+                ) : !pipelineStarted ? (
+                  <CaseStartPanel
+                    onStart={() => setPipelineStarted(true)}
+                  />
                 ) : (
                   <PipelineProgress
                     stages={stages}
@@ -830,6 +848,69 @@ function CitationChip({
     </button>
   );
 }
+
+/**
+ * CaseStartPanel — the pre-pipeline view shown when the user lands on
+ * /run/{case_id}. Critical reliability gate: navigating to a case
+ * page must NOT auto-fire the pipeline (~$1 per click otherwise).
+ * The user sees the case sources in the left pane, reads what each
+ * agent will do, and explicitly clicks Start to begin spending.
+ */
+function CaseStartPanel({ onStart }: { onStart: () => void }) {
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="rounded-md border border-border bg-card p-6">
+        <h2 className="text-lg font-semibold tracking-tight">
+          Ready to draft this appeal
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Six specialist agents will read the denial letter, the
+          patient chart, and the plan&rsquo;s medical policy in the left
+          pane, then assemble a fully cited appeal letter. A separate
+          Verifier re-checks every citation against its source —
+          nothing unverifiable reaches the final letter.
+        </p>
+        <div className="mt-4 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onStart}
+            className="inline-flex items-center rounded-sm border border-primary bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            Start pipeline →
+          </button>
+          <span className="text-xs text-muted-foreground">
+            Approx. 90&ndash;120 seconds &middot; ~$1 in Anthropic API
+            cost (Claude Opus 4.7)
+          </span>
+        </div>
+      </div>
+
+      <div className="rounded-md border border-border bg-card/40 p-5">
+        <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+          Pipeline overview
+        </div>
+        <ol className="mt-3 flex flex-col gap-2">
+          {PIPELINE_STAGES.map((s, i) => (
+            <li key={s} className="flex items-start gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border text-xs font-medium text-muted-foreground">
+                {i + 1}
+              </span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm text-foreground">
+                  {STAGE_LABELS[s] ?? s}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {STAGE_DESCRIPTIONS[s] ?? ""}
+                </span>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  );
+}
+
 
 /**
  * PipelineProgress — the prominent waiting UI shown while the agents
