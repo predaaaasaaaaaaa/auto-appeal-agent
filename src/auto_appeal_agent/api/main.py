@@ -136,49 +136,66 @@ _active_pipelines_lock = asyncio.Lock()
 
 
 # --------------------------------------------------------------------------
-# Per-IP rate limit on /api/run — sliding window over recent starts
+# Per-IP rate limit — sliding window over recent calls
 # --------------------------------------------------------------------------
 # Even with auth + per-case concurrency, a single authenticated client
-# could legitimately fire 5 different cases in parallel (5 x $1). This
-# limit is the second line of defense: max N pipeline starts per IP
-# within a rolling window. Configurable via env so a real deployment
-# can tune to its expected user behavior.
+# could legitimately fire many requests in parallel. The limit is the
+# second line of defense: max N calls per IP within a rolling window.
+# Configurable via env so a real deployment can tune to its expected
+# user behavior.
 #
-# Defaults (5 per 60s) are deliberately generous for the demo: a user
-# clicking through 5 different cases in a minute is plausible normal
-# usage. Production should tighten based on real telemetry.
+# Two independent buckets:
+#   * /api/run         — 5 starts / 60s by default (each ~$1)
+#   * /api/export_pdf  — 20 renders / 60s by default (CPU only)
+#
+# Different cost profiles → different ceilings. Defaults are deliberately
+# generous for the demo. Production should tighten based on telemetry.
 RATE_LIMIT_WINDOW_SECONDS: float = float(
     os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60")
 )
 RATE_LIMIT_MAX_STARTS: int = int(os.getenv("RATE_LIMIT_MAX_STARTS", "5"))
+PDF_RATE_LIMIT_WINDOW_SECONDS: float = float(
+    os.getenv("PDF_RATE_LIMIT_WINDOW_SECONDS", "60")
+)
+PDF_RATE_LIMIT_MAX: int = int(os.getenv("PDF_RATE_LIMIT_MAX", "20"))
 
-# Per-IP timestamps of recent /api/run starts. Pruned lazily on each
-# check so memory stays bounded by RATE_LIMIT_MAX_STARTS per active IP.
-_rate_limit_log: dict[str, list[float]] = {}
-_rate_limit_lock = asyncio.Lock()
+# Per-IP timestamps of recent calls. Pruned lazily on each check so
+# memory stays bounded by the bucket's max per active IP. One bucket
+# per endpoint so /api/run and /api/export_pdf don't share a quota.
+_run_rate_log: dict[str, list[float]] = {}
+_run_rate_lock = asyncio.Lock()
+_pdf_rate_log: dict[str, list[float]] = {}
+_pdf_rate_lock = asyncio.Lock()
 
 
-async def _enforce_rate_limit(client_ip: str) -> None:
-    """Sliding-window rate limit. Raise 429 if too many recent starts.
+async def _enforce_rate_limit(
+    client_ip: str,
+    *,
+    log: dict[str, list[float]],
+    lock: asyncio.Lock,
+    max_in_window: int,
+    window_seconds: float,
+) -> None:
+    """Sliding-window rate limit. Raise 429 if too many recent calls.
 
     Plain-language summary: we keep a tiny per-IP list of when this
-    IP last fired /api/run. Each new request prunes entries older
+    IP last hit this bucket. Each new request prunes entries older
     than the window, then either rejects (if the list is at the cap)
-    or appends. The list is bounded by RATE_LIMIT_MAX_STARTS so
-    memory cannot grow unbounded.
+    or appends. The list is bounded by max_in_window so memory cannot
+    grow unbounded.
     """
     now = time.monotonic()
-    async with _rate_limit_lock:
-        timestamps = _rate_limit_log.setdefault(client_ip, [])
-        cutoff = now - RATE_LIMIT_WINDOW_SECONDS
+    async with lock:
+        timestamps = log.setdefault(client_ip, [])
+        cutoff = now - window_seconds
         # Prune in-place so the list never holds entries we'll never check.
         timestamps[:] = [t for t in timestamps if t > cutoff]
-        if len(timestamps) >= RATE_LIMIT_MAX_STARTS:
+        if len(timestamps) >= max_in_window:
             raise HTTPException(
                 status_code=429,
                 detail=(
-                    f"too many requests; max {RATE_LIMIT_MAX_STARTS} "
-                    f"per {RATE_LIMIT_WINDOW_SECONDS:.0f}s — wait and retry"
+                    f"too many requests; max {max_in_window} "
+                    f"per {window_seconds:.0f}s — wait and retry"
                 ),
             )
         timestamps.append(now)
@@ -303,13 +320,26 @@ def _safe_filename(case_id: str) -> str:
 
 
 @app.post("/api/export_pdf", dependencies=[Depends(require_api_key)])
-async def export_pdf(draft: AppealDraft) -> Response:
+async def export_pdf(draft: AppealDraft, request: Request) -> Response:
     """Render the (possibly edited) appeal draft to a PDF download.
 
     Accepts an AppealDraft whose paragraphs may have been edited by the
     user in the UI. Returns an application/pdf body with a filename
     suggestion based on case_id (sanitized — see _safe_filename).
+
+    Rate-limited per-IP via the PDF bucket: PDF rendering is CPU-only
+    (no Claude calls), so this bucket is intentionally looser than
+    /api/run's bucket. Without a limit, an authenticated client could
+    loop max-size drafts (50 paragraphs × 20KB) and peg the worker.
     """
+    client_ip = request.client.host if request.client else "unknown"
+    await _enforce_rate_limit(
+        client_ip,
+        log=_pdf_rate_log,
+        lock=_pdf_rate_lock,
+        max_in_window=PDF_RATE_LIMIT_MAX,
+        window_seconds=PDF_RATE_LIMIT_WINDOW_SECONDS,
+    )
     pdf_bytes = render_appeal_pdf(draft)
     filename = _safe_filename(draft.case_id)
     return Response(
@@ -331,7 +361,13 @@ async def run_case(case_id: str, request: Request) -> EventSourceResponse:
     # consider X-Forwarded-For (left to deployment config; defaults
     # here are safe for direct/loopback usage).
     client_ip = request.client.host if request.client else "unknown"
-    await _enforce_rate_limit(client_ip)
+    await _enforce_rate_limit(
+        client_ip,
+        log=_run_rate_log,
+        lock=_run_rate_lock,
+        max_in_window=RATE_LIMIT_MAX_STARTS,
+        window_seconds=RATE_LIMIT_WINDOW_SECONDS,
+    )
 
     # Per-case concurrency guard — reject a second request for the
     # same case_id while the first is still running. Prevents two
