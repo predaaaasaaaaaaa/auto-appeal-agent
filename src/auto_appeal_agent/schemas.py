@@ -145,17 +145,33 @@ class GuidelineCitations(Strict):
     source_quotes: list[SourceQuote] = Field(default_factory=list)
 
 
+# Tight upper bounds on every user-controllable field. Without these,
+# a malicious POST /api/export_pdf with `paragraphs[0].text = "A" * 10**8`
+# would force the server to buffer 100 MB before the PDF renderer ever
+# saw it — a trivial DoS. The numbers are deliberately several orders
+# of magnitude larger than any realistic appeal paragraph; if a
+# legitimate appeal ever bumps these, we want to know.
+_MAX_CASE_ID = 64
+_MAX_RECIPIENT_PLAN = 200
+_MAX_SUBJECT_LINE = 500
+_MAX_HEADING = 200
+_MAX_PARAGRAPH_TEXT = 20_000  # ~3000 words is well past any real appeal
+_MAX_PARAGRAPHS_PER_DRAFT = 50  # any real appeal is 5-15 paragraphs
+
+
 class AppealParagraph(Strict):
-    heading: Optional[str] = None
-    text: str
+    heading: Optional[str] = Field(default=None, max_length=_MAX_HEADING)
+    text: str = Field(..., max_length=_MAX_PARAGRAPH_TEXT)
     citations: list[CitationMarker]
 
 
 class AppealDraft(Strict):
-    case_id: str
-    recipient_plan: str
-    subject_line: str
-    paragraphs: list[AppealParagraph]
+    case_id: str = Field(..., max_length=_MAX_CASE_ID)
+    recipient_plan: str = Field(..., max_length=_MAX_RECIPIENT_PLAN)
+    subject_line: str = Field(..., max_length=_MAX_SUBJECT_LINE)
+    paragraphs: list[AppealParagraph] = Field(
+        ..., max_length=_MAX_PARAGRAPHS_PER_DRAFT
+    )
 
 
 class VerifiedCitation(Strict):

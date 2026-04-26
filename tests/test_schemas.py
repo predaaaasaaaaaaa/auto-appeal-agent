@@ -265,3 +265,81 @@ def test_rejected_citation_shape():
         rejection_reason="quote 'y' not found in patient_chart source 'q1'",
     )
     assert "not found" in rc.rejection_reason
+
+
+# ---------------------------------------------------------------------------
+# Length-bound tests — protect /api/export_pdf against memory-blow DoS.
+# ---------------------------------------------------------------------------
+
+
+def test_appeal_draft_rejects_oversized_paragraph_text():
+    """A 100KB paragraph would let an attacker buffer megabytes of
+    text into the PDF renderer. Pydantic rejects before render."""
+    too_big = "A" * 30_000  # > _MAX_PARAGRAPH_TEXT (20_000)
+    with pytest.raises(ValidationError):
+        AppealDraft(
+            case_id="x",
+            recipient_plan="x",
+            subject_line="x",
+            paragraphs=[
+                AppealParagraph(text=too_big, citations=[]),
+            ],
+        )
+
+
+def test_appeal_draft_rejects_oversized_case_id():
+    """case_id > 64 chars is unrealistic — bound it tightly."""
+    with pytest.raises(ValidationError):
+        AppealDraft(
+            case_id="x" * 100,
+            recipient_plan="x",
+            subject_line="x",
+            paragraphs=[AppealParagraph(text="x", citations=[])],
+        )
+
+
+def test_appeal_draft_rejects_oversized_recipient_plan():
+    with pytest.raises(ValidationError):
+        AppealDraft(
+            case_id="x",
+            recipient_plan="x" * 500,
+            subject_line="x",
+            paragraphs=[AppealParagraph(text="x", citations=[])],
+        )
+
+
+def test_appeal_draft_rejects_oversized_subject_line():
+    with pytest.raises(ValidationError):
+        AppealDraft(
+            case_id="x",
+            recipient_plan="x",
+            subject_line="x" * 1000,
+            paragraphs=[AppealParagraph(text="x", citations=[])],
+        )
+
+
+def test_appeal_draft_rejects_too_many_paragraphs():
+    """50-paragraph cap. A real appeal is 5-15 paragraphs; anything
+    way past that is suspicious or malicious."""
+    too_many = [
+        AppealParagraph(text="x", citations=[]) for _ in range(100)
+    ]
+    with pytest.raises(ValidationError):
+        AppealDraft(
+            case_id="x",
+            recipient_plan="x",
+            subject_line="x",
+            paragraphs=too_many,
+        )
+
+
+def test_appeal_draft_accepts_realistic_long_paragraph():
+    """Sanity: a long but realistic paragraph (~5000 chars) is fine."""
+    realistic = "Patient presents with " + ("x " * 2500)
+    AppealDraft(
+        case_id="case_01_ozempic_bmi34",
+        recipient_plan="BlueSun Health Premium HMO",
+        subject_line="Appeal of prior auth denial",
+        paragraphs=[AppealParagraph(text=realistic, citations=[])],
+    )
+
