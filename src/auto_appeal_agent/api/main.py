@@ -116,6 +116,24 @@ FIXTURES_ROOT = REPO_ROOT / "fixtures"
 _FIXTURES_ROOT_RESOLVED = FIXTURES_ROOT.resolve()
 
 
+# --------------------------------------------------------------------------
+# Per-case concurrency lock — at most one in-flight pipeline per case_id
+# --------------------------------------------------------------------------
+# When a user opens two browser tabs and clicks Start on the same case,
+# the previous code happily ran two parallel pipelines (each ~$1). This
+# guard rejects the second request with 409 Conflict, telling the user
+# the case is already being processed. The lock entry is removed in the
+# event_stream's finally block so a normal completion frees the case
+# for a future re-run.
+#
+# Implementation: a plain dict + asyncio.Lock for thread-safe
+# add/remove. Held only across the entry/exit guard, not for the
+# whole pipeline duration — the SSE generator yields control back
+# to the event loop after the guard runs.
+_active_pipelines: set[str] = set()
+_active_pipelines_lock = asyncio.Lock()
+
+
 def _resolve_case_dir(case_id: str) -> Path:
     """Resolve `FIXTURES_ROOT / case_id` and prove it stays inside
     FIXTURES_ROOT.
@@ -257,6 +275,21 @@ async def run_case(case_id: str) -> EventSourceResponse:
     if not case_dir.is_dir():
         raise HTTPException(status_code=404, detail="case not found")
 
+    # Per-case concurrency guard — reject a second request for the
+    # same case_id while the first is still running. Prevents two
+    # browser tabs / two clicks from each spawning their own ~$1
+    # pipeline. The case is freed in event_stream's finally block.
+    async with _active_pipelines_lock:
+        if case_id in _active_pipelines:
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    "a pipeline for this case is already running; "
+                    "wait for it to finish or cancel it first"
+                ),
+            )
+        _active_pipelines.add(case_id)
+
     pipeline_input = PipelineInput(
         case_id=case_id,
         denial_letter_path=str(case_dir / "denial_letter.pdf"),
@@ -331,5 +364,9 @@ async def run_case(case_id: str) -> EventSourceResponse:
                     await asyncio.wait_for(asyncio.shield(task), timeout=1.0)
                 except (asyncio.TimeoutError, asyncio.CancelledError, Exception):
                     pass
+            # Free the case so the user (or another tab) can re-run
+            # it. Done last so a stuck shutdown doesn't leak a slot.
+            async with _active_pipelines_lock:
+                _active_pipelines.discard(case_id)
 
     return EventSourceResponse(event_stream())

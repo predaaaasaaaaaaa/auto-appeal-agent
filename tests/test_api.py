@@ -386,6 +386,106 @@ def test_module_has_logger_defined():
     assert isinstance(api_main.logger, _logging.Logger)
 
 
+# ---------------------------------------------------------------------------
+# Per-case concurrency lock — at most one in-flight pipeline per case_id
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True)
+def _reset_active_pipelines():
+    """Ensure each test starts with an empty _active_pipelines set so
+    one test's leftover state doesn't poison another."""
+    api_main._active_pipelines.clear()
+    yield
+    api_main._active_pipelines.clear()
+
+
+def test_run_returns_409_when_case_already_running():
+    """If another tab/request has the case in flight, a duplicate
+    Start must reject with 409 — NOT spawn a second pipeline."""
+    api_main._active_pipelines.add("case_01_ozempic_bmi34")
+    r = client.get("/api/run/case_01_ozempic_bmi34")
+    assert r.status_code == 409
+    body = r.json()
+    assert "already running" in body["detail"].lower()
+
+
+def test_run_does_not_burn_pipeline_call_when_409(monkeypatch):
+    """Critical: the 409 must come BEFORE run_pipeline is called.
+    Otherwise the user is rejected AND charged."""
+    api_main._active_pipelines.add("case_01_ozempic_bmi34")
+    called = {"count": 0}
+
+    def boom_pipeline(*args, **kwargs):
+        called["count"] += 1
+        raise AssertionError(
+            "run_pipeline should NOT be called when 409 returns — "
+            "that would burn $1 on a request we've already rejected"
+        )
+
+    monkeypatch.setattr(api_main, "run_pipeline", boom_pipeline)
+    r = client.get("/api/run/case_01_ozempic_bmi34")
+    assert r.status_code == 409
+    assert called["count"] == 0
+
+
+def test_run_releases_case_slot_after_normal_completion(monkeypatch):
+    """The case must be removed from _active_pipelines once the
+    pipeline finishes, otherwise the user can never re-run it."""
+    from auto_appeal_agent.schemas import (
+        AppealDraft,
+        AppealParagraph,
+        VerifiedAppeal,
+    )
+
+    def fake_pipeline(
+        pipeline_input,
+        progress_callback=None,
+        second_pass=False,
+        cancel_event=None,
+    ):
+        return VerifiedAppeal(
+            case_id="case_01_ozempic_bmi34",
+            draft=AppealDraft(
+                case_id="case_01_ozempic_bmi34",
+                recipient_plan="x",
+                subject_line="x",
+                paragraphs=[AppealParagraph(text="x", citations=[])],
+            ),
+            verified_citations=[],
+            rejected_citations=[],
+            verification_pass_rate=1.0,
+            ready_to_send=True,
+        )
+
+    monkeypatch.setattr(api_main, "run_pipeline", fake_pipeline)
+
+    with client.stream("GET", "/api/run/case_01_ozempic_bmi34") as r:
+        assert r.status_code == 200
+        for _ in r.iter_lines():
+            pass
+
+    # Slot must be freed — otherwise re-running the case is impossible.
+    assert "case_01_ozempic_bmi34" not in api_main._active_pipelines
+
+
+def test_run_releases_case_slot_after_pipeline_error(monkeypatch):
+    """Defensive: even when the pipeline raises, the slot must be
+    freed — otherwise a single failure permanently locks the case."""
+
+    def boom_pipeline(*args, **kwargs):
+        raise RuntimeError("simulated failure")
+
+    monkeypatch.setattr(api_main, "run_pipeline", boom_pipeline)
+
+    with client.stream("GET", "/api/run/case_01_ozempic_bmi34") as r:
+        assert r.status_code == 200
+        for _ in r.iter_lines():
+            pass
+
+    assert "case_01_ozempic_bmi34" not in api_main._active_pipelines
+
+
 def test_run_passes_cancel_event_to_pipeline(monkeypatch):
     """Wiring check: every call to /api/run/{case_id} must pass a
     threading.Event as `cancel_event` to run_pipeline. Without it,
