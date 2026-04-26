@@ -23,6 +23,21 @@
 const API_KEY: string | undefined =
   process.env.NEXT_PUBLIC_APPEAL_API_KEY || undefined;
 
+// Direct backend URL for EventSource ONLY. Reason: the Next.js dev
+// rewrite proxy buffers text/event-stream responses — it accumulates
+// all SSE frames server-side and only flushes them when the upstream
+// connection closes. That makes the browser receive every stage's
+// "running" and "done" event in the same tick at the END of the
+// pipeline, so the visual waiting panel stays at 0s and never shows
+// per-agent progress. Fix: open the EventSource straight against
+// FastAPI, bypassing the proxy. CORS allows localhost:3000 origin.
+//
+// Regular fetch()s continue to use relative /api/... paths via the
+// proxy because non-streaming responses don't suffer the buffering
+// issue and same-origin avoids any CORS preflight surprises.
+const API_BASE_URL: string =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+
 /** HTTP headers to attach to a fetch() call to the backend. */
 export function apiHeaders(extra?: HeadersInit): HeadersInit {
   const out: Record<string, string> = {};
@@ -45,11 +60,14 @@ export function apiHeaders(extra?: HeadersInit): HeadersInit {
 
 /**
  * Build an SSE URL that the browser EventSource can subscribe to.
+ * Returns an absolute URL pointing at the FastAPI backend so the
+ * stream bypasses the Next.js dev proxy's response buffering.
  * Adds api_key as a query param when configured (EventSource cannot
  * set custom headers from JS).
  */
 export function sseUrl(path: string): string {
-  if (!API_KEY) return path;
-  const sep = path.includes("?") ? "&" : "?";
-  return `${path}${sep}api_key=${encodeURIComponent(API_KEY)}`;
+  const absolute = `${API_BASE_URL}${path}`;
+  if (!API_KEY) return absolute;
+  const sep = absolute.includes("?") ? "&" : "?";
+  return `${absolute}${sep}api_key=${encodeURIComponent(API_KEY)}`;
 }
