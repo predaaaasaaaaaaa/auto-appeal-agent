@@ -24,9 +24,10 @@ import asyncio
 import json
 import logging
 import os
+import secrets
 import threading
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 # Configure root logging so auto_appeal_agent.* loggers surface in
 # the uvicorn terminal. LOG_LEVEL env var (from .env) wins if set;
@@ -43,7 +44,7 @@ logging.basicConfig(
 # because by then the client connection is already closing.
 logger = logging.getLogger(__name__)
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from sse_starlette.sse import EventSourceResponse
@@ -52,6 +53,59 @@ from auto_appeal_agent.orchestrator import PipelineCancelled, run_pipeline
 from auto_appeal_agent.pdf_export import render_appeal_pdf
 from auto_appeal_agent.pdf_utils import extract_text
 from auto_appeal_agent.schemas import AppealDraft, PipelineInput
+
+# --------------------------------------------------------------------------
+# API authentication
+# --------------------------------------------------------------------------
+# Single shared key auth — set APPEAL_API_KEY in .env to enable. When set,
+# every cost/data endpoint requires the same key in the X-API-Key header
+# (or `api_key` query param for EventSource which can't send headers).
+# When NOT set, the API logs a startup warning and runs open. That keeps
+# the dev / hackathon demo flow zero-config but lets production deploys
+# flip a single env var to lock the API down.
+#
+# This is intentionally minimal: one shared secret, no user accounts,
+# no token expiry. Real production should layer on session/OAuth/SSO,
+# but a shared pre-shared key meaningfully closes the immediate attack
+# (anyone-on-the-network burns $1/call by hitting /api/run) and is
+# rotation-friendly via a deploy-time env update.
+APPEAL_API_KEY: Optional[str] = os.getenv("APPEAL_API_KEY") or None
+if APPEAL_API_KEY is not None and not APPEAL_API_KEY.strip():
+    APPEAL_API_KEY = None
+
+if APPEAL_API_KEY is None:
+    logger.warning(
+        "APPEAL_API_KEY is not set — API endpoints are OPEN. "
+        "Set APPEAL_API_KEY in .env to require X-API-Key header. "
+        "Required for any non-loopback deployment."
+    )
+else:
+    logger.info("APPEAL_API_KEY is set — X-API-Key header required on cost / data endpoints")
+
+
+async def require_api_key(
+    request: Request,
+    x_api_key: Optional[str] = Header(default=None, alias="X-API-Key"),
+) -> None:
+    """FastAPI dependency: require APPEAL_API_KEY when configured.
+
+    Accepts the key via:
+      - `X-API-Key` HTTP header (preferred — doesn't leak via URL)
+      - `api_key` query param (fallback — needed by browser EventSource
+        which has no public API for setting headers)
+
+    Uses `secrets.compare_digest` for constant-time comparison so a
+    timing oracle cannot reveal correct key prefixes byte-by-byte.
+
+    No-op when APPEAL_API_KEY is unset — preserves dev / hackathon-demo
+    convenience.
+    """
+    if APPEAL_API_KEY is None:
+        return
+    presented = x_api_key or request.query_params.get("api_key")
+    if not presented or not secrets.compare_digest(presented, APPEAL_API_KEY):
+        raise HTTPException(status_code=401, detail="invalid or missing API key")
+
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 FIXTURES_ROOT = REPO_ROOT / "fixtures"
@@ -109,7 +163,7 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/api/cases")
+@app.get("/api/cases", dependencies=[Depends(require_api_key)])
 async def list_cases() -> dict[str, Any]:
     cases: list[dict[str, Any]] = []
     if not FIXTURES_ROOT.exists():
@@ -130,7 +184,7 @@ async def list_cases() -> dict[str, Any]:
     return {"cases": cases}
 
 
-@app.get("/api/case/{case_id}/source/{kind}")
+@app.get("/api/case/{case_id}/source/{kind}", dependencies=[Depends(require_api_key)])
 async def get_source_text(case_id: str, kind: str) -> dict[str, str]:
     case_dir = _resolve_case_dir(case_id)
     if not case_dir.is_dir():
@@ -180,7 +234,7 @@ def _safe_filename(case_id: str) -> str:
     return f"{sanitized}_appeal.pdf"
 
 
-@app.post("/api/export_pdf")
+@app.post("/api/export_pdf", dependencies=[Depends(require_api_key)])
 async def export_pdf(draft: AppealDraft) -> Response:
     """Render the (possibly edited) appeal draft to a PDF download.
 
@@ -197,7 +251,7 @@ async def export_pdf(draft: AppealDraft) -> Response:
     )
 
 
-@app.get("/api/run/{case_id}")
+@app.get("/api/run/{case_id}", dependencies=[Depends(require_api_key)])
 async def run_case(case_id: str) -> EventSourceResponse:
     case_dir = _resolve_case_dir(case_id)
     if not case_dir.is_dir():

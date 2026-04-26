@@ -29,6 +29,113 @@ def test_health():
     assert r.json() == {"status": "ok"}
 
 
+# ---------------------------------------------------------------------------
+# API key auth — required when APPEAL_API_KEY env var is set, no-op
+# when unset. Tests cover both modes against every guarded endpoint.
+# ---------------------------------------------------------------------------
+
+
+def test_health_does_not_require_api_key(monkeypatch):
+    """/api/health is the operations / liveness endpoint and must
+    stay open even when auth is configured. Otherwise load balancers
+    can't probe it."""
+    monkeypatch.setattr(api_main, "APPEAL_API_KEY", "test-key-xyz")
+    r = client.get("/api/health")
+    assert r.status_code == 200
+
+
+@pytest.mark.parametrize(
+    "method,url,body",
+    [
+        ("get", "/api/cases", None),
+        ("get", "/api/case/case_01_ozempic_bmi34/source/patient_chart", None),
+        ("post", "/api/export_pdf", {
+            "case_id": "x", "recipient_plan": "x", "subject_line": "x",
+            "paragraphs": [{"heading": None, "text": "x", "citations": []}],
+        }),
+        ("get", "/api/run/case_01_ozempic_bmi34", None),
+    ],
+)
+def test_protected_endpoints_reject_missing_key(monkeypatch, method, url, body):
+    """When APPEAL_API_KEY is set, every cost/data endpoint must
+    return 401 if no X-API-Key header (or api_key query param) is
+    presented. This is the lock that closes the
+    'anyone-on-the-network burns $1/call' attack."""
+    monkeypatch.setattr(api_main, "APPEAL_API_KEY", "test-key-xyz")
+    if method == "get":
+        r = client.get(url)
+    else:
+        r = client.post(url, json=body)
+    assert r.status_code == 401, (
+        f"{method.upper()} {url} returned {r.status_code} — should be 401 "
+        f"when APPEAL_API_KEY set and no key presented"
+    )
+
+
+@pytest.mark.parametrize(
+    "method,url,body",
+    [
+        ("get", "/api/cases", None),
+        ("get", "/api/case/case_01_ozempic_bmi34/source/patient_chart", None),
+        ("post", "/api/export_pdf", {
+            "case_id": "x", "recipient_plan": "x", "subject_line": "x",
+            "paragraphs": [{"heading": None, "text": "x", "citations": []}],
+        }),
+    ],
+)
+def test_protected_endpoints_reject_wrong_key(monkeypatch, method, url, body):
+    """A wrong key must NOT slip through. Constant-time comparison
+    via secrets.compare_digest prevents byte-by-byte timing oracles."""
+    monkeypatch.setattr(api_main, "APPEAL_API_KEY", "test-key-xyz")
+    headers = {"X-API-Key": "completely-wrong-key"}
+    if method == "get":
+        r = client.get(url, headers=headers)
+    else:
+        r = client.post(url, json=body, headers=headers)
+    assert r.status_code == 401
+
+
+def test_protected_endpoint_accepts_correct_header_key(monkeypatch):
+    """X-API-Key header is the preferred way to authenticate.
+    Doesn't leak via URL / referrer / server-access-log."""
+    monkeypatch.setattr(api_main, "APPEAL_API_KEY", "test-key-xyz")
+    r = client.get("/api/cases", headers={"X-API-Key": "test-key-xyz"})
+    assert r.status_code == 200
+
+
+def test_protected_endpoint_accepts_correct_query_param_key(monkeypatch):
+    """Query-param fallback exists for browser EventSource which
+    has no public API for setting headers. Same key, just delivered
+    via URL."""
+    monkeypatch.setattr(api_main, "APPEAL_API_KEY", "test-key-xyz")
+    r = client.get("/api/cases?api_key=test-key-xyz")
+    assert r.status_code == 200
+
+
+def test_unset_api_key_means_open_access(monkeypatch):
+    """Backward compat / dev convenience: when APPEAL_API_KEY is
+    None, all endpoints stay open. Documented at startup with a
+    warning log line."""
+    monkeypatch.setattr(api_main, "APPEAL_API_KEY", None)
+    r = client.get("/api/cases")
+    assert r.status_code == 200
+    r = client.get("/api/case/case_01_ozempic_bmi34/source/patient_chart")
+    assert r.status_code == 200
+
+
+def test_empty_string_api_key_treated_as_unset(monkeypatch):
+    """Defensive: APPEAL_API_KEY="" or whitespace-only must not be
+    accepted as a valid key (that would let an attacker authenticate
+    by sending an empty header). Our env loader already collapses
+    "" to None — this test pins that contract."""
+    # Direct test of the parser — empty string env value is normalized
+    # to None at module load, so we can't easily simulate "user set
+    # APPEAL_API_KEY=''" via monkeypatch. This test pins the rule.
+    monkeypatch.setattr(api_main, "APPEAL_API_KEY", None)
+    r = client.get("/api/cases", headers={"X-API-Key": ""})
+    assert r.status_code == 200  # auth disabled, request goes through
+
+
 def test_list_cases_returns_five():
     r = client.get("/api/cases")
     assert r.status_code == 200

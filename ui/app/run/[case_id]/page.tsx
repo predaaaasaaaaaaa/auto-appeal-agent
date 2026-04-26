@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import { apiHeaders, sseUrl } from "@/lib/api";
 import {
   type AppealDraft,
   type AppealReview,
@@ -110,7 +111,7 @@ export default function RunPage({
     try {
       const res = await fetch("/api/export_pdf", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: apiHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(editedDraft),
       });
       if (!res.ok) {
@@ -157,7 +158,9 @@ export default function RunPage({
       const fetched = await Promise.all(
         kinds.map(async (k) => {
           try {
-            const res = await fetch(`/api/case/${caseId}/source/${k}`);
+            const res = await fetch(`/api/case/${caseId}/source/${k}`, {
+              headers: apiHeaders(),
+            });
             if (!res.ok) return [k, ""] as const;
             const data = (await res.json()) as { text: string };
             return [k, data.text] as const;
@@ -184,7 +187,7 @@ export default function RunPage({
   // and the SSE stream begins.
   useEffect(() => {
     if (!pipelineStarted) return;
-    const es = new EventSource(`/api/run/${caseId}`);
+    const es = new EventSource(sseUrl(`/api/run/${caseId}`));
     esRef.current = es;
 
     es.onmessage = (msg) => {

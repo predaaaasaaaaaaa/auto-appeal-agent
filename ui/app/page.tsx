@@ -3,8 +3,16 @@ import { type CaseSummary, caseMeta } from "@/lib/types";
 
 async function getCases(): Promise<CaseSummary[]> {
   try {
+    // Server-side fetch: read APPEAL_API_KEY (not NEXT_PUBLIC_*) so
+    // the key stays in the Next.js server process and never ships
+    // to the browser bundle. Falls back to no header when unset
+    // (matches the backend's no-auth dev mode).
+    const headers: Record<string, string> = {};
+    const key = process.env.APPEAL_API_KEY;
+    if (key) headers["X-API-Key"] = key;
     const res = await fetch("http://localhost:8000/api/cases", {
       cache: "no-store",
+      headers,
     });
     if (!res.ok) return [];
     const data = (await res.json()) as { cases: CaseSummary[] };
