@@ -342,14 +342,26 @@ app = FastAPI(
 app.add_middleware(BodySizeLimitMiddleware, max_body_size=MAX_REQUEST_BODY_BYTES)
 
 # Next.js dev server runs on :3000; allow it to call us.
+#
+# Tight allow-list rather than wildcards:
+#   * allow_methods  — only the verbs the API actually accepts.
+#     Wildcard would also reflect PUT/DELETE/PATCH on preflight,
+#     which we never serve.
+#   * allow_headers  — only Content-Type (JSON bodies) and X-API-Key
+#     (the auth header). Wildcard would echo back arbitrary attacker-
+#     supplied request headers on preflight.
+#   * allow_credentials — explicit False. Origins are localhost-only,
+#     but pinning False ensures cookies / Authorization headers are
+#     never reflected even if origins are widened later.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "X-API-Key"],
+    allow_credentials=False,
 )
 
 
