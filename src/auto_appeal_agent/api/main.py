@@ -36,6 +36,13 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s %(message)s",
 )
 
+# Module-level logger. Used by the SSE handler's PipelineCancelled
+# catch (line ~180) to record client-disconnect cancellations.
+# Without this, the catch path raises NameError: name 'logger' is
+# not defined and the SSE generator crashes mid-flight — silent
+# because by then the client connection is already closing.
+logger = logging.getLogger(__name__)
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response

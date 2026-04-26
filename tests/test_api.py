@@ -130,6 +130,21 @@ def test_run_emits_sse_error_when_pipeline_raises(monkeypatch):
     assert "no tool_use block" in err["message"]
 
 
+def test_module_has_logger_defined():
+    """Regression for 2026-04-26 security audit: the SSE handler's
+    PipelineCancelled catch logs via `logger.info`. If `logger` is
+    undefined at module scope, the cancel path crashes silently
+    inside an already-closing response. This test pins that
+    `logger` exists and is a real Logger instance."""
+    import logging as _logging
+
+    assert hasattr(api_main, "logger"), (
+        "api/main.py must define a module-level `logger` — without it "
+        "the cancel-on-disconnect path raises NameError"
+    )
+    assert isinstance(api_main.logger, _logging.Logger)
+
+
 def test_run_passes_cancel_event_to_pipeline(monkeypatch):
     """Wiring check: every call to /api/run/{case_id} must pass a
     threading.Event as `cancel_event` to run_pipeline. Without it,
