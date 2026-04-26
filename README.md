@@ -26,6 +26,92 @@ Not sure what "prior authorization" or "denial letter" means? See
 [docs/GLOSSARY.md](docs/GLOSSARY.md). Curious why this specific
 problem and not something else? See [docs/WHY.md](docs/WHY.md).
 
+## Why this matters
+
+> *"Mom — what's the recurring thing that eats your week, every week,
+> every year, and never gets better?"*
+
+This project started with that question, asked of my mother — a
+practicing physician — about the problems she sees recur year after
+year. Her answer wasn't a clinical one. It was paperwork:
+prior-authorization denials, and the appeals nobody has time to
+write. So I went and looked at the numbers. They are worse than I
+expected.
+
+**The time tax** ([AMA 2024 Prior Authorization Physician Survey](https://www.ama-assn.org/press-center/ama-press-releases/ama-survey-indicates-prior-authorization-wreaks-havoc-patient-care), n = 1,000 practicing physicians):
+
+- **43 prior authorizations per physician per week** on average
+- **~12 hours/week** of physician + staff time on PA paperwork — every week
+- **35%** of practices employ staff working *exclusively* on prior auth
+- **95%** of physicians say PA significantly contributes to **burnout**
+
+**The patient-harm side** — same survey:
+
+- **24%** of physicians report PA caused a **serious adverse event** for a patient in their care — including hospitalization, permanent impairment, or **death**
+- **94%** say PA *delays* access to necessary care
+- **78%** report patients **abandon treatment** because of authorization struggles
+- **87%** say PA leads to *more* downstream healthcare utilization, not less — 68% saw extra office visits, 42% urgent or ED visits, 29% hospitalizations
+
+This isn't a paperwork story. It's a clinical-outcomes story.
+
+**The asymmetry that defines the opportunity** ([KFF, 2024 Medicare Advantage data](https://www.kff.org/medicare/medicare-advantage-insurers-made-nearly-53-million-prior-authorization-determinations-in-2024/)):
+
+- **~53 million** prior-auth determinations in Medicare Advantage *alone* in 2024
+- **4.1 million (7.7%)** denied in full or in part
+- **Just 11.5%** of those denials are ever appealed
+- But **80.7%** of appeals that *do* get filed are partially or fully overturned
+
+Read that twice: **four out of five appeals win — but nine out of ten
+are never filed**, because writing one takes hours physicians don't
+have. The gap between cases that *would* win and cases that *get
+filed* is the gap this project closes.
+
+![KFF Figure 8: Across All Firms, Fewer than One in Eight Denied Prior Authorization Requests Were Appealed in 2024](https://datawrapper.dwcdn.net/cPTdA/full.png)
+
+![KFF Figure 9: Across All Firms, More than Half of Prior Authorization Request Denials that Were Appealed Were Overturned (Overall 80.7%) in 2024](https://datawrapper.dwcdn.net/QooQc/full.png)
+
+*<sub>Charts: Medicare Advantage prior-authorization activity, 2024
+([KFF analysis](https://www.kff.org/medicare/medicare-advantage-insurers-made-nearly-53-million-prior-authorization-determinations-in-2024/) of CMS Part C/D Reporting Requirements data).</sub>*
+
+**The other side already brought AI to this fight** ([ProPublica, October 2024](https://www.propublica.org/article/evicore-health-insurance-denials-cigna-unitedhealthcare-aetna-prior-authorizations)):
+
+EviCore — a Cigna-owned vendor that handles prior auth for **about
+100 million Americans (~1 in 3 insured people)** — uses an internal
+AI scoring algorithm its insiders called *"the dial."* It can be
+tuned to send more cases for human review, which raises denials.
+EviCore markets a **3-to-1 ROI** to insurers: every $1 spent on
+EviCore saves $3 in medical payouts. Sales reps have **boasted of
+15% jumps in denials**. In Arkansas (one of the few states that
+publishes denial data), EviCore's denial rate runs near **20%** —
+versus the federal Medicare Advantage baseline of about **7%**.
+Cigna's separate **PXDx** review system was [investigated by Congress](https://www.propublica.org/article/cigna-health-insurance-denials-pxdx-congress-investigation)
+for batch-denying claims in seconds.
+
+[![ProPublica investigation: EviCore, the company helping U.S. health insurers deny coverage for treatments — torn denial letter showing a family photo and a denied heart catheterization procedure](https://www.propublica.org/wp-content/uploads/2024/10/20241022-evicore-denials1x1a.jpg)](https://www.propublica.org/article/evicore-health-insurance-denials-cigna-unitedhealthcare-aetna-prior-authorizations)
+
+*<sub>Image: ProPublica investigation, "EviCore, the Company Helping
+U.S. Health Insurers Deny Coverage for Treatments" (Oct 2024). The
+denial pictured ruled a heart catheterization "not medically
+necessary."</sub>*
+
+So: insurers brought AI to deny faster. **This project brings AI to
+appeal cheaper — with citation-level verification baked in**, because
+that's the only kind of AI-drafted appeal a physician can put their
+name on in a regulated, high-stakes domain. See also CNN's mainstream
+coverage of the same EviCore investigation: ['Not medically necessary': inside the company helping America's biggest health insurers deny coverage for care](https://www.cnn.com/2024/11/07/health/evi-care-insurance-company-denials-propublica/index.html).
+
+**What the agent changes — concretely:**
+
+- **Per appeal:** hours of physician time → ~90–120 s of agent time; hundreds of dollars of loaded labor cost → ~$1 of Claude spend
+- **Per practice:** the highest-cognitive-effort slice of the AMA's ~12-hour-per-physician-per-week PA paperwork tax shrinks
+- **Per patient population:** practices that today *don't* appeal — because they can't afford the time — can now afford to. With 4-in-5 of those filings overturning the denial, every additional appeal filed is **reclaimed care**, not just reclaimed admin time
+
+That asymmetry — and the patient harm sitting behind it — is why the
+Verifier is this project's architectural keystone, not a nice-to-have:
+the only AI-drafted appeal that's actually usable in this domain is
+one where every cited claim can be physically traced to a source
+quote, and anything else gets stripped before the letter ships.
+
 ## What "every factual claim is verified" actually means
 
 Each pipeline stage that reads a document also captures **verbatim
