@@ -463,26 +463,50 @@ async def run_case(case_id: str, request: Request) -> EventSourceResponse:
     # Per-case concurrency guard — reject a second request for the
     # same case_id while the first is still running. Prevents two
     # browser tabs / two clicks from each spawning their own ~$1
-    # pipeline. The case is freed in event_stream's finally block.
-    async with _active_pipelines_lock:
-        if case_id in _active_pipelines:
-            raise HTTPException(
-                status_code=409,
-                detail=(
-                    "a pipeline for this case is already running; "
-                    "wait for it to finish or cancel it first"
-                ),
-            )
-        _active_pipelines.add(case_id)
-
-    pipeline_input = PipelineInput(
-        case_id=case_id,
-        denial_letter_path=str(case_dir / "denial_letter.pdf"),
-        patient_chart_path=str(case_dir / "patient_chart.txt"),
-        payer_policy_path=str(case_dir / "payer_policy.pdf"),
-    )
+    # pipeline. We do a CHEAP check here (just to return a clean 409
+    # at the HTTP level for non-browser clients like curl); the
+    # actual atomic acquire-and-add happens inside event_stream so
+    # there's no window where the slot is held without a finally to
+    # release it. Without this in-generator atomic swap, an exception
+    # raised between `add()` and the generator's first yield would
+    # leak the slot until process restart.
+    if case_id in _active_pipelines:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "a pipeline for this case is already running; "
+                "wait for it to finish or cancel it first"
+            ),
+        )
 
     async def event_stream():
+        # Atomic check-and-add at generator entry. From here on, the
+        # only path that releases the slot is the finally block at the
+        # bottom of this generator, which Python guarantees runs once
+        # the generator has been started (even on client disconnect /
+        # cancellation / unhandled exception). If another request
+        # raced us between the route's cheap pre-check and here, emit
+        # an SSE error event instead of an HTTP 409 — we already
+        # started streaming, so the status code is committed.
+        async with _active_pipelines_lock:
+            if case_id in _active_pipelines:
+                yield {
+                    "data": json.dumps(
+                        {
+                            "stage": "error",
+                            "error_type": "PipelineConflict",
+                            "message": (
+                                "a pipeline for this case is already running; "
+                                "wait for it to finish or cancel it first"
+                            ),
+                        }
+                    )
+                }
+                return
+            _active_pipelines.add(case_id)
+
+        # Build PipelineInput INSIDE the try below so a PipelineInput
+        # validation failure can't leak the slot.
         # Queue bridges the worker thread (where run_pipeline executes)
         # and this asyncio coroutine (which yields SSE events).
         queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
@@ -501,6 +525,12 @@ async def run_case(case_id: str, request: Request) -> EventSourceResponse:
 
         async def runner() -> None:
             try:
+                pipeline_input = PipelineInput(
+                    case_id=case_id,
+                    denial_letter_path=str(case_dir / "denial_letter.pdf"),
+                    patient_chart_path=str(case_dir / "patient_chart.txt"),
+                    payer_policy_path=str(case_dir / "payer_policy.pdf"),
+                )
                 verified = await asyncio.to_thread(
                     run_pipeline,
                     pipeline_input,
