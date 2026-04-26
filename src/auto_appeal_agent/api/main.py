@@ -225,11 +225,102 @@ def _resolve_case_dir(case_id: str) -> Path:
         raise HTTPException(status_code=404, detail="case not found")
     return candidate
 
+# --------------------------------------------------------------------------
+# Max request body size — caps memory before Pydantic ever sees the body
+# --------------------------------------------------------------------------
+# AppealDraft's per-field max_length bounds (schemas.py) only fire AFTER
+# Pydantic deserializes the full request body, so an attacker could send
+# a 500MB JSON blob and the server would buffer all of it before
+# rejecting with a validation error. This middleware caps the buffer
+# before deserialization starts.
+#
+# Default 2 MiB: a max-shape AppealDraft is ~1 MiB (50 paragraphs × 20KB),
+# leaving 2x headroom. Tunable via env if a deployment needs bigger drafts.
+MAX_REQUEST_BODY_BYTES: int = int(
+    os.getenv("MAX_REQUEST_BODY_BYTES", str(2 * 1024 * 1024))
+)
+
+
+class BodySizeLimitMiddleware:
+    """ASGI middleware enforcing a maximum request body size.
+
+    Two layers of defense:
+
+      1. Header fast-path — if the client sent Content-Length and it
+         exceeds the cap, respond 413 before reading any body bytes.
+         Browsers / curl / fetch always set Content-Length on POSTs,
+         so this covers the realistic attack vectors with a clean
+         error response.
+
+      2. Stream cap — if Content-Length is missing (chunked transfer)
+         or the client lied, wrap receive() to count actual body bytes
+         and abort the connection once the cap is exceeded. The handler
+         sees a ClientDisconnect — no clean 413 in this case, but the
+         server's memory stays bounded.
+    """
+
+    def __init__(self, app: Any, *, max_body_size: int) -> None:
+        self.app = app
+        self.max_body_size = max_body_size
+
+    async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        for name, value in scope.get("headers", []):
+            if name.lower() == b"content-length":
+                try:
+                    declared = int(value)
+                except ValueError:
+                    break
+                if declared > self.max_body_size:
+                    await _send_413(send, self.max_body_size)
+                    return
+                break
+
+        bytes_received = 0
+        max_size = self.max_body_size
+
+        async def receive_with_limit() -> Any:
+            nonlocal bytes_received
+            message = await receive()
+            if message.get("type") == "http.request":
+                bytes_received += len(message.get("body", b""))
+                if bytes_received > max_size:
+                    # Can't cleanly inject a 413 from inside receive —
+                    # disconnect the body stream so the handler aborts
+                    # instead of buffering more bytes. The client sees
+                    # a torn connection (acceptable; rare path).
+                    return {"type": "http.disconnect"}
+            return message
+
+        await self.app(scope, receive_with_limit, send)
+
+
+async def _send_413(send: Any, max_body_size: int) -> None:
+    await send(
+        {
+            "type": "http.response.start",
+            "status": 413,
+            "headers": [(b"content-type", b"application/json")],
+        }
+    )
+    body = json.dumps(
+        {"detail": f"request body too large (max {max_body_size} bytes)"}
+    ).encode()
+    await send({"type": "http.response.body", "body": body})
+
+
 app = FastAPI(
     title="auto-appeal-agent API",
     description="Prior Authorization Auto-Appeal Agent — backend",
     version="0.1.0",
 )
+
+# Body size cap goes BEFORE CORS so even unauthenticated cross-origin
+# preflight + body floods are rejected without buffering.
+app.add_middleware(BodySizeLimitMiddleware, max_body_size=MAX_REQUEST_BODY_BYTES)
 
 # Next.js dev server runs on :3000; allow it to call us.
 app.add_middleware(
