@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from auto_appeal_agent.anthropic_client import call_claude_structured, cached_system
+from auto_appeal_agent.prompt_safety import PROMPT_INJECTION_GUARDRAIL, wrap_data
 from auto_appeal_agent.schemas import ChartEvidence, MedicalNecessityCriterion
 
 _SYSTEM_PROMPT = """\
@@ -47,7 +48,7 @@ You MUST follow these rules:
 
 Return your answer by calling the emit_structured_output tool with a
 valid ChartEvidence object.
-"""
+""" + PROMPT_INJECTION_GUARDRAIL
 
 
 def _format_criteria(criteria: list[MedicalNecessityCriterion]) -> str:
@@ -87,8 +88,8 @@ def mine_chart(
             "text": (
                 f"Search the patient chart for evidence matching the policy "
                 f"criteria below. case_id='{case_id}'.\n\n"
-                f"CRITERIA:\n{_format_criteria(criteria)}\n\n"
-                f"PATIENT CHART:\n{chart_text}"
+                f"{wrap_data('criteria', _format_criteria(criteria))}\n\n"
+                f"{wrap_data('patient_chart', chart_text)}"
             ),
         }
     ]

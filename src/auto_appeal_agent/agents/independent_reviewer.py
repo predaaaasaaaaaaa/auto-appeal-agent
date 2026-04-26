@@ -20,6 +20,7 @@ from __future__ import annotations
 from typing import Any
 
 from auto_appeal_agent.anthropic_client import call_claude_structured, cached_system
+from auto_appeal_agent.prompt_safety import PROMPT_INJECTION_GUARDRAIL, wrap_data
 from auto_appeal_agent.schemas import (
     AppealDraft,
     AppealReview,
@@ -57,7 +58,7 @@ is "supports" AND there are no high_level_concerns.
 Index citations by paragraph_index (0-based across draft.paragraphs)
 and citation_in_paragraph_index (0-based within that paragraph's
 citations list).
-"""
+""" + PROMPT_INJECTION_GUARDRAIL
 
 
 def _format_citations(draft: AppealDraft) -> str:
@@ -102,11 +103,11 @@ def independent_review(
     """Return a fresh-context review of the draft appeal."""
     user_text = (
         f"Review the draft appeal letter below for case_id='{draft.case_id}'.\n\n"
-        f"DRAFT LETTER (paragraphs in order):\n{_format_paragraphs(draft)}\n\n"
-        f"CITATIONS TO REVIEW (one verdict each):\n"
-        f"{_format_citations(draft)}\n\n"
-        f"AVAILABLE SOURCE QUOTES (for cross-reference):\n"
-        f"{_format_sources(source_quotes)}\n\n"
+        f"{wrap_data('draft_letter', _format_paragraphs(draft))}\n\n"
+        "CITATIONS TO REVIEW (one verdict each):\n"
+        f"{wrap_data('citations', _format_citations(draft))}\n\n"
+        "AVAILABLE SOURCE QUOTES (for cross-reference):\n"
+        f"{wrap_data('source_quotes', _format_sources(source_quotes))}\n\n"
         f"Return an AppealReview via emit_structured_output. case_id must "
         f"match '{draft.case_id}'."
     )

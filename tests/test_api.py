@@ -367,8 +367,16 @@ def test_run_emits_sse_error_when_pipeline_raises(monkeypatch):
     error_events = [e for e in events if e.get("stage") == "error"]
     assert len(error_events) == 1, f"expected exactly one error, got {events}"
     err = error_events[0]
+    # error_type (the exception class name) IS exposed to the client —
+    # it's safe and useful for the UI to know whether a retry might help.
     assert err["error_type"] == "RuntimeError"
-    assert "no tool_use block" in err["message"]
+    # The raw exception message is NOT exposed (it can echo PHI from
+    # Pydantic validation errors). The client gets a generic message;
+    # the full traceback is logged server-side via logger.exception.
+    assert "no tool_use block" not in err["message"], (
+        "raw exc message leaked to client — H2 regression"
+    )
+    assert "Pipeline failed" in err["message"]
 
 
 def test_module_has_logger_defined():
@@ -495,9 +503,9 @@ def test_run_releases_case_slot_after_pipeline_error(monkeypatch):
 @pytest.fixture(autouse=True)
 def _reset_rate_limit_log():
     """Each test starts fresh so rate-limit state doesn't bleed."""
-    api_main._rate_limit_log.clear()
+    api_main._run_rate_log.clear()
     yield
-    api_main._rate_limit_log.clear()
+    api_main._run_rate_log.clear()
 
 
 def _stub_pipeline_quick_success(monkeypatch):
@@ -602,9 +610,9 @@ def test_rate_limit_per_ip_isolation(monkeypatch):
     monkeypatch.setattr(api_main, "RATE_LIMIT_WINDOW_SECONDS", 60.0)
 
     # Pre-populate rate-limit log as if IP "1.2.3.4" already maxed out.
-    api_main._rate_limit_log["1.2.3.4"] = [time.monotonic()]
+    api_main._run_rate_log["1.2.3.4"] = [time.monotonic()]
     # IP "5.6.7.8" should still be unaffected.
-    api_main._rate_limit_log.setdefault("5.6.7.8", [])
+    api_main._run_rate_log.setdefault("5.6.7.8", [])
 
     # The TestClient uses 'testclient' as its host. We can call
     # _enforce_rate_limit directly to verify isolation.
@@ -615,13 +623,25 @@ def test_rate_limit_per_ip_isolation(monkeypatch):
         from fastapi import HTTPException
 
         try:
-            await api_main._enforce_rate_limit("1.2.3.4")
+            await api_main._enforce_rate_limit(
+                "1.2.3.4",
+                log=api_main._run_rate_log,
+                lock=api_main._run_rate_lock,
+                max_in_window=api_main.RATE_LIMIT_MAX_STARTS,
+                window_seconds=api_main.RATE_LIMIT_WINDOW_SECONDS,
+            )
             assert False, "expected 429 for maxed-out IP"
         except HTTPException as e:
             assert e.status_code == 429
 
         # 5.6.7.8 is fresh -> allowed
-        await api_main._enforce_rate_limit("5.6.7.8")
+        await api_main._enforce_rate_limit(
+            "5.6.7.8",
+            log=api_main._run_rate_log,
+            lock=api_main._run_rate_lock,
+            max_in_window=api_main.RATE_LIMIT_MAX_STARTS,
+            window_seconds=api_main.RATE_LIMIT_WINDOW_SECONDS,
+        )
 
     _asyncio.run(run())
 
@@ -635,18 +655,26 @@ def test_rate_limit_window_expiry(monkeypatch):
     import asyncio as _asyncio
     from fastapi import HTTPException
 
+    def _run_args() -> dict:
+        return dict(
+            log=api_main._run_rate_log,
+            lock=api_main._run_rate_lock,
+            max_in_window=api_main.RATE_LIMIT_MAX_STARTS,
+            window_seconds=api_main.RATE_LIMIT_WINDOW_SECONDS,
+        )
+
     async def run():
-        await api_main._enforce_rate_limit("1.2.3.4")
+        await api_main._enforce_rate_limit("1.2.3.4", **_run_args())
         # Immediately at limit
         try:
-            await api_main._enforce_rate_limit("1.2.3.4")
+            await api_main._enforce_rate_limit("1.2.3.4", **_run_args())
             assert False, "expected 429 immediately after maxing"
         except HTTPException as e:
             assert e.status_code == 429
         # Wait past the window
         await _asyncio.sleep(0.15)
         # Should be allowed again
-        await api_main._enforce_rate_limit("1.2.3.4")
+        await api_main._enforce_rate_limit("1.2.3.4", **_run_args())
 
     _asyncio.run(run())
 

@@ -25,6 +25,7 @@ from __future__ import annotations
 from typing import Any
 
 from auto_appeal_agent.anthropic_client import call_claude_structured, cached_system
+from auto_appeal_agent.prompt_safety import PROMPT_INJECTION_GUARDRAIL, wrap_data
 from auto_appeal_agent.schemas import (
     AppealDraft,
     ChartEvidence,
@@ -85,7 +86,7 @@ Output must be a valid AppealDraft. `case_id` matches the user's input.
 `recipient_plan` matches DenialAnalysis.member_info.plan_name exactly.
 `subject_line` format: "Appeal of prior authorization denial —
 <requested_service> — member <member_id>".
-"""
+""" + PROMPT_INJECTION_GUARDRAIL
 
 
 def _serialize_all_sources(
@@ -119,15 +120,15 @@ def write_appeal(
         f"Draft the appeal letter for case_id='{case_id}'. Produce a "
         "valid AppealDraft object where every CitationMarker is backed "
         "by one of the source quotes listed below.\n\n"
-        f"DENIAL ANALYSIS:\n{denial.model_dump_json(indent=2)}\n\n"
-        f"POLICY CRITERIA:\n{policy.model_dump_json(indent=2)}\n\n"
-        f"CHART EVIDENCE:\n{evidence.model_dump_json(indent=2)}\n\n"
-        f"GUIDELINE CITATIONS (corpus-backed; cite in CitationMarkers using\n"
-        f"the guideline_<...> source_quotes listed below):\n"
-        f"{guidelines.model_dump_json(indent=2)}\n\n"
-        f"AVAILABLE SOURCE QUOTES (use these quote_ids as CitationMarker.source_id;\n"
-        f"verbatim_quote must be a substring of each quoted string):\n"
-        f"{_serialize_all_sources(denial, policy, evidence, guidelines)}\n"
+        f"{wrap_data('denial_analysis', denial.model_dump_json(indent=2))}\n\n"
+        f"{wrap_data('policy_criteria', policy.model_dump_json(indent=2))}\n\n"
+        f"{wrap_data('chart_evidence', evidence.model_dump_json(indent=2))}\n\n"
+        "GUIDELINE CITATIONS (corpus-backed; cite in CitationMarkers using\n"
+        "the guideline_<...> source_quotes listed below):\n"
+        f"{wrap_data('guideline_citations', guidelines.model_dump_json(indent=2))}\n\n"
+        "AVAILABLE SOURCE QUOTES (use these quote_ids as CitationMarker.source_id;\n"
+        "verbatim_quote must be a substring of each quoted string):\n"
+        f"{wrap_data('source_quotes', _serialize_all_sources(denial, policy, evidence, guidelines))}\n"
     )
 
     user_content: list[dict[str, Any]] = [{"type": "text", "text": user_text}]

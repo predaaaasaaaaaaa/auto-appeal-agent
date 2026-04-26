@@ -31,6 +31,7 @@ from __future__ import annotations
 from typing import Any
 
 from auto_appeal_agent.anthropic_client import call_claude_structured, cached_system
+from auto_appeal_agent.prompt_safety import PROMPT_INJECTION_GUARDRAIL, wrap_data
 from auto_appeal_agent.guideline_corpus import (
     GuidelineCorpus,
     corpus_source_quotes,
@@ -74,7 +75,7 @@ Strict rules — every output is automatically verified:
 Return a valid GuidelineCitations object with `case_id` matching the
 user's case_id, the citation list, and `source_quotes` empty (the
 pipeline materializes SourceQuotes from your citation_ids).
-"""
+""" + PROMPT_INJECTION_GUARDRAIL
 
 
 def _format_denial_reasons(reasons: list[DenialReason]) -> str:
@@ -116,15 +117,19 @@ def cite_guidelines(
                 "LOCAL CLINICAL-GUIDELINE CORPUS — every excerpt below is the\n"
                 "complete universe of quotable guideline text for this run.\n"
                 "Cite excerpts BY ID with their VERBATIM text only.\n\n"
-                f"{corpus_text}"
+                # Corpus is shipped with this repo (NOT user-controlled),
+                # but wrap it anyway so all data blocks have a uniform
+                # shape and the model's "data vs. instructions" boundary
+                # is consistent across agents.
+                f"{wrap_data('guideline_corpus', corpus_text)}"
             ),
         },
         {
             "type": "text",
             "text": (
                 f"Identify supporting guideline excerpts for case_id='{case_id}'.\n\n"
-                f"DENIAL REASONS:\n{_format_denial_reasons(denial_reasons)}\n\n"
-                f"POLICY CRITERIA:\n{_format_criteria(criteria)}\n\n"
+                f"{wrap_data('denial_reasons', _format_denial_reasons(denial_reasons))}\n\n"
+                f"{wrap_data('policy_criteria', _format_criteria(criteria))}\n\n"
                 "Return 1-4 high-confidence GuidelineCitations from the corpus."
             ),
         }

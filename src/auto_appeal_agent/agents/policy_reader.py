@@ -22,6 +22,7 @@ from typing import Any
 
 from auto_appeal_agent.anthropic_client import call_claude_structured, cached_system
 from auto_appeal_agent.pdf_utils import extract_text
+from auto_appeal_agent.prompt_safety import PROMPT_INJECTION_GUARDRAIL, wrap_data
 from auto_appeal_agent.schemas import PolicyCriteria
 
 _SYSTEM_PROMPT = """\
@@ -53,7 +54,7 @@ You MUST follow these rules:
 
 Return your answer by calling the emit_structured_output tool with a
 valid PolicyCriteria object.
-"""
+""" + PROMPT_INJECTION_GUARDRAIL
 
 
 def read_policy(case_id: str, payer_policy_path) -> PolicyCriteria:
@@ -68,7 +69,7 @@ def read_policy(case_id: str, payer_policy_path) -> PolicyCriteria:
                 f"policy below for case_id='{case_id}'. Return the full "
                 f"structured PolicyCriteria object. Reminder: every quote "
                 f"must be VERBATIM from the policy text.\n\n"
-                f"POLICY DOCUMENT:\n{policy_text}"
+                f"{wrap_data('payer_policy', policy_text)}"
             ),
         }
     ]
