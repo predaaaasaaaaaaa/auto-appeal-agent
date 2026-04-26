@@ -14,6 +14,7 @@ import json
 import threading
 import time
 
+import pytest
 from fastapi.testclient import TestClient
 
 from auto_appeal_agent.api import main as api_main
@@ -59,6 +60,65 @@ def test_unknown_source_kind_returns_400():
 def test_unknown_case_returns_404():
     r = client.get("/api/case/does_not_exist/source/patient_chart")
     assert r.status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# Path-traversal hardening — simulate every realistic attack shape.
+# ---------------------------------------------------------------------------
+
+
+def test_case_source_rejects_dot_dot_traversal():
+    """Classic `..` traversal: try to read /etc/passwd via case_id.
+    Must NOT escape FIXTURES_ROOT — must return 404 (with no detail
+    leaking the attempted path)."""
+    r = client.get("/api/case/..%2F..%2Fetc%2Fpasswd/source/patient_chart")
+    # FastAPI may normalize this to either 404 or 400 depending on
+    # routing; either way it must NOT 200.
+    assert r.status_code in (400, 404)
+
+
+def test_case_source_rejects_absolute_path():
+    """An absolute case_id must not bypass the fixtures root."""
+    r = client.get("/api/case/%2Fetc%2Fpasswd/source/patient_chart")
+    assert r.status_code in (400, 404)
+
+
+def test_run_rejects_dot_dot_traversal():
+    """Same protection on the expensive endpoint — never spawn a
+    pipeline against a path outside fixtures."""
+    r = client.get("/api/run/..%2F..%2Fetc%2Fpasswd")
+    assert r.status_code in (400, 404)
+
+
+def test_resolve_case_dir_helper_rejects_outside_fixtures():
+    """Direct unit-test of the helper. case_id values that resolve
+    outside FIXTURES_ROOT must raise HTTPException(404)."""
+    from fastapi import HTTPException
+
+    from auto_appeal_agent.api.main import _resolve_case_dir
+
+    for evil_id in (
+        "../etc",
+        "../../etc",
+        "../../../etc/passwd",
+        "case_01_ozempic_bmi34/../../../etc",
+    ):
+        with pytest.raises(HTTPException) as exc:
+            _resolve_case_dir(evil_id)
+        assert exc.value.status_code == 404
+
+
+def test_resolve_case_dir_helper_accepts_real_case():
+    """Sanity: a real case id resolves inside FIXTURES_ROOT and is
+    returned as a Path the caller can then `.is_dir()`-check."""
+    from auto_appeal_agent.api.main import (
+        _FIXTURES_ROOT_RESOLVED,
+        _resolve_case_dir,
+    )
+
+    p = _resolve_case_dir("case_01_ozempic_bmi34")
+    assert p.is_relative_to(_FIXTURES_ROOT_RESOLVED)
+    assert p.is_dir()
 
 
 def test_export_pdf_returns_application_pdf():

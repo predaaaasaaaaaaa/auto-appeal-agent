@@ -55,6 +55,36 @@ from auto_appeal_agent.schemas import AppealDraft, PipelineInput
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 FIXTURES_ROOT = REPO_ROOT / "fixtures"
+# Pre-resolved (symlinks/.. fully expanded) for cheap is_relative_to
+# checks at request time. Eliminates a class of path-traversal bugs
+# where a `case_id` like `../../etc/passwd` would have escaped the
+# fixtures root if we relied on `is_dir()` alone.
+_FIXTURES_ROOT_RESOLVED = FIXTURES_ROOT.resolve()
+
+
+def _resolve_case_dir(case_id: str) -> Path:
+    """Resolve `FIXTURES_ROOT / case_id` and prove it stays inside
+    FIXTURES_ROOT.
+
+    Plain-language summary: a malicious request could send
+    `case_id = "../../etc/passwd"` and try to read arbitrary files.
+    Path joining alone wouldn't catch that — `pathlib` happily
+    composes the parents-up traversal. We `resolve()` (which fully
+    expands `..` and any symlinks) and then assert the resolved
+    path is_relative_to the fixtures root. Anything outside raises
+    404 (we deliberately do NOT echo back the attempted path —
+    no information leak to attackers).
+
+    Returns the resolved case directory. Caller still needs to
+    check `.is_dir()` if they care that the case actually exists.
+    """
+    candidate = (FIXTURES_ROOT / case_id).resolve()
+    try:
+        candidate.relative_to(_FIXTURES_ROOT_RESOLVED)
+    except ValueError:
+        # Outside FIXTURES_ROOT — path traversal attempt.
+        raise HTTPException(status_code=404, detail="case not found")
+    return candidate
 
 app = FastAPI(
     title="auto-appeal-agent API",
@@ -102,7 +132,7 @@ async def list_cases() -> dict[str, Any]:
 
 @app.get("/api/case/{case_id}/source/{kind}")
 async def get_source_text(case_id: str, kind: str) -> dict[str, str]:
-    case_dir = FIXTURES_ROOT / case_id
+    case_dir = _resolve_case_dir(case_id)
     if not case_dir.is_dir():
         raise HTTPException(status_code=404, detail="case not found")
 
@@ -140,7 +170,7 @@ async def export_pdf(draft: AppealDraft) -> Response:
 
 @app.get("/api/run/{case_id}")
 async def run_case(case_id: str) -> EventSourceResponse:
-    case_dir = FIXTURES_ROOT / case_id
+    case_dir = _resolve_case_dir(case_id)
     if not case_dir.is_dir():
         raise HTTPException(status_code=404, detail="case not found")
 
