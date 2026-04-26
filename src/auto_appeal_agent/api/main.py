@@ -28,7 +28,7 @@ import secrets
 import threading
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 # Configure root logging so auto_appeal_agent.* loggers surface in
 # the uvicorn terminal. LOG_LEVEL env var (from .env) wins if set;
@@ -391,8 +391,17 @@ async def list_cases() -> dict[str, Any]:
     return {"cases": cases}
 
 
+SourceKind = Literal["patient_chart", "denial_letter", "payer_policy"]
+
+
 @app.get("/api/case/{case_id}/source/{kind}", dependencies=[Depends(require_api_key)])
-async def get_source_text(case_id: str, kind: str) -> dict[str, str]:
+async def get_source_text(case_id: str, kind: SourceKind) -> dict[str, str]:
+    # FastAPI's Literal handling rejects any value outside the
+    # whitelist with a 422 BEFORE this body runs, so the if/elif
+    # chain below now serves only as a dispatch on already-validated
+    # input. A future maintainer adding a new branch here CANNOT
+    # accidentally widen the input surface — the type signature is
+    # the source of truth and FastAPI enforces it.
     case_dir = _resolve_case_dir(case_id)
     if not case_dir.is_dir():
         raise HTTPException(status_code=404, detail="case not found")
@@ -403,13 +412,11 @@ async def get_source_text(case_id: str, kind: str) -> dict[str, str]:
             raise HTTPException(status_code=404, detail="file not found")
         return {"text": path.read_text(encoding="utf-8")}
 
-    if kind in ("denial_letter", "payer_policy"):
-        path = case_dir / f"{kind}.pdf"
-        if not path.exists():
-            raise HTTPException(status_code=404, detail="file not found")
-        return {"text": extract_text(path)}
-
-    raise HTTPException(status_code=400, detail="invalid source kind")
+    # kind is "denial_letter" or "payer_policy" by Literal exhaustion.
+    path = case_dir / f"{kind}.pdf"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="file not found")
+    return {"text": extract_text(path)}
 
 
 _SAFE_FILENAME_CHARS = set(

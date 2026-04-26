@@ -159,9 +159,13 @@ def test_get_source_text_denial_pdf():
     assert "BlueSun" in r.json()["text"] or "bluesun" in r.json()["text"].lower()
 
 
-def test_unknown_source_kind_returns_400():
+def test_unknown_source_kind_returns_422():
+    """Invalid `kind` is now rejected at the FastAPI Literal-validation
+    layer (422), not by an in-handler if/else (400). The whitelist is
+    pinned in the type signature so a future maintainer cannot widen
+    the input surface accidentally."""
     r = client.get("/api/case/case_01_ozempic_bmi34/source/unknown")
-    assert r.status_code == 400
+    assert r.status_code == 422
 
 
 def test_unknown_case_returns_404():
