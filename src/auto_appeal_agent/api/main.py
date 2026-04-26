@@ -426,11 +426,26 @@ async def run_case(case_id: str, request: Request) -> EventSourceResponse:
                 # cleanly so the task's done() flips True.
                 logger.info("pipeline cancelled by client disconnect")
             except Exception as exc:  # pragma: no cover - streamed to client
+                # Log the full traceback (with any PHI in field values
+                # echoed by Pydantic ValidationError) ONLY server-side.
+                # The browser receives a generic message — no member
+                # IDs, file paths, or chart fragments leak to client
+                # devtools, screen shares, or browser logs. error_type
+                # (the exception class name) is safe to expose and
+                # helps the user know whether it's worth retrying.
+                logger.exception(
+                    "pipeline error case_id=%s error_type=%s",
+                    case_id,
+                    type(exc).__name__,
+                )
                 await queue.put(
                     {
                         "stage": "error",
                         "error_type": type(exc).__name__,
-                        "message": str(exc),
+                        "message": (
+                            "Pipeline failed. Please retry; "
+                            "if the issue persists, check server logs."
+                        ),
                     }
                 )
 
