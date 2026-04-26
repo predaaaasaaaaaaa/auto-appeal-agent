@@ -151,16 +151,45 @@ async def get_source_text(case_id: str, kind: str) -> dict[str, str]:
     raise HTTPException(status_code=400, detail="invalid source kind")
 
 
+_SAFE_FILENAME_CHARS = set(
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_."
+)
+
+
+def _safe_filename(case_id: str) -> str:
+    """Build a Content-Disposition filename from `case_id` that cannot
+    inject HTTP headers.
+
+    Why this exists: case_id is user-controlled (part of the
+    POST /api/export_pdf body's AppealDraft.case_id). Interpolating
+    it raw into the Content-Disposition header would let an attacker
+    submit `case_id = "x\\r\\nContent-Type: text/html"` and inject
+    response headers — letting browsers reinterpret the body, which
+    opens XSS / cache-poisoning paths.
+
+    We restrict the filename to a safe ASCII subset (alnum + `-_.`)
+    and truncate to 64 chars. Anything outside the safe set becomes
+    `_`. Robust by construction — header injection is impossible
+    because the whitelist contains no CR/LF/quotes/semicolons.
+    """
+    sanitized = "".join(
+        c if c in _SAFE_FILENAME_CHARS else "_" for c in case_id
+    )[:64]
+    if not sanitized:
+        sanitized = "appeal"
+    return f"{sanitized}_appeal.pdf"
+
+
 @app.post("/api/export_pdf")
 async def export_pdf(draft: AppealDraft) -> Response:
     """Render the (possibly edited) appeal draft to a PDF download.
 
     Accepts an AppealDraft whose paragraphs may have been edited by the
     user in the UI. Returns an application/pdf body with a filename
-    suggestion based on case_id.
+    suggestion based on case_id (sanitized — see _safe_filename).
     """
     pdf_bytes = render_appeal_pdf(draft)
-    filename = f"{draft.case_id}_appeal.pdf"
+    filename = _safe_filename(draft.case_id)
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",

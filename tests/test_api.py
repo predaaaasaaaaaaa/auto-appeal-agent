@@ -121,6 +121,80 @@ def test_resolve_case_dir_helper_accepts_real_case():
     assert p.is_dir()
 
 
+# ---------------------------------------------------------------------------
+# Content-Disposition header injection — attacker-controlled case_id
+# must NOT reach the response header raw.
+# ---------------------------------------------------------------------------
+
+
+def test_safe_filename_strips_crlf():
+    """CRLF in case_id would let an attacker inject HTTP headers via
+    Content-Disposition. The sanitizer must drop them."""
+    from auto_appeal_agent.api.main import _safe_filename
+
+    out = _safe_filename("test\r\nContent-Type: text/html")
+    assert "\r" not in out
+    assert "\n" not in out
+    assert ":" not in out
+
+
+def test_safe_filename_strips_quotes():
+    """Double quotes break the filename="..." syntax and let an
+    attacker append additional disposition params."""
+    from auto_appeal_agent.api.main import _safe_filename
+
+    out = _safe_filename('x"; filename="evil')
+    assert '"' not in out
+    assert ";" not in out
+
+
+def test_safe_filename_preserves_valid_case_id():
+    """Sanity: real case_id values pass through unchanged."""
+    from auto_appeal_agent.api.main import _safe_filename
+
+    assert _safe_filename("case_01_ozempic_bmi34") == "case_01_ozempic_bmi34_appeal.pdf"
+
+
+def test_safe_filename_truncates_long_input():
+    """A 100kB case_id shouldn't produce a 100kB header value."""
+    from auto_appeal_agent.api.main import _safe_filename
+
+    out = _safe_filename("a" * 10000)
+    # Sanitized portion <= 64 chars + "_appeal.pdf" suffix
+    assert len(out) <= 64 + len("_appeal.pdf")
+
+
+def test_safe_filename_handles_empty_input():
+    """Edge case — empty case_id must produce a non-empty filename."""
+    from auto_appeal_agent.api.main import _safe_filename
+
+    assert _safe_filename("") == "appeal_appeal.pdf"
+
+
+def test_export_pdf_endpoint_strips_header_injection_attempt():
+    """End-to-end: posting a malicious case_id must produce a
+    Content-Disposition header with no CRLF / no extra header
+    after the filename."""
+    draft = {
+        "case_id": "evil\r\nX-Injected: yes",
+        "recipient_plan": "ACME",
+        "subject_line": "T",
+        "paragraphs": [{"heading": None, "text": "x", "citations": []}],
+    }
+    r = client.post("/api/export_pdf", json=draft)
+    assert r.status_code == 200
+    cd = r.headers.get("content-disposition", "")
+    # Critical: no CRLF in the header value — that's what would
+    # inject a separate header line.
+    assert "\r" not in cd
+    assert "\n" not in cd
+    # The injected response header must NOT be present as its own header.
+    # (Substring "x-injected" can legally appear inside the filename
+    # because hyphens are an allowed filename character — that's just
+    # text, not a real header line.)
+    assert "x-injected" not in {k.lower() for k in r.headers.keys()}
+
+
 def test_export_pdf_returns_application_pdf():
     draft = {
         "case_id": "case_test",
