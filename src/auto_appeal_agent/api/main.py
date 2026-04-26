@@ -26,6 +26,7 @@ import logging
 import os
 import secrets
 import threading
+import time
 from pathlib import Path
 from typing import Any, Optional
 
@@ -132,6 +133,55 @@ _FIXTURES_ROOT_RESOLVED = FIXTURES_ROOT.resolve()
 # to the event loop after the guard runs.
 _active_pipelines: set[str] = set()
 _active_pipelines_lock = asyncio.Lock()
+
+
+# --------------------------------------------------------------------------
+# Per-IP rate limit on /api/run — sliding window over recent starts
+# --------------------------------------------------------------------------
+# Even with auth + per-case concurrency, a single authenticated client
+# could legitimately fire 5 different cases in parallel (5 x $1). This
+# limit is the second line of defense: max N pipeline starts per IP
+# within a rolling window. Configurable via env so a real deployment
+# can tune to its expected user behavior.
+#
+# Defaults (5 per 60s) are deliberately generous for the demo: a user
+# clicking through 5 different cases in a minute is plausible normal
+# usage. Production should tighten based on real telemetry.
+RATE_LIMIT_WINDOW_SECONDS: float = float(
+    os.getenv("RATE_LIMIT_WINDOW_SECONDS", "60")
+)
+RATE_LIMIT_MAX_STARTS: int = int(os.getenv("RATE_LIMIT_MAX_STARTS", "5"))
+
+# Per-IP timestamps of recent /api/run starts. Pruned lazily on each
+# check so memory stays bounded by RATE_LIMIT_MAX_STARTS per active IP.
+_rate_limit_log: dict[str, list[float]] = {}
+_rate_limit_lock = asyncio.Lock()
+
+
+async def _enforce_rate_limit(client_ip: str) -> None:
+    """Sliding-window rate limit. Raise 429 if too many recent starts.
+
+    Plain-language summary: we keep a tiny per-IP list of when this
+    IP last fired /api/run. Each new request prunes entries older
+    than the window, then either rejects (if the list is at the cap)
+    or appends. The list is bounded by RATE_LIMIT_MAX_STARTS so
+    memory cannot grow unbounded.
+    """
+    now = time.monotonic()
+    async with _rate_limit_lock:
+        timestamps = _rate_limit_log.setdefault(client_ip, [])
+        cutoff = now - RATE_LIMIT_WINDOW_SECONDS
+        # Prune in-place so the list never holds entries we'll never check.
+        timestamps[:] = [t for t in timestamps if t > cutoff]
+        if len(timestamps) >= RATE_LIMIT_MAX_STARTS:
+            raise HTTPException(
+                status_code=429,
+                detail=(
+                    f"too many requests; max {RATE_LIMIT_MAX_STARTS} "
+                    f"per {RATE_LIMIT_WINDOW_SECONDS:.0f}s — wait and retry"
+                ),
+            )
+        timestamps.append(now)
 
 
 def _resolve_case_dir(case_id: str) -> Path:
@@ -270,10 +320,18 @@ async def export_pdf(draft: AppealDraft) -> Response:
 
 
 @app.get("/api/run/{case_id}", dependencies=[Depends(require_api_key)])
-async def run_case(case_id: str) -> EventSourceResponse:
+async def run_case(case_id: str, request: Request) -> EventSourceResponse:
     case_dir = _resolve_case_dir(case_id)
     if not case_dir.is_dir():
         raise HTTPException(status_code=404, detail="case not found")
+
+    # Per-IP rate limit BEFORE the per-case lock, so a flood from a
+    # single IP gets 429'd before we even consider concurrency. Use
+    # request.client.host as the limit key. Behind a reverse proxy,
+    # consider X-Forwarded-For (left to deployment config; defaults
+    # here are safe for direct/loopback usage).
+    client_ip = request.client.host if request.client else "unknown"
+    await _enforce_rate_limit(client_ip)
 
     # Per-case concurrency guard — reject a second request for the
     # same case_id while the first is still running. Prevents two

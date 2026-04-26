@@ -486,6 +486,171 @@ def test_run_releases_case_slot_after_pipeline_error(monkeypatch):
     assert "case_01_ozempic_bmi34" not in api_main._active_pipelines
 
 
+# ---------------------------------------------------------------------------
+# Per-IP rate limit on /api/run — second-line defense vs a flood from a
+# single authenticated client.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limit_log():
+    """Each test starts fresh so rate-limit state doesn't bleed."""
+    api_main._rate_limit_log.clear()
+    yield
+    api_main._rate_limit_log.clear()
+
+
+def _stub_pipeline_quick_success(monkeypatch):
+    """Helper: replace run_pipeline with a no-op that returns a
+    minimal valid VerifiedAppeal. Lets rate-limit tests fire many
+    requests without burning anything."""
+    from auto_appeal_agent.schemas import (
+        AppealDraft,
+        AppealParagraph,
+        VerifiedAppeal,
+    )
+
+    def fake(*args, **kwargs):
+        return VerifiedAppeal(
+            case_id="case_01_ozempic_bmi34",
+            draft=AppealDraft(
+                case_id="case_01_ozempic_bmi34",
+                recipient_plan="x",
+                subject_line="x",
+                paragraphs=[AppealParagraph(text="x", citations=[])],
+            ),
+            verified_citations=[],
+            rejected_citations=[],
+            verification_pass_rate=1.0,
+            ready_to_send=True,
+        )
+
+    monkeypatch.setattr(api_main, "run_pipeline", fake)
+
+
+def test_run_returns_429_after_rate_limit_exceeded(monkeypatch):
+    """Fire MAX+1 starts in quick succession — last one rejects."""
+    _stub_pipeline_quick_success(monkeypatch)
+    # Tighten the limit so we don't have to fire 5 real requests.
+    monkeypatch.setattr(api_main, "RATE_LIMIT_MAX_STARTS", 2)
+    monkeypatch.setattr(api_main, "RATE_LIMIT_WINDOW_SECONDS", 60.0)
+
+    # First two calls allowed (200 SSE).
+    for _ in range(2):
+        with client.stream("GET", "/api/run/case_01_ozempic_bmi34") as r:
+            assert r.status_code == 200
+            for _ in r.iter_lines():
+                pass
+
+    # Third call inside the window — must be 429.
+    r = client.get("/api/run/case_01_ozempic_bmi34")
+    assert r.status_code == 429
+    assert "too many requests" in r.json()["detail"].lower()
+
+
+def test_run_429_does_not_invoke_pipeline(monkeypatch):
+    """The 429 must come BEFORE run_pipeline. Otherwise rate-limited
+    requests would still burn $1."""
+    monkeypatch.setattr(api_main, "RATE_LIMIT_MAX_STARTS", 1)
+    monkeypatch.setattr(api_main, "RATE_LIMIT_WINDOW_SECONDS", 60.0)
+
+    call_count = {"n": 0}
+
+    def fake(*args, **kwargs):
+        call_count["n"] += 1
+        from auto_appeal_agent.schemas import (
+            AppealDraft,
+            AppealParagraph,
+            VerifiedAppeal,
+        )
+
+        return VerifiedAppeal(
+            case_id="case_01_ozempic_bmi34",
+            draft=AppealDraft(
+                case_id="case_01_ozempic_bmi34",
+                recipient_plan="x",
+                subject_line="x",
+                paragraphs=[AppealParagraph(text="x", citations=[])],
+            ),
+            verified_citations=[],
+            rejected_citations=[],
+            verification_pass_rate=1.0,
+            ready_to_send=True,
+        )
+
+    monkeypatch.setattr(api_main, "run_pipeline", fake)
+
+    # First call uses the 1-call quota.
+    with client.stream("GET", "/api/run/case_01_ozempic_bmi34") as r:
+        for _ in r.iter_lines():
+            pass
+
+    # Second call must 429 without invoking run_pipeline.
+    pre_count = call_count["n"]
+    r = client.get("/api/run/case_01_ozempic_bmi34")
+    assert r.status_code == 429
+    assert call_count["n"] == pre_count, (
+        "run_pipeline was called on a rate-limited request — that's a "
+        "$1 burn that should never happen"
+    )
+
+
+def test_rate_limit_per_ip_isolation(monkeypatch):
+    """Each IP gets its own quota — one IP exhausting their quota
+    must NOT affect another IP."""
+    monkeypatch.setattr(api_main, "RATE_LIMIT_MAX_STARTS", 1)
+    monkeypatch.setattr(api_main, "RATE_LIMIT_WINDOW_SECONDS", 60.0)
+
+    # Pre-populate rate-limit log as if IP "1.2.3.4" already maxed out.
+    api_main._rate_limit_log["1.2.3.4"] = [time.monotonic()]
+    # IP "5.6.7.8" should still be unaffected.
+    api_main._rate_limit_log.setdefault("5.6.7.8", [])
+
+    # The TestClient uses 'testclient' as its host. We can call
+    # _enforce_rate_limit directly to verify isolation.
+    import asyncio as _asyncio
+
+    async def run():
+        # 1.2.3.4 is at limit -> raises 429
+        from fastapi import HTTPException
+
+        try:
+            await api_main._enforce_rate_limit("1.2.3.4")
+            assert False, "expected 429 for maxed-out IP"
+        except HTTPException as e:
+            assert e.status_code == 429
+
+        # 5.6.7.8 is fresh -> allowed
+        await api_main._enforce_rate_limit("5.6.7.8")
+
+    _asyncio.run(run())
+
+
+def test_rate_limit_window_expiry(monkeypatch):
+    """After the window passes, old timestamps are pruned and the
+    quota is refreshed. Use a tiny window so we don't sleep long."""
+    monkeypatch.setattr(api_main, "RATE_LIMIT_MAX_STARTS", 1)
+    monkeypatch.setattr(api_main, "RATE_LIMIT_WINDOW_SECONDS", 0.1)
+
+    import asyncio as _asyncio
+    from fastapi import HTTPException
+
+    async def run():
+        await api_main._enforce_rate_limit("1.2.3.4")
+        # Immediately at limit
+        try:
+            await api_main._enforce_rate_limit("1.2.3.4")
+            assert False, "expected 429 immediately after maxing"
+        except HTTPException as e:
+            assert e.status_code == 429
+        # Wait past the window
+        await _asyncio.sleep(0.15)
+        # Should be allowed again
+        await api_main._enforce_rate_limit("1.2.3.4")
+
+    _asyncio.run(run())
+
+
 def test_run_passes_cancel_event_to_pipeline(monkeypatch):
     """Wiring check: every call to /api/run/{case_id} must pass a
     threading.Event as `cancel_event` to run_pipeline. Without it,
