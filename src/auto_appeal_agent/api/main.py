@@ -168,6 +168,25 @@ _pdf_rate_log: dict[str, list[float]] = {}
 _pdf_rate_lock = asyncio.Lock()
 
 
+def _require_client_ip(request: Request) -> str:
+    """Return the caller's IP, or raise 400 if it cannot be determined.
+
+    Why not silently default to "unknown": a shared "unknown" bucket
+    means anyone whose request.client is None (some proxy / unix-
+    socket configs, or test clients) competes for one rate-limit
+    quota with every other unknown caller. A single misbehaving
+    request can then 429 every legitimate "unknown" client. Raising
+    400 here surfaces the deployment misconfiguration instead of
+    silently failing into a shared-bucket DoS.
+    """
+    if request.client is None or not request.client.host:
+        raise HTTPException(
+            status_code=400,
+            detail="cannot determine client IP — check proxy / ASGI config",
+        )
+    return request.client.host
+
+
 async def _enforce_rate_limit(
     client_ip: str,
     *,
@@ -423,7 +442,7 @@ async def export_pdf(draft: AppealDraft, request: Request) -> Response:
     /api/run's bucket. Without a limit, an authenticated client could
     loop max-size drafts (50 paragraphs × 20KB) and peg the worker.
     """
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = _require_client_ip(request)
     await _enforce_rate_limit(
         client_ip,
         log=_pdf_rate_log,
@@ -451,7 +470,7 @@ async def run_case(case_id: str, request: Request) -> EventSourceResponse:
     # request.client.host as the limit key. Behind a reverse proxy,
     # consider X-Forwarded-For (left to deployment config; defaults
     # here are safe for direct/loopback usage).
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = _require_client_ip(request)
     await _enforce_rate_limit(
         client_ip,
         log=_run_rate_log,
